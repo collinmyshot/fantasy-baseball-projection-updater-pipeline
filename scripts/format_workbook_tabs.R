@@ -107,13 +107,21 @@ for (i in seq_len(nrow(props))) {
   known_tabs <- c(cfg$google_sheets$run_data_tab, cfg$google_sheets$projection_tab, cfg$google_sheets$adp_tab, cfg$google_sheets$rbll_tab, "C", "1B", "2B", "3B", "SS", "OF")
   hdr <- if (sheet_name %in% known_tabs) character(0) else safe_header(target_sheet, sheet_name)
   freeze_cols <- derive_freeze_cols(sheet_name, hdr, n_cols)
+  freeze_rows <- 1L
+  if (identical(sheet_name, cfg$google_sheets$rbll_tab)) {
+    freeze_rows <- 0L
+  }
+  if (identical(sheet_name, cfg$google_sheets$adp_tab)) {
+    freeze_rows <- 0L
+    freeze_cols <- 0L
+  }
 
   requests[[length(requests) + 1L]] <- list(
     updateSheetProperties = list(
       properties = list(
         sheetId = sheet_id,
         gridProperties = list(
-          frozenRowCount = 1L,
+          frozenRowCount = freeze_rows,
           frozenColumnCount = freeze_cols
         )
       ),

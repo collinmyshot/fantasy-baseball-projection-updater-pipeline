@@ -37,9 +37,10 @@ cfg <- load_pipeline_config(config_path)
 
 run_rscript <- function(script, args = character(0), retries = 2L) {
   cmd <- c(script, args)
+  quoted_cmd <- shQuote(cmd)
   for (attempt in seq_len(retries + 1L)) {
     message(sprintf("Running: Rscript %s (attempt %s/%s)", paste(cmd, collapse = " "), attempt, retries + 1L))
-    status <- system2("Rscript", cmd)
+    status <- system2("Rscript", quoted_cmd)
     if (identical(status, 0L)) {
       return(invisible(TRUE))
     }

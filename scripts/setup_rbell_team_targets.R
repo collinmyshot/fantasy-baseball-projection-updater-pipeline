@@ -59,28 +59,110 @@ has_any_value <- function(df) {
   any(nzchar(vals))
 }
 
+row_values <- function(df, expected_len) {
+  if (is.null(df) || nrow(df) == 0) {
+    return(rep("", expected_len))
+  }
+  vals <- as.character(unlist(df[1, ], use.names = FALSE))
+  vals[is.na(vals)] <- ""
+  if (length(vals) < expected_len) {
+    vals <- c(vals, rep("", expected_len - length(vals)))
+  } else if (length(vals) > expected_len) {
+    vals <- vals[seq_len(expected_len)]
+  }
+  vals
+}
+
+non_comment_nonempty_count <- function(vals) {
+  vals <- trimws(vals)
+  sum(nzchar(vals) & !grepl("^#", vals))
+}
+
+choose_target_row <- function(primary_df, secondary_df, defaults) {
+  expected_len <- length(defaults)
+  primary_vals <- row_values(primary_df, expected_len)
+  secondary_vals <- row_values(secondary_df, expected_len)
+
+  primary_first <- trimws(primary_vals[1])
+  secondary_first <- trimws(secondary_vals[1])
+  primary_has_first <- nzchar(primary_first) && !grepl("^#", primary_first)
+  secondary_has_first <- nzchar(secondary_first) && !grepl("^#", secondary_first)
+
+  # Legacy sheets sometimes have targets shifted one column right.
+  if (!primary_has_first && secondary_has_first) {
+    return(secondary_df)
+  }
+
+  if (non_comment_nonempty_count(secondary_vals) > non_comment_nonempty_count(primary_vals)) {
+    return(secondary_df)
+  }
+
+  primary_df
+}
+
 preserve_targets <- function(df, defaults) {
   if (is.null(df) || nrow(df) == 0) {
     return(defaults)
   }
-  vals <- as.character(unlist(df[1, ], use.names = FALSE))
-  vals[is.na(vals)] <- ""
-  vals <- vals[nzchar(vals) & !grepl("^#", vals)]
-  if (length(vals) == 0) {
-    return(defaults)
-  }
-  if (length(vals) < length(defaults)) {
-    vals <- c(rep("", length(defaults) - length(vals)), vals)
-  } else if (length(vals) > length(defaults)) {
-    vals <- tail(vals, length(defaults))
-  }
+  vals <- row_values(df, length(defaults))
   out <- defaults
   for (i in seq_along(vals)) {
-    if (nzchar(vals[i]) && !grepl("^#", vals[i])) {
-      out[i] <- vals[i]
+    val <- trimws(vals[i])
+    if (nzchar(val) && !grepl("^#", val)) {
+      out[i] <- val
     }
   }
   out
+}
+
+flag_implausible_targets <- function(hit_targets, pit_targets) {
+  issues <- character(0)
+
+  check_numeric <- function(values, idx, label, min_val, max_val) {
+    raw <- trimws(values[idx])
+    if (!nzchar(raw) || grepl("^#", raw)) {
+      return(NULL)
+    }
+    val <- suppressWarnings(as.numeric(raw))
+    if (is.na(val)) {
+      return(sprintf("%s is non-numeric ('%s')", label, raw))
+    }
+    if (val < min_val || val > max_val) {
+      return(sprintf("%s = %s is outside expected range [%s, %s]", label, raw, min_val, max_val))
+    }
+    NULL
+  }
+
+  checks <- list(
+    list(vec = hit_targets, idx = 1, label = "Hitter HR target", min = 0, max = 800),
+    list(vec = hit_targets, idx = 2, label = "Hitter SB target", min = 0, max = 800),
+    list(vec = hit_targets, idx = 3, label = "Hitter R target", min = 0, max = 2500),
+    list(vec = hit_targets, idx = 4, label = "Hitter RBI target", min = 0, max = 2500),
+    list(vec = hit_targets, idx = 5, label = "Hitter AVG target", min = 0.150, max = 0.350),
+    list(vec = pit_targets, idx = 1, label = "Pitcher W target", min = 0, max = 200),
+    list(vec = pit_targets, idx = 2, label = "Pitcher K target", min = 0, max = 3000),
+    list(vec = pit_targets, idx = 3, label = "Pitcher SV target", min = 0, max = 300),
+    list(vec = pit_targets, idx = 4, label = "Pitcher ERA target", min = 1.50, max = 10.00),
+    list(vec = pit_targets, idx = 5, label = "Pitcher WHIP target", min = 0.80, max = 2.50)
+  )
+
+  for (chk in checks) {
+    issue <- check_numeric(chk$vec, chk$idx, chk$label, chk$min, chk$max)
+    if (!is.null(issue)) {
+      issues <- c(issues, issue)
+    }
+  }
+
+  if (length(issues) > 0) {
+    warning(
+      paste(
+        "Target sanity check flagged possible misalignment/data issues:",
+        paste(sprintf("- %s", issues), collapse = "\n"),
+        sep = "\n"
+      ),
+      call. = FALSE
+    )
+  }
 }
 
 normalize_pit_manual <- function(df) {
@@ -136,6 +218,8 @@ hit_pick_data <- NULL
 pit_manual <- NULL
 hit_targets_existing <- NULL
 pit_targets_existing <- NULL
+hit_target_defaults <- c("307", "183", "1058", "1032", "0.254")
+pit_target_defaults <- c("90", "1368", "67", "3.968", "1.235")
 
 if (tab_name %in% all_tabs) {
   hit_players <- safe_read(target_sheet, tab_name, "B2:B15")
@@ -151,23 +235,22 @@ if (tab_name %in% all_tabs) {
   pit_manual <- safe_read(target_sheet, tab_name, "B25:L33")
   pit_manual <- normalize_pit_manual(pit_manual)
 
-  hit_targets_existing <- safe_read(target_sheet, tab_name, "E18:I18")
-  if (!has_any_value(hit_targets_existing)) {
-    hit_targets_existing <- safe_read(target_sheet, tab_name, "F18:J18")
-  }
+  hit_targets_primary <- safe_read(target_sheet, tab_name, "E18:I18")
+  hit_targets_secondary <- safe_read(target_sheet, tab_name, "F18:J18")
+  hit_targets_existing <- choose_target_row(hit_targets_primary, hit_targets_secondary, hit_target_defaults)
 
-  pit_targets_existing <- safe_read(target_sheet, tab_name, "E36:I36")
-  if (!has_any_value(pit_targets_existing)) {
-    pit_targets_existing <- safe_read(target_sheet, tab_name, "F36:J36")
-  }
+  pit_targets_primary <- safe_read(target_sheet, tab_name, "E36:I36")
+  pit_targets_secondary <- safe_read(target_sheet, tab_name, "F36:J36")
+  pit_targets_existing <- choose_target_row(pit_targets_primary, pit_targets_secondary, pit_target_defaults)
 } else {
   googlesheets4::sheet_add(target_sheet, tab_name)
 }
 
 googlesheets4::sheet_resize(target_sheet, sheet = tab_name, nrow = 300, ncol = 40, exact = FALSE)
 
-hit_targets <- preserve_targets(hit_targets_existing, c("307", "183", "1058", "1032", "0.254"))
-pit_targets <- preserve_targets(pit_targets_existing, c("90", "1368", "67", "3.968", "1.235"))
+hit_targets <- preserve_targets(hit_targets_existing, hit_target_defaults)
+pit_targets <- preserve_targets(pit_targets_existing, pit_target_defaults)
+flag_implausible_targets(hit_targets, pit_targets)
 
 # Template grid A1:L45.
 grid <- matrix("", nrow = 45, ncol = 12)

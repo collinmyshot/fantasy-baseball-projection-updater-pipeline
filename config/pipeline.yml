@@ -1,0 +1,60 @@
+season: null
+
+paths:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  match_overrides_csv: data/manual/player_match_overrides.csv
+
+projection:
+  systems: [batx, steamer, oopsy, atc]
+  system_weights:
+    batx: 3
+    steamer: 2
+    oopsy: 3
+    atc: 1
+  category_weights:
+    pa: 2.3
+    hr: 1.35
+    sb: 1.0
+    r: 0.6
+    rbi: 0.6
+    h: 1.0
+  pa_floor: 200
+  starter_rank_metric: z_total_custom
+  league:
+    num_teams: 15
+    hitter_slots:
+      c: 2
+      b1: 1
+      b2: 1
+      b3: 1
+      ss: 1
+      of: 5
+      ci: 1
+      mi: 1
+      ut: 1
+  auction:
+    total_budget: 260
+    hitter_budget_share: 0.70
+    min_bid: 1
+
+adp:
+  local_tsv: data/raw/ADP.tsv
+  draft_type: 897
+  num_teams: 12
+  lookback_days: 14
+  fill_missing_with_max: true
+
+google_sheets:
+  workbook_url: "https://docs.google.com/spreadsheets/d/1jq1-54WLaKh6ADZjEYB9VC1vLPNU4h2p7TH68A0TXMk/edit?usp=sharing"
+  source_ranks_url: "https://docs.google.com/spreadsheets/d/1xjwmHUT_AvZB0UMPRMPUlnW-waFpfWPWcNdKBA4k7us/edit?usp=sharing"
+  projection_tab: Projections_Bats
+  adp_tab: ADP
+  rbll_tab: RBLL Team & Targets
+
+quality:
+  min_rows_per_system: 500
+  min_zscore_rows: 150
+  min_weighted_rows: 300
+  min_adp_match_rate: 0.35
+  fail_on_adp_match_rate: false

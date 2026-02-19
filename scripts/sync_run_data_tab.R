@@ -88,36 +88,53 @@ adp_draft_type_label <- function(draft_type_id) {
 build_rows <- function(refresh_meta, adp_meta, cfg) {
   season <- as.integer(cfg$season)
   refreshed_at <- NA_character_
+  refreshed_date <- as.Date(Sys.Date())
   systems <- tolower(paste(cfg$projection$systems, collapse = ","))
   system_weights_text <- paste(sprintf("%s=%s", names(cfg$projection$system_weights), as.numeric(cfg$projection$system_weights)), collapse = ",")
   category_weights_text <- paste(sprintf("%s=%s", names(cfg$projection$category_weights), as.numeric(cfg$projection$category_weights)), collapse = ",")
-  adp_source <- "config"
 
   if (!is.null(refresh_meta) && nrow(refresh_meta) > 0) {
     r <- refresh_meta[1, , drop = FALSE]
     season <- suppressWarnings(as.integer(r$season[1]))
     refreshed_at <- as.character(r$refreshed_at_utc[1])
+    refreshed_date <- suppressWarnings(as.Date(substr(refreshed_at, 1, 10)))
+    if (is.na(refreshed_date)) {
+      refreshed_date <- as.Date(Sys.Date())
+    }
     if (nzchar(as.character(r$systems[1]))) systems <- as.character(r$systems[1])
     if (nzchar(as.character(r$weights[1]))) system_weights_text <- as.character(r$weights[1])
     if (nzchar(as.character(r$category_weights[1]))) category_weights_text <- as.character(r$category_weights[1])
-    if (nzchar(as.character(r$nfbc_adp_source[1]))) adp_source <- as.character(r$nfbc_adp_source[1])
   }
 
   adp_from <- NA_character_
   adp_to <- NA_character_
   adp_draft_type <- cfg$adp$draft_type
   adp_num_teams <- cfg$adp$num_teams
-  adp_downloaded_at <- NA_character_
-  adp_download_status <- "unknown"
+
+  if (!is.null(refresh_meta) && nrow(refresh_meta) > 0) {
+    r <- refresh_meta[1, , drop = FALSE]
+    rf <- as.character(r$nfbc_adp_from_date[1])
+    rt <- as.character(r$nfbc_adp_to_date[1])
+    if (nzchar(rf) && !identical(rf, "NA")) adp_from <- rf
+    if (nzchar(rt) && !identical(rt, "NA")) adp_to <- rt
+  }
 
   if (!is.null(adp_meta) && nrow(adp_meta) > 0) {
     a <- adp_meta[1, , drop = FALSE]
-    adp_from <- as.character(a$from_date[1])
-    adp_to <- as.character(a$to_date[1])
+    af <- as.character(a$from_date[1])
+    at <- as.character(a$to_date[1])
+    if (nzchar(af) && !identical(af, "NA")) adp_from <- af
+    if (nzchar(at) && !identical(at, "NA")) adp_to <- at
     adp_draft_type <- suppressWarnings(as.integer(a$draft_type[1]))
     adp_num_teams <- suppressWarnings(as.integer(a$num_teams[1]))
-    adp_downloaded_at <- as.character(a$downloaded_at_utc[1])
-    adp_download_status <- as.character(a$status[1])
+  }
+
+  # Fallback: derive configured window if exact download window is unavailable.
+  if (is.na(adp_from) || !nzchar(adp_from) || identical(adp_from, "NA")) {
+    adp_from <- as.character(as.Date(refreshed_date) - as.integer(cfg$adp$lookback_days))
+  }
+  if (is.na(adp_to) || !nzchar(adp_to) || identical(adp_to, "NA")) {
+    adp_to <- as.character(refreshed_date)
   }
 
   sys_pairs <- parse_weight_pairs(system_weights_text)
@@ -133,7 +150,6 @@ build_rows <- function(refresh_meta, adp_meta, cfg) {
   rows <- rbind(
     rows,
     data.frame(Section = "Run", Metric = "Season", Value = as.character(season), stringsAsFactors = FALSE),
-    data.frame(Section = "Run", Metric = "Refreshed UTC", Value = ifelse(is.na(refreshed_at), "", refreshed_at), stringsAsFactors = FALSE),
     data.frame(Section = "Projection", Metric = "Systems Used", Value = systems, stringsAsFactors = FALSE)
   )
 
@@ -162,13 +178,9 @@ build_rows <- function(refresh_meta, adp_meta, cfg) {
   rows <- rbind(
     rows,
     data.frame(Section = "ADP Run", Metric = "Draft Type", Value = adp_draft_type_label(adp_draft_type), stringsAsFactors = FALSE),
-    data.frame(Section = "ADP Run", Metric = "Draft Type ID", Value = ifelse(is.na(adp_draft_type), "", as.character(adp_draft_type)), stringsAsFactors = FALSE),
     data.frame(Section = "ADP Run", Metric = "Number of Teams", Value = ifelse(is.na(adp_num_teams), "", as.character(adp_num_teams)), stringsAsFactors = FALSE),
     data.frame(Section = "ADP Run", Metric = "Date From", Value = ifelse(is.na(adp_from), "", adp_from), stringsAsFactors = FALSE),
-    data.frame(Section = "ADP Run", Metric = "Date To", Value = ifelse(is.na(adp_to), "", adp_to), stringsAsFactors = FALSE),
-    data.frame(Section = "ADP Run", Metric = "Download Status", Value = adp_download_status, stringsAsFactors = FALSE),
-    data.frame(Section = "ADP Run", Metric = "Downloaded At UTC", Value = ifelse(is.na(adp_downloaded_at), "", adp_downloaded_at), stringsAsFactors = FALSE),
-    data.frame(Section = "ADP Run", Metric = "Pipeline ADP Source", Value = adp_source, stringsAsFactors = FALSE)
+    data.frame(Section = "ADP Run", Metric = "Date To", Value = ifelse(is.na(adp_to), "", adp_to), stringsAsFactors = FALSE)
   )
 
   rows
@@ -186,6 +198,15 @@ auth_google_sheets()
 
 message(sprintf("Writing %s rows to tab '%s'...", nrow(rows), run_data_tab))
 googlesheets4::sheet_write(rows, ss = sheet_url, sheet = run_data_tab)
+
+# Keep additional scroll space beyond populated data.
+googlesheets4::sheet_resize(
+  ss = sheet_url,
+  sheet = run_data_tab,
+  nrow = max(nrow(rows) + 100L, 150L),
+  ncol = max(ncol(rows) + 100L, 120L),
+  exact = FALSE
+)
 
 # Keep Run Data tab before Projections_Bats.
 if (nzchar(projection_tab)) {

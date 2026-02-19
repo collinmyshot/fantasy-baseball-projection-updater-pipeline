@@ -51,7 +51,25 @@ run_rscript <- function(script, args = character(0), retries = 2L) {
 }
 
 if (!skip_adp_download) {
-  run_rscript("scripts/fetch_nfbc_adp.R", c("--config", config_path))
+  adp_download_ok <- TRUE
+  tryCatch(
+    run_rscript("scripts/fetch_nfbc_adp.R", c("--config", config_path)),
+    error = function(e) {
+      adp_download_ok <<- FALSE
+      warning(sprintf(
+        "ADP download step failed; continuing with existing local ADP file if present. Details: %s",
+        conditionMessage(e)
+      ))
+    }
+  )
+
+  if (!adp_download_ok) {
+    local_adp <- cfg$adp$local_tsv
+    if (!nzchar(local_adp) || !file.exists(local_adp)) {
+      stop("ADP download failed and no local ADP TSV exists to fall back on.")
+    }
+    message(sprintf("Using fallback local ADP TSV: %s", local_adp))
+  }
 }
 
 run_rscript("scripts/fetch_projections.R", c("--config", config_path))

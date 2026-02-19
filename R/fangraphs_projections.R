@@ -782,18 +782,31 @@ download_nfbc_adp_tsv <- function(
     sep = "&"
   )
 
-  cmd_out <- suppressWarnings(system2(
-    curl_bin,
-    args = c("-sL", NFBC_ADP_ENDPOINT, "--data", payload, "-o", output_path),
-    stdout = TRUE,
-    stderr = TRUE
-  ))
+  cmd_out <- tryCatch(
+    suppressWarnings(system2(
+      curl_bin,
+      args = c("-sL", NFBC_ADP_ENDPOINT, "--data", payload, "-o", output_path),
+      stdout = TRUE,
+      stderr = TRUE
+    )),
+    error = function(e) {
+      stop(sprintf("NFBC ADP curl command failed to execute: %s", conditionMessage(e)))
+    }
+  )
   status <- attr(cmd_out, "status")
   if (is.null(status)) {
     status <- 0
   }
   if (status != 0) {
-    stop(sprintf("NFBC ADP download failed with exit status %s.", status))
+    details <- ""
+    if (length(cmd_out) > 0) {
+      details <- paste(utils::head(cmd_out, 3), collapse = " | ")
+    }
+    stop(sprintf(
+      "NFBC ADP download failed with exit status %s. %s",
+      status,
+      details
+    ))
   }
   if (!file.exists(output_path) || isTRUE(file.info(output_path)$size <= 0)) {
     stop("NFBC ADP download did not produce a file.")

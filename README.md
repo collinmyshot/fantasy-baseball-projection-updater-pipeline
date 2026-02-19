@@ -27,6 +27,7 @@ Key sections:
 - `scripts/run_pipeline.R`: one-command orchestrator (ADP -> projections -> Sheets sync + formatting)
 - `scripts/push_to_google_sheets.R`: writes final output CSV to `Projections_Bats`
 - `scripts/sync_adp_tab.R`: rebuilds `ADP` tab from `Projections_Bats`
+- `scripts/sync_run_data_tab.R`: rebuilds `Run Data` tab (run settings + weights + ADP window info)
 - `scripts/sync_position_tabs.R`: rebuilds `C/1B/2B/3B/SS/OF` tabs, preserving `CK.Rank` + `DS.Rank`
 - `scripts/setup_rbell_team_targets.R`: rebuilds `RBLL Team & Targets` template while preserving manual inputs
 - `scripts/format_workbook_tabs.R`: bold/filter/freeze/center formatting for all tabs
@@ -78,6 +79,7 @@ Other core intermediates:
 - `<season>_hitters_weighted_per_pa_starter_pool.csv`
 - `<season>_hitters_weighted_per_pa_dollar_reference.csv`
 - `<season>_refresh_metadata.csv`
+- `<season>_adp_download_metadata.csv`
 
 ## Manual player matching overrides
 

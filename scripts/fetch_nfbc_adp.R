@@ -47,7 +47,26 @@ download_nfbc_adp_tsv(
   num_teams = num_teams
 )
 
+processed_dir <- cfg$paths$processed_dir
+if (!dir.exists(processed_dir)) {
+  dir.create(processed_dir, recursive = TRUE, showWarnings = FALSE)
+}
+adp_meta_path <- file.path(processed_dir, sprintf("%s_adp_download_metadata.csv", as.integer(cfg$season)))
+adp_meta <- data.frame(
+  season = as.integer(cfg$season),
+  downloaded_at_utc = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+  output_path = output_path,
+  from_date = as.character(from_date),
+  to_date = as.character(to_date),
+  draft_type = as.integer(draft_type),
+  num_teams = as.integer(num_teams),
+  status = "downloaded",
+  stringsAsFactors = FALSE
+)
+utils::write.csv(adp_meta, adp_meta_path, row.names = FALSE, na = "")
+
 message(sprintf("Saved ADP TSV to %s", output_path))
+message(sprintf("Saved ADP run metadata to %s", adp_meta_path))
 message(sprintf(
   "Filters: from_date=%s to_date=%s draft_type=%s num_teams=%s",
   as.character(from_date),

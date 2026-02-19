@@ -91,6 +91,7 @@ if (!skip_sheets) {
     sprintf("%s_hitters_z_scored_aggregate_projection_output.csv", cfg$season)
   )
 
+  run_rscript("scripts/sync_run_data_tab.R", c(ss, cfg$google_sheets$run_data_tab, cfg$google_sheets$projection_tab, "--config", config_path))
   run_rscript("scripts/push_to_google_sheets.R", c(ss, season_file, cfg$google_sheets$projection_tab, "--config", config_path))
   run_rscript("scripts/sync_adp_tab.R", c(ss, cfg$google_sheets$projection_tab, cfg$google_sheets$adp_tab, "--config", config_path))
   run_rscript("scripts/sync_position_tabs.R", c(source_ranks, ss, cfg$google_sheets$projection_tab, "--config", config_path))

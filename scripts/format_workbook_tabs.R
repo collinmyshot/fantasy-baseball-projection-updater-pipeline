@@ -59,8 +59,11 @@ derive_freeze_cols <- function(sheet_name, header_vals, n_cols) {
   projection_tab <- cfg$google_sheets$projection_tab
   adp_tab <- cfg$google_sheets$adp_tab
   rbll_tab <- cfg$google_sheets$rbll_tab
+  run_data_tab <- cfg$google_sheets$run_data_tab
   known <- NULL
-  if (identical(sheet_name, projection_tab)) {
+  if (identical(sheet_name, run_data_tab)) {
+    known <- 1L
+  } else if (identical(sheet_name, projection_tab)) {
     known <- 5L
   } else if (identical(sheet_name, adp_tab)) {
     known <- 3L
@@ -101,7 +104,7 @@ for (i in seq_len(nrow(props))) {
   n_rows <- as.integer(props$grid_rows[i])
   n_cols <- as.integer(props$grid_columns[i])
 
-  known_tabs <- c(cfg$google_sheets$projection_tab, cfg$google_sheets$adp_tab, cfg$google_sheets$rbll_tab, "C", "1B", "2B", "3B", "SS", "OF")
+  known_tabs <- c(cfg$google_sheets$run_data_tab, cfg$google_sheets$projection_tab, cfg$google_sheets$adp_tab, cfg$google_sheets$rbll_tab, "C", "1B", "2B", "3B", "SS", "OF")
   hdr <- if (sheet_name %in% known_tabs) character(0) else safe_header(target_sheet, sheet_name)
   freeze_cols <- derive_freeze_cols(sheet_name, hdr, n_cols)
 

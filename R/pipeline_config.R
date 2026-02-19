@@ -60,6 +60,7 @@ default_pipeline_config <- function() {
     google_sheets = list(
       workbook_url = "",
       source_ranks_url = "",
+      run_data_tab = "Run Data",
       projection_tab = "Projections_Bats",
       adp_tab = "ADP",
       rbll_tab = "RBLL Team & Targets"

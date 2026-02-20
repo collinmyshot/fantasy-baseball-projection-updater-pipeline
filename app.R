@@ -558,13 +558,6 @@ ui <- page_sidebar(
       vertical-align: middle !important;
       white-space: nowrap;
     }
-    #pitcher_table table.dataTable thead th,
-    #pitcher_sp_skillz_table table.dataTable thead th {
-      white-space: normal !important;
-      overflow-wrap: anywhere;
-      word-break: break-word;
-      line-height: 1.15;
-    }
     table.dataTable thead > tr:first-child > th {
       padding-top: 10px !important;
       padding-bottom: 10px !important;
@@ -1291,30 +1284,36 @@ server <- function(input, output, session) {
       player_name = "Name",
       team = "Team",
       adp = "ADP",
-      adp_rank = "ADP Rank",
+      adp_rank = "ADP Rk",
       proj_ip = "Proj IP",
       proj_w = "Proj W",
       proj_sv = "Proj SV",
       proj_k = "Proj K",
       proj_era = "Proj ERA",
       proj_whip = "Proj WHIP",
-      sp_skillz_2025_score_stabilized = "SP Skillz 2025 Score",
-      sp_skillz_2025_rank_stabilized = "SP Skillz 2025 Rank",
-      sp_skillz_2026_score_stabilized = "SP Skillz 2026 Score",
-      sp_skillz_2026_rank_stabilized = "SP Skillz 2026 Rank",
-      eno_rank = "Eno Rank",
-      ck_rank = "CK Rank",
-      ds_rank = "DS Rank"
+      sp_skillz_2025_score_stabilized = "SP25 Score",
+      sp_skillz_2025_rank_stabilized = "SP25 Rank",
+      sp_skillz_2026_score_stabilized = "SP26 Score",
+      sp_skillz_2026_rank_stabilized = "SP26 Rank",
+      eno_rank = "Eno",
+      ck_rank = "CK",
+      ds_rank = "DS"
     )
     keep <- intersect(names(col_map), names(dat))
     dat <- dat[, keep, drop = FALSE]
     names(dat) <- unname(col_map[keep])
     table_opts <- dt_opts
-    skillz_idx <- which(grepl("SP Skillz", names(dat))) - 1L
+    skillz_idx <- which(names(dat) %in% c("SP25 Score", "SP25 Rank", "SP26 Score", "SP26 Rank")) - 1L
+    metric_idx <- which(names(dat) %in% c("ADP Rk", "Proj IP", "Proj W", "Proj SV", "Proj K", "Proj ERA", "Proj WHIP")) - 1L
+    width_defs <- list()
     if (length(skillz_idx) > 0) {
-      table_opts$columnDefs <- list(
-        list(width = "120px", targets = skillz_idx)
-      )
+      width_defs <- c(width_defs, list(list(width = "86px", targets = skillz_idx)))
+    }
+    if (length(metric_idx) > 0) {
+      width_defs <- c(width_defs, list(list(width = "74px", targets = metric_idx)))
+    }
+    if (length(width_defs) > 0) {
+      table_opts$columnDefs <- width_defs
     }
     datatable(
       dat,

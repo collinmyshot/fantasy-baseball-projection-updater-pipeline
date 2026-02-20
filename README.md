@@ -183,6 +183,13 @@ For Google Sheets scripts:
 
 - `googlesheets4`
 
+For Shiny deployment:
+
+- `shiny`
+- `DT`
+- `bslib`
+- `rsconnect`
+
 Optional reproducibility bootstrap:
 
 ```bash

@@ -4,6 +4,16 @@ suppressPackageStartupMessages({
   library(rsconnect)
 })
 
+ensure_valid_repos <- function() {
+  repos <- getOption("repos")
+  cran <- suppressWarnings(as.character(repos[["CRAN"]]))
+  bad <- length(cran) == 0 || is.na(cran) || !nzchar(cran) || cran %in% c("@CRAN@", "CRAN")
+  if (bad) {
+    options(repos = c(CRAN = "https://cloud.r-project.org"))
+  }
+  invisible(getOption("repos"))
+}
+
 normalize_secret <- function(x) {
   x <- trimws(as.character(x))
   x <- sub('^"(.*)"$', "\\1", x)
@@ -29,6 +39,8 @@ if (!nzchar(account) || !nzchar(token) || !nzchar(secret)) {
     call. = FALSE
   )
 }
+
+ensure_valid_repos()
 
 message("Deploying app '", app_name, "' from ", normalizePath(app_dir, mustWork = FALSE))
 

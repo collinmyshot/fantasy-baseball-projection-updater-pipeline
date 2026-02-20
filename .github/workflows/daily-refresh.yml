@@ -60,6 +60,9 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
+            any::shiny
+            any::DT
+            any::bslib
             any::jsonlite
             any::yaml
             any::googlesheets4

@@ -1,0 +1,10 @@
+name: fantasy-baseball-projection-updater
+title:
+username: collinmyshot
+account: collinmyshot
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16721596
+bundleId: 11606016
+url: https://collinmyshot.shinyapps.io/fantasy-baseball-projection-updater/
+version: 1

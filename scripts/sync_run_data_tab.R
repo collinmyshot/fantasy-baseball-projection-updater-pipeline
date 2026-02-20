@@ -85,13 +85,23 @@ adp_draft_type_label <- function(draft_type_id) {
   "Unknown"
 }
 
-build_rows <- function(refresh_meta, adp_meta, cfg) {
+build_rows <- function(refresh_meta, adp_meta, sp_meta, cfg) {
   season <- as.integer(cfg$season)
   refreshed_at <- NA_character_
   refreshed_date <- as.Date(Sys.Date())
   systems <- tolower(paste(cfg$projection$systems, collapse = ","))
   system_weights_text <- paste(sprintf("%s=%s", names(cfg$projection$system_weights), as.numeric(cfg$projection$system_weights)), collapse = ",")
   category_weights_text <- paste(sprintf("%s=%s", names(cfg$projection$category_weights), as.numeric(cfg$projection$category_weights)), collapse = ",")
+  pitcher_weights_text <- paste(sprintf("%s=%s", names(cfg$pitcher$sp_skillz$weights), as.numeric(cfg$pitcher$sp_skillz$weights)), collapse = ",")
+  pitcher_low_ip_weights_text <- paste(sprintf("%s=%s", names(cfg$pitcher$sp_skillz$low_ip_weights), as.numeric(cfg$pitcher$sp_skillz$low_ip_weights)), collapse = ",")
+  pitcher_high_ip_weights_text <- paste(sprintf("%s=%s", names(cfg$pitcher$sp_skillz$high_ip_weights), as.numeric(cfg$pitcher$sp_skillz$high_ip_weights)), collapse = ",")
+  pitcher_stabilization_text <- paste(sprintf("%s=%s", names(cfg$pitcher$sp_skillz$stabilization_points), as.numeric(cfg$pitcher$sp_skillz$stabilization_points)), collapse = ",")
+  pitcher_reliability_method <- as.character(cfg$pitcher$sp_skillz$reliability_method %||% "sample_over_sample_plus_stab")
+  pitcher_use_ip_paradigms <- isTRUE(cfg$pitcher$sp_skillz$use_ip_paradigms)
+  pitcher_low_ip_max <- as.numeric(cfg$pitcher$sp_skillz$low_ip_max_start_ip)
+  pitcher_high_ip_min <- as.numeric(cfg$pitcher$sp_skillz$high_ip_min_start_ip)
+  pitcher_gs_fallback <- as.numeric(cfg$pitcher$sp_skillz$gs_fallback_threshold)
+  pitcher_lookback <- as.integer(cfg$pitcher$sp_skillz$lookback_season)
 
   if (!is.null(refresh_meta) && nrow(refresh_meta) > 0) {
     r <- refresh_meta[1, , drop = FALSE]
@@ -104,6 +114,24 @@ build_rows <- function(refresh_meta, adp_meta, cfg) {
     if (nzchar(as.character(r$systems[1]))) systems <- as.character(r$systems[1])
     if (nzchar(as.character(r$weights[1]))) system_weights_text <- as.character(r$weights[1])
     if (nzchar(as.character(r$category_weights[1]))) category_weights_text <- as.character(r$category_weights[1])
+  }
+
+  if (!is.null(sp_meta) && nrow(sp_meta) > 0) {
+    p <- sp_meta[1, , drop = FALSE]
+    if (nzchar(as.character(p$weights_default[1]))) pitcher_weights_text <- as.character(p$weights_default[1])
+    if (nzchar(as.character(p$weights_low_ip[1]))) pitcher_low_ip_weights_text <- as.character(p$weights_low_ip[1])
+    if (nzchar(as.character(p$weights_high_ip[1]))) pitcher_high_ip_weights_text <- as.character(p$weights_high_ip[1])
+    if ("stabilization_points" %in% names(p) && nzchar(as.character(p$stabilization_points[1]))) {
+      pitcher_stabilization_text <- as.character(p$stabilization_points[1])
+    }
+    if ("reliability_method" %in% names(p) && nzchar(as.character(p$reliability_method[1]))) {
+      pitcher_reliability_method <- as.character(p$reliability_method[1])
+    }
+    pitcher_use_ip_paradigms <- isTRUE(p$use_ip_paradigms[1])
+    pitcher_low_ip_max <- suppressWarnings(as.numeric(p$low_ip_max_start_ip[1]))
+    pitcher_high_ip_min <- suppressWarnings(as.numeric(p$high_ip_min_start_ip[1]))
+    pitcher_gs_fallback <- suppressWarnings(as.numeric(p$gs_fallback_threshold[1]))
+    pitcher_lookback <- suppressWarnings(as.integer(p$lookback_season[1]))
   }
 
   adp_from <- NA_character_
@@ -139,6 +167,10 @@ build_rows <- function(refresh_meta, adp_meta, cfg) {
 
   sys_pairs <- parse_weight_pairs(system_weights_text)
   cat_pairs <- parse_weight_pairs(category_weights_text)
+  p_base_pairs <- parse_weight_pairs(pitcher_weights_text)
+  p_low_pairs <- parse_weight_pairs(pitcher_low_ip_weights_text)
+  p_high_pairs <- parse_weight_pairs(pitcher_high_ip_weights_text)
+  p_stab_pairs <- parse_weight_pairs(pitcher_stabilization_text)
 
   rows <- data.frame(
     Section = character(0),
@@ -150,13 +182,13 @@ build_rows <- function(refresh_meta, adp_meta, cfg) {
   rows <- rbind(
     rows,
     data.frame(Section = "Run", Metric = "Season", Value = as.character(season), stringsAsFactors = FALSE),
-    data.frame(Section = "Projection", Metric = "Systems Used", Value = systems, stringsAsFactors = FALSE)
+    data.frame(Section = "Hitter Projection", Metric = "Systems Used", Value = systems, stringsAsFactors = FALSE)
   )
 
   if (nrow(sys_pairs) > 0) {
     for (i in seq_len(nrow(sys_pairs))) {
       rows <- rbind(rows, data.frame(
-        Section = "Projection System Weights",
+        Section = "Hitter Projection Weights",
         Metric = toupper(sys_pairs$metric[i]),
         Value = as.character(sys_pairs$value[i]),
         stringsAsFactors = FALSE
@@ -167,9 +199,63 @@ build_rows <- function(refresh_meta, adp_meta, cfg) {
   if (nrow(cat_pairs) > 0) {
     for (i in seq_len(nrow(cat_pairs))) {
       rows <- rbind(rows, data.frame(
-        Section = "Stat Category Weights",
+        Section = "Hitter Stat Weights",
         Metric = toupper(cat_pairs$metric[i]),
         Value = as.character(cat_pairs$value[i]),
+        stringsAsFactors = FALSE
+      ))
+    }
+  }
+
+  rows <- rbind(
+    rows,
+    data.frame(Section = "Pitcher SP Skillz", Metric = "Lookback Season", Value = ifelse(is.na(pitcher_lookback), "", as.character(pitcher_lookback)), stringsAsFactors = FALSE),
+    data.frame(Section = "Pitcher SP Skillz", Metric = "Use IP Paradigms", Value = ifelse(isTRUE(pitcher_use_ip_paradigms), "TRUE", "FALSE"), stringsAsFactors = FALSE),
+    data.frame(Section = "Pitcher SP Skillz", Metric = "Low-IP Max Start-IP", Value = ifelse(is.na(pitcher_low_ip_max), "", as.character(pitcher_low_ip_max)), stringsAsFactors = FALSE),
+    data.frame(Section = "Pitcher SP Skillz", Metric = "High-IP Min Start-IP", Value = ifelse(is.na(pitcher_high_ip_min), "", as.character(pitcher_high_ip_min)), stringsAsFactors = FALSE),
+    data.frame(Section = "Pitcher SP Skillz", Metric = "GS Fallback Threshold", Value = ifelse(is.na(pitcher_gs_fallback), "", as.character(pitcher_gs_fallback)), stringsAsFactors = FALSE),
+    data.frame(Section = "Pitcher SP Skillz", Metric = "Reliability Method", Value = pitcher_reliability_method, stringsAsFactors = FALSE)
+  )
+
+  if (nrow(p_base_pairs) > 0) {
+    for (i in seq_len(nrow(p_base_pairs))) {
+      rows <- rbind(rows, data.frame(
+        Section = "Pitcher SP Skillz Base Weights",
+        Metric = toupper(p_base_pairs$metric[i]),
+        Value = as.character(p_base_pairs$value[i]),
+        stringsAsFactors = FALSE
+      ))
+    }
+  }
+
+  if (nrow(p_low_pairs) > 0) {
+    for (i in seq_len(nrow(p_low_pairs))) {
+      rows <- rbind(rows, data.frame(
+        Section = "Pitcher SP Skillz Low-IP Weights",
+        Metric = toupper(p_low_pairs$metric[i]),
+        Value = as.character(p_low_pairs$value[i]),
+        stringsAsFactors = FALSE
+      ))
+    }
+  }
+
+  if (nrow(p_high_pairs) > 0) {
+    for (i in seq_len(nrow(p_high_pairs))) {
+      rows <- rbind(rows, data.frame(
+        Section = "Pitcher SP Skillz High-IP Weights",
+        Metric = toupper(p_high_pairs$metric[i]),
+        Value = as.character(p_high_pairs$value[i]),
+        stringsAsFactors = FALSE
+      ))
+    }
+  }
+
+  if (nrow(p_stab_pairs) > 0) {
+    for (i in seq_len(nrow(p_stab_pairs))) {
+      rows <- rbind(rows, data.frame(
+        Section = "Pitcher SP Skillz Stabilization Points",
+        Metric = toupper(p_stab_pairs$metric[i]),
+        Value = as.character(p_stab_pairs$value[i]),
         stringsAsFactors = FALSE
       ))
     }
@@ -188,10 +274,12 @@ build_rows <- function(refresh_meta, adp_meta, cfg) {
 
 refresh_meta_path <- file.path(cfg$paths$processed_dir, sprintf("%s_refresh_metadata.csv", as.integer(cfg$season)))
 adp_meta_path <- file.path(cfg$paths$processed_dir, sprintf("%s_adp_download_metadata.csv", as.integer(cfg$season)))
+sp_meta_path <- file.path(cfg$paths$processed_dir, sprintf("%s_sp_skillz_metadata.csv", as.integer(cfg$pitcher$sp_skillz$lookback_season)))
 
 refresh_meta <- safe_read_csv(refresh_meta_path)
 adp_meta <- safe_read_csv(adp_meta_path)
-rows <- build_rows(refresh_meta, adp_meta, cfg)
+sp_meta <- safe_read_csv(sp_meta_path)
+rows <- build_rows(refresh_meta, adp_meta, sp_meta, cfg)
 
 message("Authenticating Google Sheets...")
 auth_google_sheets()

@@ -725,6 +725,11 @@ parse_nfbc_adp_tsv <- function(tsv_path) {
     pos <- out$positions[i]
     name_key <- normalize_join_name(out$player_name[i])
 
+    # Ohtani Rule: always keep him in hitter ADP inputs.
+    if (identical(name_key, "shoheiohtani")) {
+      return(TRUE)
+    }
+
     if (is.na(pos) || !nzchar(pos)) {
       return(FALSE)
     }
@@ -739,8 +744,7 @@ parse_nfbc_adp_tsv <- function(tsv_path) {
       return(TRUE)
     }
 
-    # Explicit exception: keep Shohei even if listed as P-only.
-    identical(name_key, "shoheiohtani")
+    FALSE
   }, logical(1))
 
   out <- out[is_hitter, , drop = FALSE]
@@ -769,12 +773,23 @@ download_nfbc_adp_tsv <- function(
     stop("curl is required to download NFBC ADP data.")
   }
 
+  filter_value <- function(x) {
+    x_chr <- trimws(as.character(x)[1])
+    if (!length(x_chr) || is.na(x_chr) || !nzchar(x_chr) || identical(toupper(x_chr), "NA")) {
+      return("")
+    }
+    x_chr
+  }
+
+  draft_type_q <- filter_value(draft_type)
+  num_teams_q <- filter_value(num_teams)
+
   payload <- paste(
     paste0("team_id=", utils::URLencode("0", reserved = TRUE)),
     paste0("from_date=", utils::URLencode(as.character(from_date), reserved = TRUE)),
     paste0("to_date=", utils::URLencode(as.character(to_date), reserved = TRUE)),
-    paste0("num_teams=", utils::URLencode(as.character(num_teams), reserved = TRUE)),
-    paste0("draft_type=", utils::URLencode(as.character(draft_type), reserved = TRUE)),
+    paste0("num_teams=", utils::URLencode(num_teams_q, reserved = TRUE)),
+    paste0("draft_type=", utils::URLencode(draft_type_q, reserved = TRUE)),
     paste0("position=", utils::URLencode("", reserved = TRUE)),
     paste0("league_teams=", utils::URLencode("", reserved = TRUE)),
     paste0("sport=", utils::URLencode("mlb", reserved = TRUE)),
@@ -965,13 +980,24 @@ apply_nfbc_adp_matches <- function(
   out$adp <- NA_real_
   out$position <- NA_character_
   out$adp_match_method <- NA_character_
+  out$adp_match_quality <- NA_character_
+  out$name_team_flag <- NA_character_
   out$adp_override_notes <- NA_character_
   out$adp_source_index <- NA_integer_
 
   if (is.null(nfbc_adp) || nrow(nfbc_adp) == 0) {
+    out$name_team_flag <- "unknown_no_adp"
     out <- out[, setdiff(names(out), c("name_key", "team_key")), drop = FALSE]
     return(list(output = out, audit = empty_adp_match_audit()))
   }
+
+  out_name_counts <- table(out$name_key)
+  adp_name_counts <- table(nfbc_adp$name_key)
+  out$name_team_flag <- ifelse(
+    out_name_counts[out$name_key] > 1 | (out$name_key %in% names(adp_name_counts[adp_name_counts > 1])),
+    "duplicate_name_needs_team",
+    "unique_name"
+  )
 
   key_out <- paste(out$name_key, out$team_key, sep = "|")
   key_adp <- paste(nfbc_adp$name_key, nfbc_adp$team_key, sep = "|")
@@ -983,14 +1009,13 @@ apply_nfbc_adp_matches <- function(
     out$adp[has_direct] <- nfbc_adp$adp[idx_direct[has_direct]]
     out$position[has_direct] <- nfbc_adp$positions[idx_direct[has_direct]]
     out$adp_match_method[has_direct] <- "direct"
+    out$adp_match_quality[has_direct] <- "exact_name_team"
     out$adp_source_index[has_direct] <- idx_direct[has_direct]
   }
 
   # Pass 2: unique-name fallback.
   missing <- is.na(out$adp)
   if (any(missing)) {
-    out_name_counts <- table(out$name_key)
-    adp_name_counts <- table(nfbc_adp$name_key)
     unique_name_pool <- names(adp_name_counts[adp_name_counts == 1])
     fallback_ok <- missing &
       out$name_key %in% unique_name_pool &
@@ -1001,6 +1026,7 @@ apply_nfbc_adp_matches <- function(
       out$adp[fallback_ok] <- nfbc_adp$adp[idx_name]
       out$position[fallback_ok] <- nfbc_adp$positions[idx_name]
       out$adp_match_method[fallback_ok] <- "name_unique"
+      out$adp_match_quality[fallback_ok] <- "name_only_unique_fallback"
       out$adp_source_index[fallback_ok] <- idx_name
     }
   }
@@ -1042,6 +1068,7 @@ apply_nfbc_adp_matches <- function(
         out$adp[i] <- nfbc_adp$adp[adp_idx]
         out$position[i] <- nfbc_adp$positions[adp_idx]
         out$adp_match_method[i] <- "manual_override"
+        out$adp_match_quality[i] <- "manual_override"
         out$adp_override_notes[i] <- override_row$notes
         out$adp_source_index[i] <- adp_idx
       }
@@ -1055,6 +1082,7 @@ apply_nfbc_adp_matches <- function(
       if (any(still_missing)) {
         out$adp[still_missing] <- max_adp
         out$adp_match_method[still_missing] <- "filled_max_adp"
+        out$adp_match_quality[still_missing] <- "fallback_max_adp"
       }
     }
   }
@@ -1182,7 +1210,7 @@ build_z_scored_aggregate_projection_output_table <- function(
   )
 
   ordered_cols <- c(
-    "player_name", "position", "adp", "team",
+    "player_name", "position", "adp", "adp_match_quality", "name_team_flag", "team",
     "pa", "hr", "sb", "r", "rbi", "avg",
     "pa_z", "hr_z", "sb_z", "r_z", "rbi_z", "avg_z",
     "z_total_raw", "z_total_weights",

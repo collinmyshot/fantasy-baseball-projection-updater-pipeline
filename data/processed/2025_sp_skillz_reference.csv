@@ -1,0 +1,11 @@
+"metric","standardization_method","overall_mean","overall_sd","starter_pool_mean","starter_pool_sd","sample_source","stabilization_point","reliability_method","start_share_min","use_ip_paradigms","low_ip_max_start_ip","high_ip_min_start_ip","gs_fallback_threshold","starter_pool_size","num_teams","sp_depth"
+"tbf","starter_pool_zscore",428.060975609756,238.657247912325,463.706666666667,234.184277427379,"tbf",1,"sample_over_sample_plus_stab",0.67,TRUE,80,100,5,150,15,10
+"ip_per_gs","starter_pool_zscore",5.40695708379006,0.713395542397908,5.50000352043716,0.66645326000334,"gs",1,"sample_over_sample_plus_stab",0.67,TRUE,80,100,5,150,15,10
+"siera","starter_pool_zscore",4.29748094703506,0.765209097501723,3.87749505295232,0.540435639424531,"start_ip",30,"sample_over_sample_plus_stab",0.67,TRUE,80,100,5,150,15,10
+"xfip","starter_pool_zscore",4.29585889391602,0.853087199660916,3.84631561274725,0.593962934257238,"start_ip",30,"sample_over_sample_plus_stab",0.67,TRUE,80,100,5,150,15,10
+"k_minus_bb_pct","starter_pool_zscore",2.94883790658537,1.49417743928289,3.5396992646,1.56974831240136,"tbf",120,"sample_over_sample_plus_stab",0.67,TRUE,80,100,5,150,15,10
+"contact_pct","starter_pool_zscore",0.777259339227642,0.0435920788465014,0.755719168133333,0.0337235916528761,"tbf",150,"sample_over_sample_plus_stab",0.67,TRUE,80,100,5,150,15,10
+"csw_pct","starter_pool_zscore",0.268987341585366,0.0238639287358542,0.281724100066667,0.0186684668460716,"pitches",200,"sample_over_sample_plus_stab",0.67,TRUE,80,100,5,150,15,10
+"ball_pct","starter_pool_zscore",36.2306827877767,2.57952167450566,35.4588153134585,2.30939974251465,"pitches",150,"sample_over_sample_plus_stab",0.67,TRUE,80,100,5,150,15,10
+"stuff_plus","fixed_scale_(x-100)/10",97.5681013460106,7.61762739929407,100.497453965528,7.18981188311353,"pitches",100,"sample_over_sample_plus_stab",0.67,TRUE,80,100,5,150,15,10
+"pitching_plus","fixed_scale_(x-100)/10",98.3550129295651,8.69175221592417,102.425313974587,7.52900276887616,"pitches",300,"sample_over_sample_plus_stab",0.67,TRUE,80,100,5,150,15,10

@@ -75,6 +75,37 @@ if (!skip_adp_download) {
 
 run_rscript("scripts/fetch_projections.R", c("--config", config_path))
 
+pitcher_refresh_ok <- TRUE
+tryCatch(
+  run_rscript(
+    "scripts/build_pitcher_integration_table.R",
+    c(
+      "--config", config_path,
+      "--season", as.character(cfg$season),
+      "--pitcher-system", as.character(cfg$pitcher$projection$system),
+      "--refresh-projections",
+      "--no-sheet-export"
+    )
+  ),
+  error = function(e) {
+    pitcher_refresh_ok <<- FALSE
+    warning(sprintf(
+      "Pitcher integration refresh failed; continuing with existing pitcher table if present. Details: %s",
+      conditionMessage(e)
+    ))
+  }
+)
+
+if (!pitcher_refresh_ok) {
+  pitcher_out <- file.path(
+    cfg$paths$processed_dir,
+    sprintf("%s_pitchers_integrated_table.csv", cfg$season)
+  )
+  if (!file.exists(pitcher_out)) {
+    stop("Pitcher integration refresh failed and no existing integrated pitcher table is available.")
+  }
+}
+
 if (!skip_sheets) {
   ss <- cfg$google_sheets$workbook_url
   if (!nzchar(ss)) {

@@ -3,8 +3,22 @@ name: Daily Fangraphs Refresh
 on:
   workflow_dispatch:
   schedule:
-    - cron: '7 15 * * *'
-    - cron: '7 16 * * *'
+    # Standard Time months (PT = UTC-8): Jan, Feb, Dec.
+    - cron: '0 16 * 1,2,12 *'
+    # Daylight Time months (PT = UTC-7): Apr-Oct.
+    - cron: '0 15 * 4-10 *'
+    # March transition handling:
+    # Mar 1-7 is always standard time, Mar 15-31 is always daylight time,
+    # and Mar 8-14 can contain the DST flip depending on year.
+    - cron: '0 16 1-7 3 *'
+    - cron: '0 15 15-31 3 *'
+    - cron: '0 15 8-14 3 *'
+    - cron: '0 16 8-14 3 *'
+    # November transition handling:
+    # Nov 8-30 is always standard time, and Nov 1-7 can contain the DST flip.
+    - cron: '0 15 1-7 11 *'
+    - cron: '0 16 1-7 11 *'
+    - cron: '0 16 8-30 11 *'
 
 permissions:
   contents: write
@@ -21,7 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Gate schedule to 8:07 AM Pacific
+      - name: Gate schedule to 8:00 AM Pacific
         id: gate
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -48,6 +62,7 @@ jobs:
             any::jsonlite
             any::yaml
             any::googlesheets4
+            any::rsconnect
 
       - name: Write Google service account key
         if: steps.gate.outputs.run_pipeline == 'true'
@@ -79,3 +94,18 @@ jobs:
           git add data
           git commit -m "chore: refresh fangraphs projections"
           git push
+
+      - name: Deploy Shiny app
+        if: steps.gate.outputs.run_pipeline == 'true'
+        env:
+          SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
+          SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+          SHINYAPP_NAME: ${{ secrets.SHINYAPPS_APP_NAME }}
+        run: |
+          if [ -z "$SHINYAPPS_ACCOUNT" ] || [ -z "$SHINYAPPS_TOKEN" ] || [ -z "$SHINYAPPS_SECRET" ]; then
+            echo "Missing required shinyapps secrets: SHINYAPPS_ACCOUNT, SHINYAPPS_TOKEN, SHINYAPPS_SECRET" >&2
+            exit 1
+          fi
+          APP_NAME="${SHINYAPP_NAME:-fantasy-baseball-projection-updater}"
+          Rscript scripts/deploy_shinyapps.R . "$APP_NAME"

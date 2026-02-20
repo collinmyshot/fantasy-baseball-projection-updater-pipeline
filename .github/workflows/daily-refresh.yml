@@ -4,21 +4,21 @@ on:
   workflow_dispatch:
   schedule:
     # Standard Time months (PT = UTC-8): Jan, Feb, Dec.
-    - cron: '15 16 * 1,2,12 *'
+    - cron: '0 11 * 1,2,12 *'
     # Daylight Time months (PT = UTC-7): Apr-Oct.
-    - cron: '15 15 * 4-10 *'
+    - cron: '0 10 * 4-10 *'
     # March transition handling:
     # Mar 1-7 is always standard time, Mar 15-31 is always daylight time,
     # and Mar 8-14 can contain the DST flip depending on year.
-    - cron: '15 16 1-7 3 *'
-    - cron: '15 15 15-31 3 *'
-    - cron: '15 15 8-14 3 *'
-    - cron: '15 16 8-14 3 *'
+    - cron: '0 11 1-7 3 *'
+    - cron: '0 10 15-31 3 *'
+    - cron: '0 10 8-14 3 *'
+    - cron: '0 11 8-14 3 *'
     # November transition handling:
     # Nov 8-30 is always standard time, and Nov 1-7 can contain the DST flip.
-    - cron: '15 15 1-7 11 *'
-    - cron: '15 16 1-7 11 *'
-    - cron: '15 16 8-30 11 *'
+    - cron: '0 10 1-7 11 *'
+    - cron: '0 11 1-7 11 *'
+    - cron: '0 11 8-30 11 *'
 
 permissions:
   contents: write
@@ -35,7 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Gate schedule to 8:15 AM Pacific
+      - name: Gate schedule to 3:00 AM Pacific
         id: gate
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -45,7 +45,7 @@ jobs:
 
           PT_HOUR=$(TZ=America/Los_Angeles date +%H)
           PT_MIN=$(TZ=America/Los_Angeles date +%M)
-          if [ "$PT_HOUR" = "08" ] && [ "$PT_MIN" = "15" ]; then
+          if [ "$PT_HOUR" = "03" ] && [ "$PT_MIN" = "00" ]; then
             echo "run_pipeline=true" >> "$GITHUB_OUTPUT"
           else
             echo "run_pipeline=false" >> "$GITHUB_OUTPUT"

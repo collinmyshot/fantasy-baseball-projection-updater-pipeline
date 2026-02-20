@@ -193,7 +193,7 @@ Rscript scripts/init_renv.R
 
 Workflow: `.github/workflows/daily-refresh.yml`
 
-- Scheduled at `8:07 AM Pacific` (DST-safe via dual UTC schedules + Pacific-hour gate)
+- Scheduled at `8:15 AM Pacific` (DST-safe via dual UTC schedules + Pacific hour/minute gate)
 - Runs the full pipeline, including Google Sheets sync:
   `Rscript scripts/run_pipeline.R --config config/pipeline.yml`
 - Installs `jsonlite`, `yaml`, and `googlesheets4`

@@ -784,55 +784,103 @@ download_nfbc_adp_tsv <- function(
   draft_type_q <- filter_value(draft_type)
   num_teams_q <- filter_value(num_teams)
 
-  payload <- paste(
-    paste0("team_id=", utils::URLencode("0", reserved = TRUE)),
-    paste0("from_date=", utils::URLencode(as.character(from_date), reserved = TRUE)),
-    paste0("to_date=", utils::URLencode(as.character(to_date), reserved = TRUE)),
-    paste0("num_teams=", utils::URLencode(num_teams_q, reserved = TRUE)),
-    paste0("draft_type=", utils::URLencode(draft_type_q, reserved = TRUE)),
-    paste0("position=", utils::URLencode("", reserved = TRUE)),
-    paste0("league_teams=", utils::URLencode("", reserved = TRUE)),
-    paste0("sport=", utils::URLencode("mlb", reserved = TRUE)),
-    paste0("download=", utils::URLencode("Download", reserved = TRUE)),
-    sep = "&"
-  )
-
-  cmd_out <- tryCatch(
-    suppressWarnings(system2(
-      curl_bin,
-      args = c("-sL", NFBC_ADP_ENDPOINT, "--data", payload, "-o", output_path),
-      stdout = TRUE,
-      stderr = TRUE
-    )),
-    error = function(e) {
-      stop(sprintf("NFBC ADP curl command failed to execute: %s", conditionMessage(e)))
+  date_variants <- function(d) {
+    d_date <- suppressWarnings(as.Date(d))
+    out <- character(0)
+    if (!is.na(d_date)) {
+      out <- c(out, format(d_date, "%Y-%m-%d"), format(d_date, "%m/%d/%Y"))
     }
-  )
-  status <- attr(cmd_out, "status")
-  if (is.null(status)) {
-    status <- 0
+    out <- c(out, trimws(as.character(d)))
+    out <- out[nzchar(out)]
+    unique(out)
   }
-  if (status != 0) {
-    details <- ""
-    if (length(cmd_out) > 0) {
-      details <- paste(utils::head(cmd_out, 3), collapse = " | ")
+
+  validate_output <- function(path) {
+    if (!file.exists(path) || isTRUE(file.info(path)$size <= 0)) {
+      return(list(ok = FALSE, reason = "NFBC ADP download did not produce a file."))
     }
-    stop(sprintf(
-      "NFBC ADP download failed with exit status %s. %s",
-      status,
-      details
-    ))
-  }
-  if (!file.exists(output_path) || isTRUE(file.info(output_path)$size <= 0)) {
-    stop("NFBC ADP download did not produce a file.")
+
+    header_line <- readLines(path, n = 1, warn = FALSE, encoding = "UTF-8")
+    header_text <- if (length(header_line)) gsub("^\uFEFF", "", header_line[1]) else ""
+    looks_tsv <- grepl("^Rank\tPlayer ID\t", header_text)
+
+    parsed_try <- tryCatch(parse_nfbc_adp_tsv(path), error = function(e) NULL)
+    parsed_ok <- is.data.frame(parsed_try) && nrow(parsed_try) > 0
+
+    if (!looks_tsv && !parsed_ok) {
+      snippet <- paste(readLines(path, n = 2, warn = FALSE, encoding = "UTF-8"), collapse = " | ")
+      snippet <- gsub("[\r\n\t]+", " ", snippet)
+      snippet <- substr(snippet, 1, 220)
+      return(list(ok = FALSE, reason = sprintf("NFBC ADP download returned unexpected content. First line: %s", snippet)))
+    }
+    list(ok = TRUE, reason = "")
   }
 
-  header_line <- readLines(output_path, n = 1, warn = FALSE)
-  if (!length(header_line) || !grepl("^Rank\tPlayer ID\t", header_line[1])) {
-    stop("NFBC ADP download returned unexpected content.")
+  from_options <- date_variants(from_date)
+  to_options <- date_variants(to_date)
+  attempt_pairs <- unique(expand.grid(from_options, to_options, stringsAsFactors = FALSE))
+  attempts <- character(0)
+
+  for (i in seq_len(nrow(attempt_pairs))) {
+    from_q <- attempt_pairs[i, 1][[1]]
+    to_q <- attempt_pairs[i, 2][[1]]
+    curl_args <- c(
+      "-sS", "-L", "--fail",
+      "--retry", "2",
+      "--connect-timeout", "15",
+      "--max-time", "60",
+      NFBC_ADP_ENDPOINT,
+      "--data-urlencode", "team_id=0",
+      "--data-urlencode", paste0("from_date=", from_q),
+      "--data-urlencode", paste0("to_date=", to_q),
+      "--data-urlencode", paste0("num_teams=", num_teams_q),
+      "--data-urlencode", paste0("draft_type=", draft_type_q),
+      "--data-urlencode", "position=",
+      "--data-urlencode", "league_teams=",
+      "--data-urlencode", "sport=mlb",
+      "--data-urlencode", "download=Download",
+      "-o", output_path
+    )
+    status_or_error <- tryCatch(
+      suppressWarnings(system2(
+        curl_bin,
+        args = curl_args,
+        stdout = TRUE,
+        stderr = TRUE
+      )),
+      error = function(e) e
+    )
+
+    if (inherits(status_or_error, "error")) {
+      attempts <- c(attempts, sprintf("curl POST (%s to %s) execution error: %s", from_q, to_q, conditionMessage(status_or_error)))
+      next
+    }
+
+    status <- attr(status_or_error, "status")
+    if (is.null(status)) {
+      status <- 0L
+    }
+    status <- as.integer(status[1])
+    if (!is.na(status) && status == 0L) {
+      valid <- validate_output(output_path)
+      if (isTRUE(valid$ok)) {
+        return(output_path)
+      }
+      attempts <- c(attempts, sprintf("curl POST (%s to %s): %s", from_q, to_q, valid$reason))
+    } else {
+      details <- ""
+      if (is.character(status_or_error) && length(status_or_error) > 0) {
+        details <- paste(utils::head(status_or_error, 2), collapse = " | ")
+      }
+      attempts <- c(attempts, sprintf("curl POST (%s to %s) exit %s: %s", from_q, to_q, status, details))
+    }
   }
 
-  output_path
+  attempts <- unique(attempts[nzchar(attempts)])
+  stop(sprintf(
+    "NFBC ADP download failed after transport/date retries. %s",
+    paste(utils::head(attempts, 4), collapse = " | ")
+  ))
 }
 
 fetch_nfbc_adp <- function(

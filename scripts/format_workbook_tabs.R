@@ -54,6 +54,39 @@ safe_header <- function(ss, sheet_name) {
   vals
 }
 
+safe_used_data <- function(ss, sheet_name) {
+  out <- tryCatch(
+    googlesheets4::read_sheet(
+      ss,
+      sheet = sheet_name,
+      col_names = FALSE,
+      .name_repair = "minimal"
+    ),
+    error = function(e) NULL
+  )
+  if (is.null(out)) {
+    return(list(
+      used_rows = 0L,
+      used_cols = 0L,
+      header = character(0)
+    ))
+  }
+
+  used_rows <- as.integer(nrow(out))
+  used_cols <- as.integer(ncol(out))
+  header <- character(0)
+  if (used_rows > 0 && used_cols > 0) {
+    header <- as.character(unlist(out[1, ], use.names = FALSE))
+    header[is.na(header)] <- ""
+  }
+
+  list(
+    used_rows = used_rows,
+    used_cols = used_cols,
+    header = header
+  )
+}
+
 derive_freeze_cols <- function(sheet_name, header_vals, n_cols) {
   # Fast path for known tabs to reduce read/load churn.
   projection_tab <- cfg$google_sheets$projection_tab
@@ -103,10 +136,18 @@ for (i in seq_len(nrow(props))) {
   sheet_id <- props$id[i]
   n_rows <- as.integer(props$grid_rows[i])
   n_cols <- as.integer(props$grid_columns[i])
+  used <- safe_used_data(target_sheet, sheet_name)
+
+  base_rows <- if (used$used_rows > 0) used$used_rows else 1L
+  base_cols <- if (used$used_cols > 0) used$used_cols else 1L
+  # Always grow each tab by +100 rows/+100 cols per export run,
+  # while still ensuring we never clip used data.
+  target_rows <- max(as.integer(n_rows + 100L), as.integer(base_rows + 100L))
+  target_cols <- max(as.integer(n_cols + 100L), as.integer(base_cols + 100L))
 
   known_tabs <- c(cfg$google_sheets$run_data_tab, cfg$google_sheets$projection_tab, cfg$google_sheets$adp_tab, cfg$google_sheets$rbll_tab, "C", "1B", "2B", "3B", "SS", "OF")
-  hdr <- if (sheet_name %in% known_tabs) character(0) else safe_header(target_sheet, sheet_name)
-  freeze_cols <- derive_freeze_cols(sheet_name, hdr, n_cols)
+  hdr <- if (sheet_name %in% known_tabs) character(0) else used$header
+  freeze_cols <- derive_freeze_cols(sheet_name, hdr, target_cols)
   freeze_rows <- 1L
   if (identical(sheet_name, cfg$google_sheets$rbll_tab)) {
     freeze_rows <- 0L
@@ -121,11 +162,13 @@ for (i in seq_len(nrow(props))) {
       properties = list(
         sheetId = sheet_id,
         gridProperties = list(
+          rowCount = target_rows,
+          columnCount = target_cols,
           frozenRowCount = freeze_rows,
           frozenColumnCount = freeze_cols
         )
       ),
-      fields = "gridProperties.frozenRowCount,gridProperties.frozenColumnCount"
+      fields = "gridProperties.rowCount,gridProperties.columnCount,gridProperties.frozenRowCount,gridProperties.frozenColumnCount"
     )
   )
 
@@ -135,9 +178,9 @@ for (i in seq_len(nrow(props))) {
         range = list(
           sheetId = sheet_id,
           startRowIndex = 0L,
-          endRowIndex = n_rows,
+          endRowIndex = target_rows,
           startColumnIndex = 0L,
-          endColumnIndex = n_cols
+          endColumnIndex = target_cols
         )
       )
     )
@@ -148,9 +191,9 @@ for (i in seq_len(nrow(props))) {
       range = list(
         sheetId = sheet_id,
         startRowIndex = 0L,
-        endRowIndex = n_rows,
+        endRowIndex = target_rows,
         startColumnIndex = 0L,
-        endColumnIndex = n_cols
+        endColumnIndex = target_cols
       ),
       cell = list(
         userEnteredFormat = list(
@@ -169,7 +212,7 @@ for (i in seq_len(nrow(props))) {
         startRowIndex = 0L,
         endRowIndex = 1L,
         startColumnIndex = 0L,
-        endColumnIndex = n_cols
+        endColumnIndex = target_cols
       ),
       cell = list(
         userEnteredFormat = list(

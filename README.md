@@ -39,63 +39,10 @@ Key sections:
 Rscript scripts/run_pipeline.R
 ```
 
-## Web app (local)
+## Shiny app note
 
-A Shiny app is included at:
-
-- `app.R`
-
-Launch it locally:
-
-```bash
-Rscript -e "shiny::runApp('.', host = '127.0.0.1', port = 8080)"
-```
-
-Open:
-
-- `http://127.0.0.1:8080`
-
-## Publish to a shareable URL (shinyapps.io)
-
-1. Create a [shinyapps.io](https://www.shinyapps.io/) account (Free tier works).
-2. In R, install deploy package once:
-
-```bash
-Rscript -e "install.packages('rsconnect', repos='https://cloud.r-project.org')"
-```
-
-3. In shinyapps.io dashboard:
-   - Go to **Account -> Tokens**
-   - Create/copy `name` (account), `token`, and `secret`
-4. Set credentials in terminal:
-
-```bash
-export SHINYAPPS_ACCOUNT="your_account_name"
-export SHINYAPPS_TOKEN="your_token"
-export SHINYAPPS_SECRET="your_secret"
-```
-
-5. Deploy:
-
-```bash
-cd "/Users/ckaufman/Documents/New project"
-Rscript scripts/deploy_shinyapps.R . fantasy-baseball-projection-updater
-```
-
-After publish, your URL will look like:
-
-- `https://<account>.shinyapps.io/fantasy-baseball-projection-updater`
-
-Re-publish after code changes with the same deploy command.
-
-Current app features:
-
-- editable projection system inclusion + weights
-- editable stat category weights
-- league format selector (`10`, `12`, `15` teams)
-- ADP draft type + date-window controls
-- preset loader (`Power + PT`, `Balanced`, `Speed Lean`)
-- interactive sortable output table
+This repo is now pipeline-only (FG/NFC pulls, calculations, and Google Sheets sync).
+Shiny app code/deploy assets are intentionally kept local and ignored by git.
 
 Optional flags:
 
@@ -182,13 +129,6 @@ At minimum:
 For Google Sheets scripts:
 
 - `googlesheets4`
-
-For Shiny deployment:
-
-- `shiny`
-- `DT`
-- `bslib`
-- `rsconnect`
 
 Optional reproducibility bootstrap:
 

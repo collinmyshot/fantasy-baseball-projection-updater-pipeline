@@ -60,13 +60,9 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
-            any::shiny
-            any::DT
-            any::bslib
             any::jsonlite
             any::yaml
             any::googlesheets4
-            any::rsconnect
 
       - name: Write Google service account key
         if: steps.gate.outputs.run_pipeline == 'true'
@@ -98,18 +94,3 @@ jobs:
           git add data
           git commit -m "chore: refresh fangraphs projections"
           git push
-
-      - name: Deploy Shiny app
-        if: steps.gate.outputs.run_pipeline == 'true'
-        env:
-          SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
-          SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
-          SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
-          SHINYAPP_NAME: ${{ secrets.SHINYAPPS_APP_NAME }}
-        run: |
-          if [ -z "$SHINYAPPS_ACCOUNT" ] || [ -z "$SHINYAPPS_TOKEN" ] || [ -z "$SHINYAPPS_SECRET" ]; then
-            echo "Missing required shinyapps secrets: SHINYAPPS_ACCOUNT, SHINYAPPS_TOKEN, SHINYAPPS_SECRET" >&2
-            exit 1
-          fi
-          APP_NAME="${SHINYAPP_NAME:-fantasy-baseball-projection-updater}"
-          Rscript scripts/deploy_shinyapps.R . "$APP_NAME"

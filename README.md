@@ -203,20 +203,16 @@ Workflow: `.github/workflows/daily-refresh.yml`
 - Scheduled at `3:00 AM Pacific` (DST-safe via dual UTC schedules + Pacific hour/minute gate)
 - Runs the full pipeline, including Google Sheets sync:
   `Rscript scripts/run_pipeline.R --config config/pipeline.yml`
+- Pulls source-rank context from `google_sheets.source_ranks_url` and preserves manual `CK/DS` rank columns in position tabs
 - Installs `jsonlite`, `yaml`, and `googlesheets4`
+- Commits refreshed files in `data/` only
+- Does not deploy or update shinyapps.io
 
 ### Required GitHub secret
 
 To update Google Sheets from GitHub Actions (no local PC required), add this repo secret:
 
 - `GSHEETS_SERVICE_ACCOUNT_JSON`: full JSON key for a Google service account
-
-To auto-deploy the Shiny app after each successful refresh, also add:
-
-- `SHINYAPPS_ACCOUNT`
-- `SHINYAPPS_TOKEN`
-- `SHINYAPPS_SECRET`
-- `SHINYAPPS_APP_NAME` (optional; defaults to `fantasy-baseball-projection-updater`)
 
 Then share both spreadsheets with that service-account email as `Editor`:
 

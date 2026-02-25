@@ -2,6 +2,12 @@
 
 This project pulls Fangraphs hitter projections (`BATX`, `Steamer`, `OOPSY`, `ATC`), builds your weighted per-PA aggregate, applies starter-pool z-scoring, converts to dollars, merges NFBC ADP, and syncs outputs to Google Sheets.
 
+## Project boundary (explicit)
+
+- This git/GitHub project is for **data pipeline + Google Sheets export only**.
+- It **does not** run, deploy, or update the Shiny app.
+- Shiny is handled as a separate local/deploy workflow outside this repo automation path.
+
 ## Configuration-first workflow
 
 Most settings now live in:
@@ -158,3 +164,69 @@ Then share both spreadsheets with that service-account email as `Editor`:
 
 - target workbook (`google_sheets.workbook_url`)
 - source ranks workbook (`google_sheets.source_ranks_url`) if different from target
+
+## Park factor model (BBE, fantasy-first)
+
+Builds park factors from batted-ball events using:
+
+- outcome: `wOBAcon - xwOBAcon` at BBE level
+- fantasy components: `BACON residual` (`hit_on_contact - xBA`) and `HR-on-contact`
+- hierarchical random effects: park era, park-half, batter-season, pitcher-season, fielding team-season, batting team-season
+- first/second half splits (`1H = Mar-Jun`, `2H = Jul-Sep`)
+- default modeling window starts at `2015` (first Statcast year)
+- default exclusion of `2020`
+- venue-based park-era IDs (captures team moves/temporary parks) plus manual dimension-change overrides in `data/manual/park_era_events.csv`
+
+Run:
+
+```bash
+Rscript scripts/build_park_factors.R --bbe-input data/raw/statcast_bbe.csv
+```
+
+Fetch/store Statcast BBE data (persistent chunk store, skips existing chunks):
+
+```bash
+Rscript scripts/fetch_statcast_bbe.R
+```
+
+This writes:
+
+- chunk store: `data/raw/statcast_bbe_store_chunks/`
+- chunk manifest: `data/raw/statcast_bbe_store_chunks/chunk_manifest.csv`
+- combined BBE table: `data/raw/statcast_bbe_store.csv`
+
+To add new seasons without re-scraping history:
+
+```bash
+Rscript scripts/fetch_statcast_bbe.R --start-season 2026 --end-season 2026
+```
+
+Optional:
+
+```bash
+Rscript scripts/build_park_factors.R \
+  --bbe-input data/raw/statcast_bbe.csv \
+  --defense-input data/manual/team_defense.csv \
+  --measurement-era auto \
+  --output-dir data/processed/park_factors
+```
+
+Optional defense input template:
+
+- `data/manual/team_defense_template.csv` with `season,team,oaa,drs,uzr`
+
+Key outputs (`data/processed/park_factors/`):
+
+- `park_factors_by_half.csv`
+- `park_factors_overall.csv`
+- `park_factors_bacon_by_half.csv`
+- `park_factors_bacon_overall.csv`
+- `park_factors_hr_by_half.csv`
+- `park_factors_hr_overall.csv`
+- `validation_summary.csv`
+- `validation_detail.csv`
+- `measurement_era_comparison.csv`
+- `invariance_checks.csv`
+- `team_park_era_audit.csv`
+- `team_park_transitions.csv`
+- `run_metadata.csv`

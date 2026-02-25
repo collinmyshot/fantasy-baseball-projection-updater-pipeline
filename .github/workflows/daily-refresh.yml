@@ -1,4 +1,4 @@
-name: Daily Fangraphs Refresh
+name: Daily Google Sheets Refresh (No Shiny)
 
 on:
   workflow_dispatch:
@@ -28,12 +28,17 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  refresh:
+  refresh_sheets:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Scope guard (Sheets only)
+        run: |
+          echo "This workflow updates Google Sheets only."
+          echo "It does not deploy or update shinyapps.io."
 
       - name: Gate schedule to 3:00 AM Pacific
         id: gate

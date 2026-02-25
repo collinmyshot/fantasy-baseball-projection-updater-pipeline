@@ -35,6 +35,8 @@ while (i <= length(args_raw)) {
 source(file.path("R", "pipeline_config.R"))
 cfg <- load_pipeline_config(config_path)
 
+message("Pipeline scope: Google Sheets refresh only (no shinyapps deployment).")
+
 run_rscript <- function(script, args = character(0), retries = 2L) {
   cmd <- c(script, args)
   quoted_cmd <- shQuote(cmd)

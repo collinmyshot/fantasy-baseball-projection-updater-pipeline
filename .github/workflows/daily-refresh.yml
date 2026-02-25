@@ -40,7 +40,7 @@ jobs:
           echo "This workflow updates Google Sheets only."
           echo "It does not deploy or update shinyapps.io."
 
-      - name: Gate schedule to 3:00 AM Pacific
+      - name: Gate schedule to 3 AM Pacific hour
         id: gate
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -50,7 +50,7 @@ jobs:
 
           PT_HOUR=$(TZ=America/Los_Angeles date +%H)
           PT_MIN=$(TZ=America/Los_Angeles date +%M)
-          if [ "$PT_HOUR" = "03" ] && [ "$PT_MIN" = "00" ]; then
+          if [ "$PT_HOUR" = "03" ]; then
             echo "run_pipeline=true" >> "$GITHUB_OUTPUT"
           else
             echo "run_pipeline=false" >> "$GITHUB_OUTPUT"

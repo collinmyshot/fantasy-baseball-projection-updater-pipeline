@@ -64,6 +64,7 @@ STANDARD_COLUMN_ORDER <- c(
 FG_API_BASE <- "https://www.fangraphs.com/api/projections"
 FG_REQUEST_RETRIES <- 3L
 FG_REQUEST_RETRY_SLEEP_SEC <- 1.5
+FG_BROWSER_USER_AGENT <- "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
 
 `%||%` <- function(x, y) {
   if (is.null(x)) y else x
@@ -154,6 +155,87 @@ as_data_frame <- function(raw) {
   NULL
 }
 
+fetch_fg_json_with_fallback <- function(
+  url,
+  simplifyVector = TRUE,
+  retries = FG_REQUEST_RETRIES,
+  retry_sleep_sec = FG_REQUEST_RETRY_SLEEP_SEC
+) {
+  retries <- max(1L, as.integer(retries))
+  last_error <- NULL
+
+  for (attempt in seq_len(retries)) {
+    payload <- tryCatch(
+      jsonlite::fromJSON(url, simplifyVector = simplifyVector),
+      error = function(e) {
+        last_error <<- conditionMessage(e)
+        NULL
+      }
+    )
+    if (!is.null(payload)) {
+      return(list(ok = TRUE, payload = payload, method = "fromJSON", error = NULL))
+    }
+
+    curl_bin <- Sys.which("curl")
+    if (nzchar(curl_bin)) {
+      tmp_json <- tempfile(fileext = ".json")
+      curl_args <- c(
+        "-sS", "-L", "--fail", "--compressed",
+        "--retry", "2", "--retry-delay", "1",
+        "-A", FG_BROWSER_USER_AGENT,
+        "-H", "Accept: application/json, text/plain, */*",
+        "-H", "Referer: https://www.fangraphs.com/projections",
+        "-H", "Origin: https://www.fangraphs.com",
+        url,
+        "-o", tmp_json
+      )
+
+      curl_result <- tryCatch(
+        system2(curl_bin, args = curl_args, stdout = TRUE, stderr = TRUE),
+        error = function(e) e
+      )
+
+      if (!inherits(curl_result, "error")) {
+        curl_status <- attr(curl_result, "status")
+        if (is.null(curl_status) || as.integer(curl_status) == 0L) {
+          payload <- tryCatch(
+            jsonlite::fromJSON(tmp_json, simplifyVector = simplifyVector),
+            error = function(e) {
+              last_error <<- paste0("curl JSON parse failed: ", conditionMessage(e))
+              NULL
+            }
+          )
+          unlink(tmp_json)
+          if (!is.null(payload)) {
+            return(list(ok = TRUE, payload = payload, method = "curl", error = NULL))
+          }
+        } else {
+          details <- trimws(paste(curl_result, collapse = " | "))
+          if (!nzchar(details)) {
+            details <- "no stderr/stdout details"
+          }
+          last_error <- sprintf("curl exit %s: %s", as.integer(curl_status), details)
+          unlink(tmp_json)
+        }
+      } else {
+        last_error <- sprintf("curl execution error: %s", conditionMessage(curl_result))
+        unlink(tmp_json)
+      }
+    }
+
+    if (attempt < retries) {
+      Sys.sleep(retry_sleep_sec * attempt)
+    }
+  }
+
+  list(
+    ok = FALSE,
+    payload = NULL,
+    method = NA_character_,
+    error = ifelse(is.null(last_error), "No payload returned", last_error)
+  )
+}
+
 fetch_projection_raw <- function(system_name, season) {
   if (!system_name %in% names(FG_SYSTEM_CODES)) {
     stop(sprintf("Unknown system '%s'. Expected one of: %s", system_name, paste(names(FG_SYSTEM_CODES), collapse = ", ")))
@@ -164,25 +246,22 @@ fetch_projection_raw <- function(system_name, season) {
 
   for (projection_type in attempts) {
     url <- build_fg_projection_url(projection_type = projection_type, season = season)
-    for (attempt in seq_len(FG_REQUEST_RETRIES)) {
-      raw <- tryCatch(jsonlite::fromJSON(url), error = function(e) {
-        last_error <<- conditionMessage(e)
-        NULL
-      })
+    fetch <- fetch_fg_json_with_fallback(
+      url = url,
+      simplifyVector = TRUE,
+      retries = FG_REQUEST_RETRIES,
+      retry_sleep_sec = FG_REQUEST_RETRY_SLEEP_SEC
+    )
 
-      data <- as_data_frame(raw)
-
-      if (!is.null(data) && nrow(data) > 0) {
-        data$projection_system <- system_name
-        data$projection_type <- projection_type
-        data$season <- as.integer(season)
-        return(data)
-      }
-
-      if (attempt < FG_REQUEST_RETRIES) {
-        Sys.sleep(FG_REQUEST_RETRY_SLEEP_SEC * attempt)
-      }
+    data <- as_data_frame(fetch$payload)
+    if (!is.null(data) && nrow(data) > 0) {
+      data$projection_system <- system_name
+      data$projection_type <- projection_type
+      data$season <- as.integer(season)
+      return(data)
     }
+
+    last_error <- fetch$error
   }
 
   stop(sprintf("Failed to fetch data for system '%s'. Last error: %s", system_name, ifelse(is.null(last_error), "No rows returned", last_error)))

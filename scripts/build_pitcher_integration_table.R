@@ -250,10 +250,14 @@ refresh_pitcher_projection_json <- function(json_path, season, system_name) {
 
   for (projection_type in projection_types) {
     url <- build_pitcher_projection_url(season = season, projection_type = projection_type)
-    payload_try <- tryCatch(jsonlite::fromJSON(url, simplifyVector = TRUE), error = function(e) {
-      last_error <<- conditionMessage(e)
-      NULL
-    })
+    fetch <- fetch_fg_json_with_fallback(
+      url = url,
+      simplifyVector = TRUE
+    )
+    payload_try <- fetch$payload
+    if (!isTRUE(fetch$ok)) {
+      last_error <- fetch$error
+    }
     payload_df_try <- as_data_frame(payload_try)
     if (!is.null(payload_df_try) && nrow(payload_df_try) > 0) {
       payload <- payload_try

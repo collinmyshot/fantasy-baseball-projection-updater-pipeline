@@ -1,188 +1,41 @@
 #!/usr/bin/env Rscript
 
-args_raw <- commandArgs(trailingOnly = TRUE)
-
-config_path <- file.path("config", "pipeline.yml")
-season_arg <- ""
-projection_json_arg <- ""
-adp_tsv_arg <- ""
-eno_csv_arg <- ""
-ck_csv_arg <- ""
-sp2025_csv_arg <- ""
-sp2026_csv_arg <- ""
-out_csv_arg <- ""
-refresh_projection_arg <- FALSE
-pitcher_system_arg <- ""
-sheet_url_arg <- ""
-integrated_tab_arg <- ""
-sp_skillz_tab_arg <- ""
-no_sheet_export_arg <- FALSE
-
-i <- 1
-while (i <= length(args_raw)) {
-  arg <- args_raw[[i]]
-  if (arg == "--config" && i < length(args_raw)) {
-    config_path <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--config=")) {
-    config_path <- sub("^--config=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--season" && i < length(args_raw)) {
-    season_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--season=")) {
-    season_arg <- sub("^--season=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--projection-json" && i < length(args_raw)) {
-    projection_json_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--projection-json=")) {
-    projection_json_arg <- sub("^--projection-json=", "", arg)
-    i <- i + 1
-    next
-  }
-  # Backward-compatible alias.
-  if (arg == "--oopsy-json" && i < length(args_raw)) {
-    projection_json_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--oopsy-json=")) {
-    projection_json_arg <- sub("^--oopsy-json=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--adp-tsv" && i < length(args_raw)) {
-    adp_tsv_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--adp-tsv=")) {
-    adp_tsv_arg <- sub("^--adp-tsv=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--eno-csv" && i < length(args_raw)) {
-    eno_csv_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--eno-csv=")) {
-    eno_csv_arg <- sub("^--eno-csv=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--ck-csv" && i < length(args_raw)) {
-    ck_csv_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--ck-csv=")) {
-    ck_csv_arg <- sub("^--ck-csv=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--sp2025-csv" && i < length(args_raw)) {
-    sp2025_csv_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--sp2025-csv=")) {
-    sp2025_csv_arg <- sub("^--sp2025-csv=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--sp2026-csv" && i < length(args_raw)) {
-    sp2026_csv_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--sp2026-csv=")) {
-    sp2026_csv_arg <- sub("^--sp2026-csv=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--out-csv" && i < length(args_raw)) {
-    out_csv_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--out-csv=")) {
-    out_csv_arg <- sub("^--out-csv=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--refresh-projections") {
-    refresh_projection_arg <- TRUE
-    i <- i + 1
-    next
-  }
-  # Backward-compatible alias.
-  if (arg == "--refresh-oopsy") {
-    refresh_projection_arg <- TRUE
-    i <- i + 1
-    next
-  }
-  if (arg == "--pitcher-system" && i < length(args_raw)) {
-    pitcher_system_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--pitcher-system=")) {
-    pitcher_system_arg <- sub("^--pitcher-system=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--sheet-url" && i < length(args_raw)) {
-    sheet_url_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--sheet-url=")) {
-    sheet_url_arg <- sub("^--sheet-url=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--integrated-tab" && i < length(args_raw)) {
-    integrated_tab_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--integrated-tab=")) {
-    integrated_tab_arg <- sub("^--integrated-tab=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--sp-skillz-tab" && i < length(args_raw)) {
-    sp_skillz_tab_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--sp-skillz-tab=")) {
-    sp_skillz_tab_arg <- sub("^--sp-skillz-tab=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--no-sheet-export") {
-    no_sheet_export_arg <- TRUE
-    i <- i + 1
-    next
-  }
-  stop(sprintf("Unknown argument: %s", arg))
-}
-
 source(file.path("R", "pipeline_config.R"))
 source(file.path("R", "fangraphs_projections.R"))
+
+parsed <- parse_cli_args(list(
+  config = list(flag = "--config", default = file.path("config", "pipeline.yml")),
+  season = list(flag = "--season", default = ""),
+  projection_json = list(flag = "--projection-json", default = "", aliases = c("--oopsy-json")),
+  adp_tsv = list(flag = "--adp-tsv", default = ""),
+  eno_csv = list(flag = "--eno-csv", default = ""),
+  ck_csv = list(flag = "--ck-csv", default = ""),
+  sp2025_csv = list(flag = "--sp2025-csv", default = ""),
+  sp2026_csv = list(flag = "--sp2026-csv", default = ""),
+  out_csv = list(flag = "--out-csv", default = ""),
+  refresh_projections = list(flag = "--refresh-projections", type = "boolean", default = FALSE, aliases = c("--refresh-oopsy")),
+  pitcher_system = list(flag = "--pitcher-system", default = ""),
+  sheet_url = list(flag = "--sheet-url", default = ""),
+  integrated_tab = list(flag = "--integrated-tab", default = ""),
+  sp_skillz_tab = list(flag = "--sp-skillz-tab", default = ""),
+  no_sheet_export = list(flag = "--no-sheet-export", type = "boolean", default = FALSE)
+), allow_positional = FALSE)
+
+config_path <- parsed$config
+season_arg <- parsed$season
+projection_json_arg <- parsed$projection_json
+adp_tsv_arg <- parsed$adp_tsv
+eno_csv_arg <- parsed$eno_csv
+ck_csv_arg <- parsed$ck_csv
+sp2025_csv_arg <- parsed$sp2025_csv
+sp2026_csv_arg <- parsed$sp2026_csv
+out_csv_arg <- parsed$out_csv
+refresh_projection_arg <- parsed$refresh_projections
+pitcher_system_arg <- parsed$pitcher_system
+sheet_url_arg <- parsed$sheet_url
+integrated_tab_arg <- parsed$integrated_tab
+sp_skillz_tab_arg <- parsed$sp_skillz_tab
+no_sheet_export_arg <- parsed$no_sheet_export
 source(file.path("R", "gsheets_auth.R"))
 
 if (!requireNamespace("jsonlite", quietly = TRUE)) {
@@ -196,17 +49,6 @@ PITCHER_PROJECTION_TYPES <- list(
   atc = c("atc"),
   zips = c("zips")
 )
-
-parse_num <- function(x, fallback) {
-  if (!nzchar(x)) {
-    return(fallback)
-  }
-  out <- suppressWarnings(as.numeric(trimws(x)))
-  if (length(out) != 1 || is.na(out)) {
-    stop(sprintf("Invalid numeric value: %s", x))
-  }
-  out
-}
 
 name_key <- function(x) normalize_join_name(x)
 team_key <- function(x) normalize_team_abbrev(x)
@@ -300,7 +142,12 @@ read_pitcher_projections <- function(json_path, system_name = "oopsy") {
     team = toupper(trimws(as.character(raw$Team))),
     proj_w = suppressWarnings(as.numeric(raw$W)),
     proj_sv = suppressWarnings(as.numeric(raw$SV)),
+    proj_hld = suppressWarnings(as.numeric(raw$HLD)),
     proj_k = suppressWarnings(as.numeric(raw$SO)),
+    proj_h = suppressWarnings(as.numeric(raw$H)),
+    proj_bb = suppressWarnings(as.numeric(raw$BB)),
+    proj_hbp = suppressWarnings(as.numeric(raw$HBP)),
+    proj_hr = suppressWarnings(as.numeric(raw$HR)),
     proj_gs = suppressWarnings(as.numeric(raw$GS)),
     proj_ip = suppressWarnings(as.numeric(raw$IP)),
     proj_era = suppressWarnings(as.numeric(raw$ERA)),
@@ -447,24 +294,6 @@ dedupe_name_conflicts <- function(df) {
   out
 }
 
-normalize_df_for_compare <- function(df) {
-  out <- as.data.frame(df, stringsAsFactors = FALSE)
-  for (nm in names(out)) {
-    if (is.numeric(out[[nm]])) {
-      out[[nm]] <- ifelse(is.na(out[[nm]]), NA, round(out[[nm]], 6))
-    } else {
-      out[[nm]] <- trimws(as.character(out[[nm]]))
-      out[[nm]][out[[nm]] == ""] <- NA
-    }
-  }
-  out
-}
-
-frames_equal <- function(a, b) {
-  if (!identical(names(a), names(b))) return(FALSE)
-  if (nrow(a) != nrow(b)) return(FALSE)
-  identical(normalize_df_for_compare(a), normalize_df_for_compare(b))
-}
 
 apply_tab_display_format <- function(sheet_url, tab_name, dat, target_rows, target_cols) {
   props <- googlesheets4::sheet_properties(sheet_url)
@@ -808,7 +637,12 @@ if (!any(base$name_key == ohtani_key)) {
       projection_system = pitcher_projection_system,
       proj_w = NA_real_,
       proj_sv = NA_real_,
+      proj_hld = NA_real_,
       proj_k = NA_real_,
+      proj_h = NA_real_,
+      proj_bb = NA_real_,
+      proj_hbp = NA_real_,
+      proj_hr = NA_real_,
       proj_ip = NA_real_,
       proj_era = NA_real_,
       proj_whip = NA_real_,
@@ -880,7 +714,12 @@ out <- base[, c(
   "proj_ip",
   "proj_w",
   "proj_sv",
+  "proj_hld",
   "proj_k",
+  "proj_h",
+  "proj_bb",
+  "proj_hbp",
+  "proj_hr",
   "proj_era",
   "proj_whip",
   "sp_skillz_2025_score_stabilized",
@@ -896,6 +735,17 @@ out$proj_era <- round(suppressWarnings(as.numeric(out$proj_era)), 2)
 out$proj_whip <- round(suppressWarnings(as.numeric(out$proj_whip)), 2)
 out$sp_skillz_2025_score_stabilized <- round(suppressWarnings(as.numeric(out$sp_skillz_2025_score_stabilized)), 3)
 out$sp_skillz_2026_score_stabilized <- round(suppressWarnings(as.numeric(out$sp_skillz_2026_score_stabilized)), 3)
+out$ottoneu_fg_pts <- round(
+  OTTONEU_FG_PITCHING_POINTS[["ip"]] * score_num(out$proj_ip) +
+    OTTONEU_FG_PITCHING_POINTS[["k"]] * score_num(out$proj_k) +
+    OTTONEU_FG_PITCHING_POINTS[["h"]] * score_num(out$proj_h) +
+    OTTONEU_FG_PITCHING_POINTS[["bb"]] * score_num(out$proj_bb) +
+    OTTONEU_FG_PITCHING_POINTS[["hbp"]] * score_num(out$proj_hbp) +
+    OTTONEU_FG_PITCHING_POINTS[["hr"]] * score_num(out$proj_hr) +
+    OTTONEU_FG_PITCHING_POINTS[["sv"]] * score_num(out$proj_sv) +
+    OTTONEU_FG_PITCHING_POINTS[["hld"]] * score_num(out$proj_hld),
+  1
+)
 
 out <- out[order(is.na(out$adp), out$adp, out$sp_skillz_2026_rank_stabilized, out$player_name), , drop = FALSE]
 rownames(out) <- NULL

@@ -1,0 +1,10 @@
+local_time=2026-03-01 10:26 PST
+done=550
+total=550
+pct=100.00
+next_missing=none
+last_manifest_local=2026-02-27 00:46
+last_chunk=550
+last_status=ok
+lag_min=3460.2
+error=

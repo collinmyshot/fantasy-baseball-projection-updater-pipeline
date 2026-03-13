@@ -1,0 +1,7 @@
+metric,n_parks,pearson_r,spearman_rho
+savant_overall_vs_index_woba,28,0.728556,0.491722
+savant_bacon_vs_index_bacon,28,0.856767,0.610809
+savant_hr_vs_index_hr,28,0.813052,0.854246
+fg_overall_vs_3yr,30,0.639951,0.305006
+fg_overall_vs_basic5yr,30,0.749205,0.433593
+fg_hr_vs_hr,30,0.813214,0.797553

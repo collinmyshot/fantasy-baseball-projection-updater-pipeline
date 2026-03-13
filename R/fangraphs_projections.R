@@ -18,7 +18,46 @@ DEFAULT_CATEGORY_WEIGHTS <- c(
   sb = 1.0,
   r = 0.6,
   rbi = 0.6,
-  h = 1.0
+  h = 1.0,
+  avg = 1.0,
+  obp = 1.0
+)
+
+OTTONEU_FG_HITTING_POINTS <- c(
+  ab = -1.0,
+  h = 5.6,
+  x2b = 2.9,
+  x3b = 5.7,
+  hr = 9.4,
+  bb = 3.0,
+  hbp = 3.0,
+  sb = 1.9,
+  cs = -2.8
+)
+
+OTTONEU_FG_PITCHING_POINTS <- c(
+  ip = 7.4,
+  k = 2.0,
+  h = -2.6,
+  bb = -3.0,
+  hbp = -3.0,
+  hr = -12.3,
+  sv = 5.0,
+  hld = 4.0
+)
+
+# Default uses AVG league categories. For OBP leagues, swap "avg" for "obp".
+DEFAULT_HITTER_CATEGORIES <- c("pa", "hr", "sb", "r", "rbi", "h", "avg")
+
+HITTER_CATEGORY_COLUMN_MAP <- list(
+  pa = list(value = "weighted_pa", z = "z_pa", z_starter = "z_pa_starter"),
+  hr = list(value = "weighted_hr_per_pa", z = "z_hr", z_starter = "z_hr_starter"),
+  sb = list(value = "weighted_sb_per_pa_log", z = "z_sb", z_starter = "z_sb_starter"),
+  r = list(value = "weighted_r_per_pa", z = "z_r", z_starter = "z_r_starter"),
+  rbi = list(value = "weighted_rbi_per_pa", z = "z_rbi", z_starter = "z_rbi_starter"),
+  h = list(value = "weighted_h_per_pa", z = "z_h", z_starter = "z_h_starter"),
+  avg = list(value = "weighted_avg", z = "z_avg", z_starter = "z_avg_starter"),
+  obp = list(value = "weighted_obp", z = "z_obp", z_starter = "z_obp_starter")
 )
 
 DEFAULT_NFBC_TEAMS <- 15
@@ -49,16 +88,21 @@ STANDARD_COLUMN_MAP <- list(
   ab = c("ab", "atbats"),
   pa = c("pa", "plateappearances"),
   h = c("h", "hits"),
+  x2b = c("2b", "doubles"),
+  x3b = c("3b", "triples"),
+  bb = c("bb", "walks"),
+  hbp = c("hbp", "hitbypitch"),
   r = c("r", "runs"),
   hr = c("hr", "homeruns"),
   rbi = c("rbi", "runsbattedin"),
   sb = c("sb", "stolenbases"),
+  cs = c("cs", "caughtstealing", "caughtstealings"),
   avg = c("avg", "battingaverage")
 )
 
 STANDARD_COLUMN_ORDER <- c(
   "projection_system", "projection_type", "season", "playerid", "name", "team",
-  "ab", "pa", "h", "r", "hr", "rbi", "sb", "avg"
+  "ab", "pa", "h", "x2b", "x3b", "bb", "hbp", "r", "hr", "rbi", "sb", "cs", "avg"
 )
 
 FG_API_BASE <- "https://www.fangraphs.com/api/projections"
@@ -66,9 +110,7 @@ FG_REQUEST_RETRIES <- 3L
 FG_REQUEST_RETRY_SLEEP_SEC <- 1.5
 FG_BROWSER_USER_AGENT <- "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
 
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}
+if (!exists("%||%")) source(file.path("R", "utils.R"))
 
 normalize_name <- function(x) {
   gsub("[^a-z0-9]", "", tolower(x))
@@ -96,7 +138,7 @@ normalize_team_abbrev <- function(x) {
     SFG = "SFG", SF = "SFG",
     TBR = "TBR", TB = "TBR",
     CHW = "CHW", CWS = "CHW",
-    WSN = "WSN", WAS = "WSN",
+    WSH = "WSH", WSN = "WSH", WAS = "WSH",
     ARI = "ARZ", ARZ = "ARZ",
     MIL = "MIL", MLW = "MIL"
   )
@@ -316,11 +358,17 @@ add_per_pa_rates <- function(standard_data) {
   out <- standard_data
 
   out$ab_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$ab / out$pa, NA_real_)
+  out$bb_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$bb / out$pa, NA_real_)
+  out$x2b_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$x2b / out$pa, NA_real_)
+  out$x3b_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$x3b / out$pa, NA_real_)
+  out$hbp_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$hbp / out$pa, NA_real_)
+  out$cs_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$cs / out$pa, NA_real_)
   out$r_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$r / out$pa, NA_real_)
   out$hr_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$hr / out$pa, NA_real_)
   out$rbi_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$rbi / out$pa, NA_real_)
   out$sb_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$sb / out$pa, NA_real_)
   out$h_per_pa <- ifelse(!is.na(out$pa) & out$pa > 0, out$h / out$pa, NA_real_)
+  out$obp <- ifelse(!is.na(out$pa) & out$pa > 0, (out$h + out$bb) / out$pa, NA_real_)
 
   out
 }
@@ -388,6 +436,11 @@ weighted_aggregate_per_pa <- function(per_pa_data, weights = DEFAULT_PROJECTION_
 
     weighted_pa <- weighted_mean_available(player_rows$pa, w)
     weighted_ab_per_pa <- weighted_mean_available(player_rows$ab_per_pa, w)
+    weighted_bb_per_pa <- weighted_mean_available(player_rows$bb_per_pa, w)
+    weighted_2b_per_pa <- weighted_mean_available(player_rows$x2b_per_pa, w)
+    weighted_3b_per_pa <- weighted_mean_available(player_rows$x3b_per_pa, w)
+    weighted_hbp_per_pa <- weighted_mean_available(player_rows$hbp_per_pa, w)
+    weighted_cs_per_pa <- weighted_mean_available(player_rows$cs_per_pa, w)
     weighted_h_per_pa <- weighted_mean_available(player_rows$h_per_pa, w)
     weighted_r_per_pa <- weighted_mean_available(player_rows$r_per_pa, w)
     weighted_hr_per_pa <- weighted_mean_available(player_rows$hr_per_pa, w)
@@ -397,6 +450,11 @@ weighted_aggregate_per_pa <- function(per_pa_data, weights = DEFAULT_PROJECTION_
     weighted_avg <- ifelse(
       !is.na(weighted_ab_per_pa) && weighted_ab_per_pa > 0,
       weighted_h_per_pa / weighted_ab_per_pa,
+      NA_real_
+    )
+    weighted_obp <- ifelse(
+      !is.na(weighted_h_per_pa) && !is.na(weighted_bb_per_pa),
+      weighted_h_per_pa + weighted_bb_per_pa,
       NA_real_
     )
 
@@ -410,12 +468,18 @@ weighted_aggregate_per_pa <- function(per_pa_data, weights = DEFAULT_PROJECTION_
       weights_used = sum(w[!is.na(player_rows$pa)]),
       weighted_pa = weighted_pa,
       weighted_ab_per_pa = weighted_ab_per_pa,
+      weighted_bb_per_pa = weighted_bb_per_pa,
+      weighted_2b_per_pa = weighted_2b_per_pa,
+      weighted_3b_per_pa = weighted_3b_per_pa,
+      weighted_hbp_per_pa = weighted_hbp_per_pa,
+      weighted_cs_per_pa = weighted_cs_per_pa,
       weighted_h_per_pa = weighted_h_per_pa,
       weighted_r_per_pa = weighted_r_per_pa,
       weighted_hr_per_pa = weighted_hr_per_pa,
       weighted_rbi_per_pa = weighted_rbi_per_pa,
       weighted_sb_per_pa = weighted_sb_per_pa,
       weighted_avg = weighted_avg,
+      weighted_obp = weighted_obp,
       stringsAsFactors = FALSE
     )
   })
@@ -465,28 +529,43 @@ z_score_from_reference <- function(x, center, spread) {
 }
 
 validate_category_weights <- function(weights) {
-  required <- c("pa", "hr", "sb", "r", "rbi", "h")
+  allowed <- names(HITTER_CATEGORY_COLUMN_MAP)
   if (is.null(weights) || length(weights) == 0) {
-    stop("Category weights cannot be empty.")
+    return(DEFAULT_CATEGORY_WEIGHTS)
   }
   if (is.null(names(weights)) || any(!nzchar(names(weights)))) {
     stop("Category weights must be a named vector.")
   }
 
-  missing <- setdiff(required, names(weights))
-  if (length(missing) > 0) {
-    stop(sprintf("Missing category weights: %s", paste(missing, collapse = ", ")))
+  unknown <- setdiff(names(weights), allowed)
+  if (length(unknown) > 0) {
+    stop(sprintf("Unknown category weights: %s", paste(unknown, collapse = ", ")))
   }
 
-  out <- as.numeric(weights[required])
-  names(out) <- required
+  out <- DEFAULT_CATEGORY_WEIGHTS
+  out[names(weights)] <- as.numeric(weights)
+
   if (any(is.na(out)) || any(out < 0)) {
     stop("Category weights must be numeric and non-negative.")
   }
-  if (sum(out) <= 0) {
-    stop("Category weights must sum to a value greater than 0.")
-  }
 
+  out
+}
+
+validate_hitter_categories_selected <- function(categories) {
+  allowed <- names(HITTER_CATEGORY_COLUMN_MAP)
+  if (is.null(categories) || length(categories) == 0) {
+    return(DEFAULT_HITTER_CATEGORIES)
+  }
+  out <- unique(tolower(trimws(as.character(categories))))
+  out <- out[nzchar(out)]
+  unknown <- setdiff(out, allowed)
+  if (length(unknown) > 0) {
+    stop(sprintf("Unknown selected hitter categories: %s", paste(unknown, collapse = ", ")))
+  }
+  if (length(out) == 0) {
+    stop("At least one hitter category must be selected.")
+  }
   out
 }
 
@@ -498,7 +577,8 @@ build_baseline_reference <- function(data, baseline, pa_floor, starter_count = N
     HR_per_PA = "weighted_hr_per_pa",
     SB_per_PA_LOG = "weighted_sb_per_pa_log",
     H_per_PA = "weighted_h_per_pa",
-    AVG = "weighted_avg"
+    AVG = "weighted_avg",
+    OBP = "weighted_obp"
   )
 
   means <- vapply(metrics, function(col) mean(data[[col]], na.rm = TRUE), numeric(1))
@@ -522,6 +602,7 @@ compute_zscores_per_pa <- function(
   weighted_aggregate,
   pa_floor = 200,
   category_weights = DEFAULT_CATEGORY_WEIGHTS,
+  selected_categories = DEFAULT_HITTER_CATEGORIES,
   starter_count = DEFAULT_NFBC_HITTER_STARTER_COUNT,
   starter_rank_metric = "z_total_custom"
 ) {
@@ -533,6 +614,7 @@ compute_zscores_per_pa <- function(
   }
 
   category_weights <- validate_category_weights(category_weights)
+  selected_categories <- validate_hitter_categories_selected(selected_categories)
 
   required <- c(
     "weighted_pa",
@@ -540,7 +622,9 @@ compute_zscores_per_pa <- function(
     "weighted_rbi_per_pa",
     "weighted_hr_per_pa",
     "weighted_sb_per_pa",
-    "weighted_h_per_pa"
+    "weighted_h_per_pa",
+    "weighted_avg",
+    "weighted_obp"
   )
   missing_cols <- setdiff(required, names(weighted_aggregate))
   if (length(missing_cols) > 0) {
@@ -566,17 +650,17 @@ compute_zscores_per_pa <- function(
   out$z_sb <- z_score_vector(out$weighted_sb_per_pa_log)
   out$z_h <- z_score_vector(out$weighted_h_per_pa)
   out$z_avg <- z_score_vector(out$weighted_avg)
+  out$z_obp <- z_score_vector(out$weighted_obp)
 
-  # Raw total uses the same stat set as custom total, but with equal weights.
-  out$z_total_equal <- out$z_pa + out$z_r + out$z_rbi + out$z_hr + out$z_sb + out$z_h
-  out$z_total_custom <- (
-    category_weights[["pa"]] * out$z_pa +
-      category_weights[["hr"]] * out$z_hr +
-      category_weights[["sb"]] * out$z_sb +
-      category_weights[["r"]] * out$z_r +
-      category_weights[["rbi"]] * out$z_rbi +
-      category_weights[["h"]] * out$z_h
+  selected_z_cols <- vapply(
+    selected_categories,
+    function(cat) HITTER_CATEGORY_COLUMN_MAP[[cat]]$z,
+    character(1)
   )
+  selected_weight_vec <- category_weights[selected_categories]
+
+  out$z_total_equal <- rowSums(out[, selected_z_cols, drop = FALSE])
+  out$z_total_custom <- as.numeric(as.matrix(out[, selected_z_cols, drop = FALSE]) %*% selected_weight_vec)
 
   # Backward compatibility for older metric names before SB standard-path removal.
   if (starter_rank_metric %in% c("z_total_equal_sb_std", "z_total_equal_sb_log")) {
@@ -588,15 +672,21 @@ compute_zscores_per_pa <- function(
     stop(sprintf("starter_rank_metric must be one of: %s", paste(rank_metric_options, collapse = ", ")))
   }
 
-  starter_pool <- out[!is.na(out[[starter_rank_metric]]), , drop = FALSE]
-  if (nrow(starter_pool) == 0) {
+  starter_candidates <- out[!is.na(out[[starter_rank_metric]]), , drop = FALSE]
+  if (nrow(starter_candidates) == 0) {
     stop(sprintf("No players have non-missing values for starter_rank_metric '%s'.", starter_rank_metric))
   }
 
-  starter_pool <- starter_pool[order(starter_pool[[starter_rank_metric]], decreasing = TRUE), , drop = FALSE]
-  starter_n <- min(as.integer(round(starter_count)), nrow(starter_pool))
-  starter_pool <- starter_pool[seq_len(starter_n), , drop = FALSE]
-  starter_pool$starter_pool_rank <- seq_len(nrow(starter_pool))
+  starter_candidates <- starter_candidates[order(starter_candidates[[starter_rank_metric]], decreasing = TRUE), , drop = FALSE]
+  starter_n <- min(as.integer(round(starter_count)), nrow(starter_candidates))
+  starter_candidates <- starter_candidates[seq_len(starter_n), , drop = FALSE]
+
+  # Mark starter pool membership on `out` so we can re-extract after computing
+  # starter-baseline z-scores (needed for dollar value conversion).
+  out$starter_pool_rank <- NA_integer_
+  out$starter_pool_rank[rownames(out) %in% rownames(starter_candidates)] <-
+    match(rownames(out)[rownames(out) %in% rownames(starter_candidates)], rownames(starter_candidates))
+  starter_pool <- starter_candidates
 
   overall_ref <- build_baseline_reference(out, "overall_pool", pa_floor = pa_floor)
   starter_ref <- build_baseline_reference(
@@ -617,16 +707,21 @@ compute_zscores_per_pa <- function(
   out$z_sb_starter <- z_score_from_reference(out$weighted_sb_per_pa_log, starter_center[["SB_per_PA_LOG"]], starter_spread[["SB_per_PA_LOG"]])
   out$z_h_starter <- z_score_from_reference(out$weighted_h_per_pa, starter_center[["H_per_PA"]], starter_spread[["H_per_PA"]])
   out$z_avg_starter <- z_score_from_reference(out$weighted_avg, starter_center[["AVG"]], starter_spread[["AVG"]])
+  out$z_obp_starter <- z_score_from_reference(out$weighted_obp, starter_center[["OBP"]], starter_spread[["OBP"]])
 
-  out$z_total_equal_starter <- out$z_pa_starter + out$z_r_starter + out$z_rbi_starter + out$z_hr_starter + out$z_sb_starter + out$z_h_starter
-  out$z_total_custom_starter <- (
-    category_weights[["pa"]] * out$z_pa_starter +
-      category_weights[["hr"]] * out$z_hr_starter +
-      category_weights[["sb"]] * out$z_sb_starter +
-      category_weights[["r"]] * out$z_r_starter +
-      category_weights[["rbi"]] * out$z_rbi_starter +
-      category_weights[["h"]] * out$z_h_starter
+  selected_z_starter_cols <- vapply(
+    selected_categories,
+    function(cat) HITTER_CATEGORY_COLUMN_MAP[[cat]]$z_starter,
+    character(1)
   )
+  out$z_total_equal_starter <- rowSums(out[, selected_z_starter_cols, drop = FALSE])
+  out$z_total_custom_starter <- as.numeric(as.matrix(out[, selected_z_starter_cols, drop = FALSE]) %*% selected_weight_vec)
+
+  # Refresh starter_pool from the updated `out` so it includes the newly
+
+  # computed starter-baseline z-scores needed for dollar value conversion.
+  starter_pool <- out[!is.na(out$starter_pool_rank), , drop = FALSE]
+  starter_pool <- starter_pool[order(starter_pool$starter_pool_rank), , drop = FALSE]
 
   make_rank <- function(x) {
     rank(-x, ties.method = "min", na.last = "keep")
@@ -643,7 +738,8 @@ compute_zscores_per_pa <- function(
   list(
     z_scores = out,
     zscore_reference = rbind(overall_ref, starter_ref),
-    starter_pool = starter_pool
+    starter_pool = starter_pool,
+    selected_categories = selected_categories
   )
 }
 
@@ -672,7 +768,7 @@ compute_dollar_values <- function(
     stop("num_teams must be a single positive number.")
   }
 
-  required_metrics <- c("z_total_equal", "z_total_custom")
+  required_metrics <- c("z_total_equal_starter", "z_total_custom_starter")
   missing_from_z <- setdiff(required_metrics, names(z_scores))
   if (length(missing_from_z) > 0) {
     stop(sprintf("Missing z-score columns for dollar conversion: %s", paste(missing_from_z, collapse = ", ")))
@@ -689,26 +785,35 @@ compute_dollar_values <- function(
   }
   dollars_per_slot <- budget_bats / numstartingbats
 
-  avg_z_equal <- mean(starter_pool$z_total_equal, na.rm = TRUE)
-  avg_z_custom <- mean(starter_pool$z_total_custom, na.rm = TRUE)
+  # Dollar values use replacement-level approach: each player's value is
 
-  dollar_formula <- function(z_value, avg_z_value) {
-    if (is.na(avg_z_value) || abs(avg_z_value) < .Machine$double.eps^0.5) {
+  # proportional to how far their z-score exceeds the last starter's z-score.
+  # This works correctly with starter-baseline z-scores (where mean ≈ 0).
+  z_replacement_equal <- min(starter_pool$z_total_equal_starter, na.rm = TRUE)
+  z_replacement_custom <- min(starter_pool$z_total_custom_starter, na.rm = TRUE)
+
+  # Total z above replacement across all starters = budget to distribute
+  z_above_repl_equal <- sum(starter_pool$z_total_equal_starter - z_replacement_equal, na.rm = TRUE)
+  z_above_repl_custom <- sum(starter_pool$z_total_custom_starter - z_replacement_custom, na.rm = TRUE)
+
+  dollar_formula <- function(z_value, z_repl, z_above_total) {
+    if (!is.finite(z_above_total) || z_above_total <= 0) {
       return(rep(NA_real_, length(z_value)))
     }
-    (dollars_per_slot * (z_value / avg_z_value)) + min_bid
+    dollars_per_z <- (budget_bats - numstartingbats * min_bid) / z_above_total
+    pmax((z_value - z_repl) * dollars_per_z + min_bid, min_bid)
   }
 
   out <- z_scores
-  out$dollar_value_raw <- dollar_formula(out$z_total_equal, avg_z_equal)
-  out$dollar_value_weights <- dollar_formula(out$z_total_custom, avg_z_custom)
+  out$dollar_value_raw <- dollar_formula(out$z_total_equal_starter, z_replacement_equal, z_above_repl_equal)
+  out$dollar_value_weights <- dollar_formula(out$z_total_custom_starter, z_replacement_custom, z_above_repl_custom)
 
   reference <- data.frame(
-    metric = c("z_total_equal", "z_total_custom"),
-    avg_z_sum = c(avg_z_equal, avg_z_custom),
+    metric = c("z_total_equal_starter", "z_total_custom_starter"),
+    z_replacement = c(z_replacement_equal, z_replacement_custom),
+    z_above_replacement_total = c(z_above_repl_equal, z_above_repl_custom),
     budget_bats = budget_bats,
     numstartingbats = numstartingbats,
-    dollars_per_slot = dollars_per_slot,
     total_budget = total_budget,
     num_teams = num_teams,
     hitter_budget_share = hitter_budget_share,
@@ -1221,7 +1326,11 @@ apply_nfbc_adp_matches <- function(
 
   used_adp_idx <- unique(out$adp_source_index[!is.na(out$adp_source_index)])
   adp_unmatched <- nfbc_adp[setdiff(seq_len(nrow(nfbc_adp)), used_adp_idx), , drop = FALSE]
-  projection_unmatched <- out[!matched_mask, c("player_name", "team", "pa", "hr", "sb", "r", "rbi", "avg", "adp", "adp_match_method"), drop = FALSE]
+  unmatched_cols <- intersect(
+    c("player_name", "team", "pa", "bb", "hr", "sb", "r", "rbi", "avg", "obp", "adp", "adp_match_method"),
+    names(out)
+  )
+  projection_unmatched <- out[!matched_mask, unmatched_cols, drop = FALSE]
   projection_unmatched <- projection_unmatched[order(projection_unmatched$pa, decreasing = TRUE, na.last = TRUE), , drop = FALSE]
   matches <- out[, c("player_name", "team", "position", "adp", "adp_match_method", "adp_override_notes"), drop = FALSE]
 
@@ -1295,32 +1404,64 @@ build_z_scored_aggregate_projection_output_table <- function(
   }
 
   out$pa_proj <- ifelse(!is.na(out$atc_pa), out$atc_pa, out$weighted_pa)
+  out$ab_proj <- out$weighted_ab_per_pa * out$pa_proj
+  out$h_proj <- out$weighted_h_per_pa * out$pa_proj
+  out$x2b_proj <- out$weighted_2b_per_pa * out$pa_proj
+  out$x3b_proj <- out$weighted_3b_per_pa * out$pa_proj
+  out$bb_proj <- out$weighted_bb_per_pa * out$pa_proj
+  out$hbp_proj <- out$weighted_hbp_per_pa * out$pa_proj
   out$hr_proj <- out$weighted_hr_per_pa * out$pa_proj
   out$sb_proj <- out$weighted_sb_per_pa * out$pa_proj
+  out$cs_proj <- out$weighted_cs_per_pa * out$pa_proj
   out$r_proj <- out$weighted_r_per_pa * out$pa_proj
   out$rbi_proj <- out$weighted_rbi_per_pa * out$pa_proj
   out$avg_proj <- out$weighted_avg
+  out$obp_proj <- out$weighted_obp
+
+  score_num <- function(x) ifelse(is.na(x), 0, x)
+  out$ottoneu_fg_pts <- (
+    OTTONEU_FG_HITTING_POINTS[["ab"]] * score_num(out$ab_proj) +
+      OTTONEU_FG_HITTING_POINTS[["h"]] * score_num(out$h_proj) +
+      OTTONEU_FG_HITTING_POINTS[["x2b"]] * score_num(out$x2b_proj) +
+      OTTONEU_FG_HITTING_POINTS[["x3b"]] * score_num(out$x3b_proj) +
+      OTTONEU_FG_HITTING_POINTS[["hr"]] * score_num(out$hr_proj) +
+      OTTONEU_FG_HITTING_POINTS[["bb"]] * score_num(out$bb_proj) +
+      OTTONEU_FG_HITTING_POINTS[["hbp"]] * score_num(out$hbp_proj) +
+      OTTONEU_FG_HITTING_POINTS[["sb"]] * score_num(out$sb_proj) +
+      OTTONEU_FG_HITTING_POINTS[["cs"]] * score_num(out$cs_proj)
+  )
 
   output <- data.frame(
     player_name = out$name,
     team = out$team,
     pa = round(out$pa_proj, 1),
+    ab = round(out$ab_proj, 1),
+    h = round(out$h_proj, 1),
+    `2b` = round(out$x2b_proj, 1),
+    `3b` = round(out$x3b_proj, 1),
+    bb = round(out$bb_proj, 1),
+    hbp = round(out$hbp_proj, 1),
     hr = round(out$hr_proj, 1),
     sb = round(out$sb_proj, 1),
+    cs = round(out$cs_proj, 1),
     r = round(out$r_proj, 1),
     rbi = round(out$rbi_proj, 1),
     avg = round(out$avg_proj, 3),
+    obp = round(out$obp_proj, 3),
+    ottoneu_fg_pts = round(out$ottoneu_fg_pts, 1),
     pa_z = round(out$z_pa_starter, 3),
     hr_z = round(out$z_hr_starter, 3),
     sb_z = round(out$z_sb_starter, 3),
     r_z = round(out$z_r_starter, 3),
     rbi_z = round(out$z_rbi_starter, 3),
     avg_z = round(out$z_avg_starter, 3),
-    z_total_raw = round(out$z_total_equal, 3),
-    z_total_weights = round(out$z_total_custom, 3),
+    obp_z = round(out$z_obp_starter, 3),
+    z_total_raw = round(out$z_total_equal_starter, 3),
+    z_total_weights = round(out$z_total_custom_starter, 3),
     dollars_raw = round(out$dollar_value_raw, 2),
     dollars_weights = round(out$dollar_value_weights, 2),
-    stringsAsFactors = FALSE
+    stringsAsFactors = FALSE,
+    check.names = FALSE
   )
 
   match_result <- apply_nfbc_adp_matches(
@@ -1338,8 +1479,8 @@ build_z_scored_aggregate_projection_output_table <- function(
 
   ordered_cols <- c(
     "player_name", "position", "adp", "adp_match_quality", "name_team_flag", "team",
-    "pa", "hr", "sb", "r", "rbi", "avg",
-    "pa_z", "hr_z", "sb_z", "r_z", "rbi_z", "avg_z",
+    "pa", "ab", "h", "2b", "3b", "bb", "hbp", "hr", "sb", "cs", "r", "rbi", "avg", "obp", "ottoneu_fg_pts",
+    "pa_z", "hr_z", "sb_z", "r_z", "rbi_z", "avg_z", "obp_z",
     "z_total_raw", "z_total_weights",
     "dollars_raw", "dollars_weights", "dollars_adp"
   )
@@ -1422,6 +1563,7 @@ fetch_all_systems <- function(
   weights = DEFAULT_PROJECTION_WEIGHTS,
   pa_floor = 200,
   category_weights = DEFAULT_CATEGORY_WEIGHTS,
+  category_selection = DEFAULT_HITTER_CATEGORIES,
   starter_count = DEFAULT_NFBC_HITTER_STARTER_COUNT,
   starter_rank_metric = "z_total_custom",
   num_teams = DEFAULT_NFBC_TEAMS,
@@ -1440,6 +1582,7 @@ fetch_all_systems <- function(
 ) {
   weights <- validate_projection_weights(weights)
   category_weights <- validate_category_weights(category_weights)
+  category_selection <- validate_hitter_categories_selected(category_selection)
   missing_from_run <- setdiff(systems, names(weights))
   if (length(missing_from_run) > 0) {
     stop(sprintf("No weights configured for selected systems: %s", paste(missing_from_run, collapse = ", ")))
@@ -1473,6 +1616,7 @@ fetch_all_systems <- function(
     weighted_aggregate,
     pa_floor = pa_floor,
     category_weights = category_weights,
+    selected_categories = category_selection,
     starter_count = starter_count,
     starter_rank_metric = starter_rank_metric
   )
@@ -1539,6 +1683,7 @@ fetch_all_systems <- function(
     season = season,
     pa_floor = pa_floor,
     category_weights = category_weights,
+    category_selection = zscore_result$selected_categories,
     starter_count = starter_count,
     starter_rank_metric = starter_rank_metric,
     num_teams = num_teams,

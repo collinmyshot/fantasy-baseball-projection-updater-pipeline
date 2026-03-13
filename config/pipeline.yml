@@ -19,6 +19,9 @@ projection:
     r: 0.6
     rbi: 0.6
     h: 1.0
+    avg: 1.0
+    obp: 1.0
+  categories: [pa, hr, sb, r, rbi, h, avg]
   pa_floor: 200
   starter_rank_metric: z_total_custom
   league:
@@ -95,7 +98,7 @@ pitcher:
       siera: 30
       xfip: 30
       k_minus_bb_pct: 120
-      contact_pct: 150
+      contact_pct: 300
       csw_pct: 200
       ball_pct: 150
       stuff_plus: 100
@@ -120,6 +123,18 @@ google_sheets:
   projection_tab: Projections_Bats
   adp_tab: ADP
   rbll_tab: RBLL Team & Targets
+
+park_factors:
+  component_weights:
+    bacon: 0.45
+    hr: 0.35
+    xbh: 0.20
+  google_sheets:
+    workbook_url: "https://docs.google.com/spreadsheets/d/1RRY94GcEqKMjvL6-pPkJmvPOnNdGyH5lgAUtSujk6Vo/edit?usp=sharing"
+    overall_tab: "Overall PF"
+    first_half_tab: "1H PF"
+    second_half_tab: "2H PF"
+    known_effects_tab: "Known Park Effects"
 
 quality:
   min_rows_per_system: 500

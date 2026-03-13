@@ -7,3 +7,14 @@ app.R
 scripts/deploy_shinyapps.R
 rsconnect/
 .rscignore
+# Large raw Statcast data — too big for git (300+ MB).
+data/raw/statcast_bbe_store.csv
+data/raw/statcast_bbe_store_chunks/
+data/raw/statcast_bbe_chunks_2015_2025/
+# Smoke-test / scratch outputs from park factor builds.
+data/processed/park_factors_smoke/
+data/processed/park_factors_smoke_resid_off/
+# Transient build artifacts.
+data/processed/park_factors/park_factor_build.pid
+data/processed/park_factors/park_factor_build_current.log
+data/processed/park_factors/.~lock.*

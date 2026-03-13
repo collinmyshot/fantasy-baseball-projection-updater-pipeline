@@ -1,6 +1,4 @@
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}
+source(file.path("R", "utils.R"))
 
 is_named_list <- function(x) {
   is.list(x) && !is.null(names(x)) && all(nzchar(names(x)))
@@ -41,7 +39,8 @@ default_pipeline_config <- function() {
     projection = list(
       systems = c("batx", "steamer", "oopsy", "atc"),
       system_weights = list(batx = 3, steamer = 2, oopsy = 3, atc = 1),
-      category_weights = list(pa = 2.3, hr = 1.35, sb = 1.0, r = 0.6, rbi = 0.6, h = 1.0),
+      category_weights = list(pa = 2.3, hr = 1.35, sb = 1.0, r = 0.6, rbi = 0.6, h = 1.0, avg = 1.0, obp = 1.0),
+      categories = c("pa", "hr", "sb", "r", "rbi", "h", "avg"),
       pa_floor = 200,
       starter_rank_metric = "z_total_custom",
       league = list(
@@ -112,7 +111,7 @@ default_pipeline_config <- function() {
           siera = 30,
           xfip = 30,
           k_minus_bb_pct = 120,
-          contact_pct = 150,
+          contact_pct = 300,
           csw_pct = 200,
           ball_pct = 150,
           stuff_plus = 100,
@@ -164,6 +163,11 @@ normalize_pipeline_config <- function(cfg) {
   category_weights <- unlist(cfg$projection$category_weights, recursive = TRUE, use.names = TRUE)
   cfg$projection$category_weights <- as.numeric(category_weights)
   names(cfg$projection$category_weights) <- names(category_weights)
+
+  # Selected categories for z-score computation (e.g., swap "avg" for "obp" for OBP leagues).
+  if (!is.null(cfg$projection$categories)) {
+    cfg$projection$categories <- as.character(unlist(cfg$projection$categories))
+  }
 
   cfg$projection$pa_floor <- ensure_scalar_numeric(cfg$projection$pa_floor, 200)
   cfg$projection$league$num_teams <- ensure_scalar_numeric(cfg$projection$league$num_teams, 15)

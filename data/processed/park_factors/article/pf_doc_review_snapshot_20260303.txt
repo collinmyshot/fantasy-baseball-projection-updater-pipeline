@@ -1,0 +1,514 @@
+﻿Building A Fantasy-Focused Park Factor 
+Ugh, Another Park Factor Model?
+Park factors (PFs) are something we all think about when evaluating hitters and pitchers. Colorado and Cincinnati are feared starts for pitchers, while San Francisco and Seattle can detract value from hitters. But once you move past the obvious spots, PF math can feel opaque and sometimes disconnected from what we, as fantasy players, actually experience week to week. That is exactly why I built this model.
+Baseball Savant sets the standard for public park factors (https://baseballsavant.mlb.com/leaderboard/statcast-park-factors), but the table includes plenty of categories that are either less relevant for most fantasy formats (2B, 3B, xBACON) or less intuitive to use in day-to-day fantasy decisions (OBP, Hard Hit). FanGraphs park factors (https://www.fangraphs.com/tools/guts?type=pf) are also interesting, but are less commonly referenced in fantasy circles, so I focused more on Savant. Both models are trying to capture real-life value, but fantasy managers need something more targeted. From the pitching perspective, we want to know how much a park changes BABIP-type hit risk (WHIP and innings length) and how much it changes home-run blow-up risk. While for streaming hitters, we really want to emphasize parks with a beneficial HR PF.
+So How Does This Model Work?
+My methodology has three main pillars:
+1. Actual minus expected contact outcomes: if a park repeatedly over- or under-performs expected contact quality over a long sample, the park itself is likely a large driver of that behavior.
+2. Weather and the physics of the baseball: this model controls for game-level weather when available (temperature, wind, humidity) and year-level drag effects, so we do not blame the park for what is really atmospheric or ball-level noise.
+3. Team defense: strong defenses can suppress observed BABIP (and weak defenses can inflate it) independent of park geometry, so defense has to be controlled to minimize park estimate bias.
+This model incorporates every batted-ball event (BBE) from the start of the Statcast era in 2015 through the end of the 2025 regular season (2020 excluded because it was such a confounding year, both in real life and from a data perspective. That leaves an astounding 1,634,138 BBEs across 10 seasons!
+One structural choice worth calling out: this build explicitly splits park eras around known moves, temporary homes, and meaningful dimension changes (data/manual/park_era_events.csv; full event log in Appendix A). Public models still account for these effects in aggregate, but they usually do not expose boundary-aware era splits directly in the output table. In practice, that means rolling windows like Savant's 3-year view can blend pre-change and post-change environments in a single park line.
+Nerd stuff alert: The model is hierarchical, with random effects for park-era, park-era-half, batter-season, pitcher-season, batting-team-season, and fielding-team-season. That is the core move that separates park context from roster quality. Invariance checks are reassuringly small: correlation between estimated park effect and home-team offense is -0.022, and correlation with home-team defense is 0.031. TL;DR: once talent and defense are controlled, repeatable venue-era residuals are treated as park signal.
+The primary residual is wOBAcon minus xwOBAcon, with component residuals for BACON and HR (XBH is retained in the display blend). Defense is included at the team-season level using an even blend of OAA, UZR, and DRS (OAA source: https://baseballsavant.mlb.com/leaderboard/outs_above_average; DRS/UZR source: https://www.fangraphs.com/leaders/major-league?stats=fld). I also split environmental effects into 1H (March-June) and 2H (July-September) to capture broad seasonal shifts.
+For 2026 outputs, we also maintain a verified home-park map for all 30 teams in data/manual/mlb_home_parks_2026_verified_sources.csv, using MLB team pages (https://www.mlb.com/team) with secondary checks against current stadium listings.
+How the Scores Are Built (and What RMSE Means)
+RMSE is the quick scorecard for "how wrong are we, on average, in holdout data?" In this case it is the square root of weighted mean squared prediction error for park-half residuals in rolling validation. We train on trailing windows and predict the next season to test forward stability, not just in-sample fit. Weighted holdout RMSE values: model=0.0211, zero-baseline=0.0231, prior-park-baseline=0.0169. Weighted correlation between predicted and realized holdout effects is 0.530 (prior-park baseline 0.557), with calibration slope 0.810. For display, we normalize everything to a 100-centered index where 100 is league-average context. The final Overall PF then combines BACON, HR, and XBH with your chosen fantasy blend (0.45 / 0.35 / 0.20), so the metric reflects both hit volume and damage quality.
+Component
+	Weight
+	bacon_resid
+	0.45
+	hr_resid
+	0.35
+	xbh_resid
+	0.20
+	Rolling holdout RMSE by season
+  
+
+Predicted versus realized holdout park-half residuals
+  
+
+Overall PF index (100 = league average)
+  
+
+2026 Team Results Snapshot
+Rank
+	Team
+	Park
+	Years
+	Overall PF
+	BACON PF
+	HR PF
+	Total BBE
+	1
+	Rockies
+	Coors Field
+	2015-2025
+	130.83
+	138.34
+	107.10
+	59900
+	2
+	Athletics
+	Sutter Health Park
+	2025
+	117.87
+	114.65
+	113.94
+	5527
+	3
+	Reds
+	Great American Ball Park
+	2015-2025
+	115.15
+	111.19
+	116.98
+	53554
+	4
+	Red Sox
+	Fenway Park
+	2015-2025
+	111.62
+	120.27
+	90.83
+	56567
+	5
+	Astros
+	Daikin Park
+	2015-2025
+	107.36
+	105.57
+	107.64
+	54058
+	6
+	Orioles
+	Oriole Park at Camden Yards
+	2025
+	106.90
+	102.11
+	111.46
+	5305
+	7
+	Phillies
+	Citizens Bank Park
+	2015-2025
+	105.42
+	102.80
+	108.89
+	53852
+	8
+	Diamondbacks
+	Chase Field
+	2015-2025
+	105.40
+	109.28
+	93.11
+	56195
+	9
+	Brewers
+	American Family Field
+	2015-2025
+	103.01
+	98.16
+	107.60
+	52079
+	10
+	Dodgers
+	Dodger Stadium
+	2015-2025
+	101.55
+	94.98
+	108.56
+	51940
+	Rank
+	Team
+	Park
+	Years
+	Overall PF
+	BACON PF
+	HR PF
+	Total BBE
+	30
+	Cardinals
+	Busch Stadium
+	2015-2025
+	85.08
+	89.93
+	85.48
+	55617
+	29
+	Mariners
+	T-Mobile Park
+	2015-2025
+	88.55
+	83.70
+	100.52
+	52331
+	28
+	Giants
+	Oracle Park
+	2015-2025
+	88.89
+	97.59
+	80.08
+	53932
+	27
+	Mets
+	Citi Field
+	2015-2025
+	90.11
+	88.22
+	99.07
+	52955
+	26
+	Tigers
+	Comerica Park
+	2015-2025
+	90.20
+	92.20
+	90.56
+	55730
+	25
+	Marlins
+	loanDepot park
+	2015-2025
+	90.73
+	95.53
+	89.33
+	53776
+	24
+	Pirates
+	PNC Park
+	2015-2025
+	91.13
+	93.28
+	89.29
+	55218
+	23
+	Royals
+	Kauffman Stadium
+	2015-2025
+	92.97
+	98.76
+	83.67
+	57401
+	22
+	Padres
+	Petco Park
+	2015-2025
+	93.80
+	94.14
+	96.68
+	52059
+	21
+	Angels
+	Angel Stadium
+	2015-2025
+	95.26
+	92.92
+	103.04
+	54193
+	How It Compares to Savant and FanGraphs
+To sanity-check this against models fantasy players already trust, we validated directly against Savant and FanGraphs park outputs using matched team-level indices. For Savant (https://baseballsavant.mlb.com/leaderboard/statcast-park-factors), our Overall PF versus Savant index_wOBA yields r=0.729 across n=28 parks; BACON alignment is r=0.857; HR alignment is r=0.813. For FanGraphs Guts park factors (https://www.fangraphs.com/tools/guts?type=pf), using Basic (5yr) as the primary comparator as requested, Overall PF alignment is r=0.749 across n=30 parks; HR-to-HR alignment is r=0.813. By rank overlap, our top-10 and bottom-10 overlap with Savant is 6/10 and 5/10, and with FG Basic (5yr) is 5/10 and 5/10. Bottom line: strong directional agreement with both public models, but with a more fantasy-usable component split by design.
+Validation Metric
+	Parks
+	Pearson r
+	savant_overall_vs_index_woba
+	28
+	0.729
+	savant_bacon_vs_index_bacon
+	28
+	0.857
+	savant_hr_vs_index_hr
+	28
+	0.813
+	fg_overall_vs_3yr
+	30
+	0.640
+	fg_overall_vs_basic5yr
+	30
+	0.749
+	fg_hr_vs_hr
+	30
+	0.813
+	Conclusions: What This Means for Streaming
+The core takeaway is that "offense-friendly park" is not one thing. Some parks boost hit conversion more than long-ball damage, while others do the opposite. That matters directly for streaming because pitcher archetypes are not interchangeable: fly-ball arms are more exposed in HR-tilted parks, while contact managers are more exposed in BACON-tilted parks.
+A second takeaway is timing. The 1H/2H split surfaces repeatable seasonal drift that a single full-season park number can hide, which is useful when borderline streaming calls depend on thin margins. Operationally, this model is best used as a context layer alongside skill and opponent quality: it should sharpen close decisions, not override large talent gaps.
+Finally, validation suggests this framework is directionally aligned with Savant and FanGraphs while adding fantasy-specific component clarity. That is the point of the build: keep the signal those models capture, then make the output easier to act on for weekly roster and streaming decisions.
+HR PF minus BACON PF (positive = HR-friendlier than hit-friendlier)
+  
+
+Largest 1H versus 2H movers
+  
+
+Analysis
+	Team
+	Park
+	Difference
+	Abs Difference
+	Years
+	Total BBE
+	HR vs BACON Gap
+	Rockies
+	Coors Field
+	-31.24
+	31.24
+	2015-2025
+	59900
+	HR vs BACON Gap
+	Red Sox
+	Fenway Park
+	-29.44
+	29.44
+	2015-2025
+	56567
+	HR vs BACON Gap
+	Giants
+	Oracle Park
+	-17.51
+	17.51
+	2015-2025
+	53932
+	HR vs BACON Gap
+	Mariners
+	T-Mobile Park
+	16.82
+	16.82
+	2015-2025
+	52331
+	HR vs BACON Gap
+	Diamondbacks
+	Chase Field
+	-16.17
+	16.17
+	2015-2025
+	56195
+	HR vs BACON Gap
+	Yankees
+	Yankee Stadium
+	15.51
+	15.51
+	2015-2025
+	52547
+	HR vs BACON Gap
+	Royals
+	Kauffman Stadium
+	-15.09
+	15.09
+	2015-2025
+	57401
+	HR vs BACON Gap
+	Dodgers
+	Dodger Stadium
+	13.58
+	13.58
+	2015-2025
+	51940
+	HR vs BACON Gap
+	Mets
+	Citi Field
+	10.86
+	10.86
+	2015-2025
+	52955
+	HR vs BACON Gap
+	Angels
+	Angel Stadium
+	10.12
+	10.12
+	2015-2025
+	54193
+	HR vs BACON Gap
+	Twins
+	Target Field
+	-9.46
+	9.46
+	2015-2025
+	55678
+	HR vs BACON Gap
+	Brewers
+	American Family Field
+	9.43
+	9.43
+	2015-2025
+	52079
+	1H vs 2H Overall PF Gap
+	White Sox
+	Rate Field
+	6.22
+	6.22
+	2015-2025
+	55218
+	1H vs 2H Overall PF Gap
+	Phillies
+	Citizens Bank Park
+	4.71
+	4.71
+	2015-2025
+	53852
+	1H vs 2H Overall PF Gap
+	Red Sox
+	Fenway Park
+	4.52
+	4.52
+	2015-2025
+	56567
+	1H vs 2H Overall PF Gap
+	Rangers
+	Globe Life Field
+	4.51
+	4.51
+	2021-2025
+	26426
+	1H vs 2H Overall PF Gap
+	Rays
+	Tropicana Field
+	-3.89
+	3.89
+	2015-2024
+	46546
+	1H vs 2H Overall PF Gap
+	Guardians
+	Progressive Field
+	3.68
+	3.68
+	2015-2025
+	54645
+	1H vs 2H Overall PF Gap
+	Nationals
+	Nationals Park
+	3.60
+	3.60
+	2015-2025
+	56036
+	1H vs 2H Overall PF Gap
+	Rockies
+	Coors Field
+	-2.76
+	2.76
+	2015-2025
+	59900
+	1H vs 2H Overall PF Gap
+	Cardinals
+	Busch Stadium
+	-2.67
+	2.67
+	2015-2025
+	55617
+	1H vs 2H Overall PF Gap
+	Giants
+	Oracle Park
+	-2.59
+	2.59
+	2015-2025
+	53932
+	1H vs 2H Overall PF Gap
+	Padres
+	Petco Park
+	-2.36
+	2.36
+	2015-2025
+	52059
+	1H vs 2H Overall PF Gap
+	Angels
+	Angel Stadium
+	-2.26
+	2.26
+	2015-2025
+	54193
+	What This Model Is (and Is Not)
+Assumptions and exclusions: 2020 is excluded (2020); park-era tagging quality is bounded by public reporting and source logs; weather/drag covariates are included but noisy; 1H/2H is intentionally coarse; and spray-angle interaction terms were not promoted to the production fixed-effect set for stability reasons. The goal is simple and practical: estimate true park run environment independent of team quality, then expose component-specific risk (especially BACON and HR) to make streaming calls more confident.
+Appendix A: Park-Era Event Log
+Full park-era event definitions used to split venue contexts, including move dates, wall-change windows, and primary source URLs.
+Team
+	Event Type
+	Era Suffix
+	Start
+	End
+	Primary Source URL
+	ATL
+	park_move
+	suntrust
+	2017-03-01
+	active
+	https://www.mlb.com/press-release/braves-to-host-yankees-in-exhibition-game-to-open-play-at-suntrust-par-200242862
+	BAL
+	dimension_change
+	wall_deep
+	2022-03-01
+	2024-12-31
+	https://www.espn.com/mlb/story/_/id/33050396/baltimore-orioles-move-back-left-field-wall-camden-yards-say-no-longer-outlier-ballparks
+	BAL
+	dimension_change
+	wall_medium
+	2025-03-01
+	active
+	https://www.mlb.com/orioles/news/orioles-camden-yards-left-field-wall-modifications
+	TOR
+	temporary_home
+	dunedin
+	2021-03-01
+	2021-05-31
+	https://www.mlb.com/press-release/press-release-blue-jays-to-play-first-2-homestands-in-florida
+	TOR
+	temporary_home
+	buffalo
+	2021-06-01
+	2021-07-29
+	https://www.mlb.com/press-release/press-release-blue-jays-to-move-home-location-to-sahlen-field-beginning-june-1
+	TBR
+	temporary_home
+	steinbrenner
+	2025-03-01
+	2025-12-31
+	https://www.mlb.com/press-release/press-release-tampa-bay-rays-to-play-2025-season-at-george-m-steinbrenner-field-in-tampa
+	TBR
+	return_home
+	trop_return
+	2026-03-01
+	active
+	https://www.mlb.com/rays/news/rays-state-desire-to-be-back-at-tropicana-field-for-2026
+	TEX
+	park_move
+	globe_life
+	2021-03-01
+	active
+	https://www.mlb.com/press-release/texas-rangers-announce-2020-schedule
+	ATH
+	temporary_home
+	sutter_health
+	2025-03-01
+	2027-12-31
+	https://www.mlb.com/press-release/press-release-sutter-health-park-in-west-sacramento-to-host-a-s-for-2025-2027-seasons
+	KCR
+	dimension_change
+	walls_in
+	2026-03-01
+	active
+	https://www.mlb.com/press-release/royals-announce-new-dimensions-for-kauffman-stadium
+	Appendix B: Equations and Model Formulae
+Event-level residual definitions:
+* resid_i = wOBAcon_i - xwOBAcon_i
+* bacon_resid_i = hit_on_contact_i - xBA_on_contact_i
+* hr_resid_i = HR_on_contact_i - xHR_on_contact_i
+* xbh_resid_i = XBH_on_contact_i - xXBH_on_contact_i
+Primary mixed-effects model (conceptual fixed+random form):
+* resid ~ half + temp + wind_speed + humidity + drag + defense_composite + (1 | park_era_id) + (1 | park_era_half_id) + (1 | batter_season_id) + (1 | pitcher_season_id) + (1 | fielding_team_season_id) + (1 | batting_team_season_id)
+Component models (same random structure, outcome swapped):
+* bacon_resid ~ same fixed/random structure
+* hr_resid ~ same fixed/random structure
+* xbh_resid ~ same fixed/random structure
+Index scaling and aggregation:
+* PF_component_idx = 100 * (1 + delta_component / baseline_component)
+* Overall_PF_idx = 0.45 * BACON_idx + 0.35 * HR_idx + 0.20 * XBH_idx
+* RMSE = sqrt(weighted_mean((realized - predicted)^2, n_bbe))
+Inline Sources
+* Statcast search endpoint: https://baseballsavant.mlb.com/statcast_search/csv
+* Savant park factors page: https://baseballsavant.mlb.com/leaderboard/statcast-park-factors
+* Savant OAA leaderboard: https://baseballsavant.mlb.com/leaderboard/outs_above_average
+* FanGraphs Guts park factors: https://www.fangraphs.com/tools/guts?type=pf
+* FanGraphs fielding leaders (DRS/UZR): https://www.fangraphs.com/leaders/major-league?stats=fld
+* MLB team pages (home park verification): https://www.mlb.com/team
+* Park era source rows included: 10 (data/manual/park_era_events.csv)
+* 2026 home park verification rows included: 30 (data/manual/mlb_home_parks_2026_verified_sources.csv)
+* Defense source rows included: 3 (data/manual/team_defense_2015_2025_sources.csv)

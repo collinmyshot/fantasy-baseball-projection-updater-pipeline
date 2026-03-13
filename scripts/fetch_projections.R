@@ -255,6 +255,7 @@ result <- fetch_all_systems(
   weights = weights,
   pa_floor = pa_floor,
   category_weights = cfg$projection$category_weights,
+  category_selection = if (!is.null(cfg$projection$categories)) cfg$projection$categories else DEFAULT_HITTER_CATEGORIES,
   starter_count = cfg$projection$starter_count,
   starter_rank_metric = cfg$projection$starter_rank_metric,
   num_teams = num_teams,

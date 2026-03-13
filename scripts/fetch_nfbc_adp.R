@@ -1,30 +1,13 @@
 #!/usr/bin/env Rscript
 
-args_raw <- commandArgs(trailingOnly = TRUE)
-
-config_path <- file.path("config", "pipeline.yml")
-args <- character(0)
-i <- 1
-while (i <= length(args_raw)) {
-  arg <- args_raw[[i]]
-  if (arg == "--config" && i < length(args_raw)) {
-    config_path <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--config=")) {
-    config_path <- sub("^--config=", "", arg)
-    i <- i + 1
-    next
-  }
-  args <- c(args, arg)
-  i <- i + 1
-}
-
 source(file.path("R", "pipeline_config.R"))
 source(file.path("R", "fangraphs_projections.R"))
 
-cfg <- load_pipeline_config(config_path)
+parsed <- parse_cli_args(list(
+  config = list(flag = "--config", default = file.path("config", "pipeline.yml"))
+))
+args <- parsed$positional
+cfg <- load_pipeline_config(parsed$config)
 
 output_path <- if (length(args) >= 1) args[[1]] else cfg$adp$local_tsv
 draft_type <- if (length(args) >= 2) suppressWarnings(as.integer(args[[2]])) else cfg$adp$draft_type

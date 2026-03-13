@@ -1,0 +1,4 @@
+"metric","source","method","seasons","created_utc"
+"oaa","https://baseballsavant.mlb.com/leaderboard/outs_above_average","Summed player-level Statcast OAA to team-season.","2015-2025 (excluding 2020)","2026-03-02T02:56:14Z"
+"drs","https://www.fangraphs.com/leaders/major-league?stats=fld","Summed player-level FanGraphs DRS to team-season.","2015-2025 (excluding 2020)","2026-03-02T02:56:14Z"
+"uzr","https://www.fangraphs.com/leaders/major-league?stats=fld","Summed player-level FanGraphs UZR to team-season.","2015-2025 (excluding 2020)","2026-03-02T02:56:14Z"

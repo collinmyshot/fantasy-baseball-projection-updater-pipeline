@@ -1,0 +1,6 @@
+local_time=2026-03-02 08:43 PST
+pid=480
+run_state=stopped
+stage=completed
+last_validation=Validation fold complete: target=2025 rmse_model=0.018816 rmse_prev=0.018165 corr=0.4546 slope=0.8905
+last_line=Output directory: data/processed/park_factors

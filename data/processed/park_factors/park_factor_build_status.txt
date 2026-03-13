@@ -1,0 +1,7 @@
+started_local=2026-03-02 07:18 PST
+run_pid=480
+logger_pid=481
+run_log=data/processed/park_factors/run_logs/park_factor_build_20260302_071855.log
+logger_log=data/processed/park_factors/run_logs/park_factor_checkpoint_logger_20260302_071855.log
+pid_file=data/processed/park_factors/park_factor_build.pid
+run_exit_code=0

@@ -1,39 +1,16 @@
 #!/usr/bin/env Rscript
 
-args_raw <- commandArgs(trailingOnly = TRUE)
-
-config_path <- file.path("config", "pipeline.yml")
-skip_adp_download <- FALSE
-skip_sheets <- FALSE
-
-i <- 1
-while (i <= length(args_raw)) {
-  arg <- args_raw[[i]]
-  if (arg == "--config" && i < length(args_raw)) {
-    config_path <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--config=")) {
-    config_path <- sub("^--config=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--skip-adp-download") {
-    skip_adp_download <- TRUE
-    i <- i + 1
-    next
-  }
-  if (arg == "--skip-sheets") {
-    skip_sheets <- TRUE
-    i <- i + 1
-    next
-  }
-  stop(sprintf("Unknown argument: %s", arg))
-}
-
 source(file.path("R", "pipeline_config.R"))
+
+parsed <- parse_cli_args(list(
+  config = list(flag = "--config", default = file.path("config", "pipeline.yml")),
+  skip_adp_download = list(flag = "--skip-adp-download", type = "boolean", default = FALSE),
+  skip_sheets = list(flag = "--skip-sheets", type = "boolean", default = FALSE)
+), allow_positional = FALSE)
+config_path <- parsed$config
 cfg <- load_pipeline_config(config_path)
+skip_adp_download <- parsed$skip_adp_download
+skip_sheets <- parsed$skip_sheets
 
 message("Pipeline scope: Google Sheets refresh only (no shinyapps deployment).")
 

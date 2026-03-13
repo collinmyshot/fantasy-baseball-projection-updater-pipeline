@@ -1,0 +1,301 @@
+---
+title: "Building Fantasy-Forward Park Factors from Statcast Batted-Ball Residuals"
+author: "C. Kaufman + Codex"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: false
+    theme: cosmo
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 6, dpi = 140)
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(readr)
+  library(ggplot2)
+  library(knitr)
+})
+
+root <- normalizePath(file.path(getwd(), "data", "processed", "park_factors"), mustWork = TRUE)
+
+overall <- read_csv(file.path(root, "park_factors_savant_style_clean_2026.csv"), show_col_types = FALSE)
+h1 <- read_csv(file.path(root, "park_factors_savant_style_clean_2026_1H.csv"), show_col_types = FALSE)
+h2 <- read_csv(file.path(root, "park_factors_savant_style_clean_2026_2H.csv"), show_col_types = FALSE)
+known <- read_csv(file.path(root, "park_factor_known_effects_2026.csv"), show_col_types = FALSE)
+val_sum <- read_csv(file.path(root, "validation_summary.csv"), show_col_types = FALSE)
+val_det <- read_csv(file.path(root, "validation_detail.csv"), show_col_types = FALSE)
+weights <- read_csv(file.path(root, "park_factors_savant_style_weights.csv"), show_col_types = FALSE)
+invariance <- read_csv(file.path(root, "invariance_checks.csv"), show_col_types = FALSE)
+meta <- read_csv(file.path(root, "run_metadata.csv"), show_col_types = FALSE)
+
+weighted_mean <- function(x, w) {
+  ok <- is.finite(x) & is.finite(w)
+  if (!any(ok)) return(NA_real_)
+  sum(x[ok] * w[ok]) / sum(w[ok])
+}
+
+rows_modeled <- as.numeric(meta$value[meta$key == "rows_modeled"]) %>% as.integer()
+seasons_modeled <- meta$value[meta$key == "seasons_modeled"]
+exclude_2020 <- meta$value[meta$key == "exclude_seasons"]
+mean_rmse_model <- weighted_mean(val_sum$rmse_model, val_sum$n_park_half)
+mean_rmse_zero <- weighted_mean(val_sum$rmse_zero, val_sum$n_park_half)
+mean_rmse_prev <- weighted_mean(val_sum$rmse_prev, val_sum$n_park_half)
+mean_corr <- weighted_mean(val_sum$corr_model_vs_realized, val_sum$n_park_half)
+mean_corr_prev <- weighted_mean(val_sum$corr_prev_vs_realized, val_sum$n_park_half)
+mean_slope <- weighted_mean(val_sum$calibration_slope, val_sum$n_park_half)
+
+def_corr <- invariance$value[invariance$metric == "corr_park_effect_vs_home_team_defense"]
+off_corr <- invariance$value[invariance$metric == "corr_park_effect_vs_home_team_xwoba_con"]
+
+w_tbl <- weights %>% mutate(weight = round(weight, 2))
+
+overall_tbl <- overall %>%
+  mutate(`Total BBE` = as.integer(round(`Total BBE`, 0))) %>%
+  arrange(desc(`Overall Park Factor`))
+
+h_split <- h1 %>%
+  select(Team, Park, `Overall Park Factor`) %>%
+  rename(`1H Overall PF` = `Overall Park Factor`) %>%
+  inner_join(
+    h2 %>% select(Team, Park, `Overall Park Factor`) %>% rename(`2H Overall PF` = `Overall Park Factor`),
+    by = c("Team", "Park")
+  ) %>%
+  mutate(`2H-1H` = `2H Overall PF` - `1H Overall PF`) %>%
+  arrange(desc(abs(`2H-1H`)))
+
+fit_vs_realized <- val_det %>%
+  mutate(season = as.factor(season))
+```
+
+## Why Build a New Park Factor?
+
+For fantasy pitcher streaming, the main park-risk pathways are not identical to public one-number park factors. The specific risks we care about are:
+
+- Hit environment (BACON / contact-hit environment)
+- HR environment
+- Overall run-scoring environment
+
+This build uses event-level Statcast batted-ball data and explicitly removes team quality effects (batter, pitcher, batting team, fielding team, and fielding quality) so we isolate park signal.
+
+## Data Scope
+
+- Statcast BBE seasons modeled: `r seasons_modeled`
+- Excluded season: `r exclude_2020`
+- Total BBE rows modeled: `r format(rows_modeled, big.mark = ',')`
+- Park-era handling: explicit team/venue era map (`park_era_events.csv`) to account for moves and wall changes
+- 2026 output filter: only parks expected to be active in 2026
+
+## Model Design
+
+### Core Residual Target
+
+Primary target at the event level:
+
+\[
+\text{resid} = \text{wOBAcon} - \text{xwOBAcon}
+\]
+
+Core component residuals:
+
+- `bacon_resid = hit_on_contact - xBA_on_contact`
+- `hr_resid = HR_on_contact - xHR_on_contact`
+- `xbh_resid = XBH_on_contact - xXBH_on_contact`
+
+Where xBA is taken from `estimated_ba_using_speedangle` when available, with contact-shape smoothing fallback by EV/LA/stand bins.
+
+### Hierarchical Structure
+
+Random intercepts:
+
+- `park_era_id`
+- `park_era_half_id`
+- `batter_season_id`
+- `pitcher_season_id`
+- `fielding_team_season_id`
+- `batting_team_season_id`
+
+Fixed effects include:
+
+- `half` (1H: Mar-Jun, 2H: Jul-Sep)
+- weather/drag features when available
+- defense composite (z-scored OAA, DRS, UZR mix; falls back to DRS+UZR when OAA missing)
+
+Measurement-era term (Trackman vs Hawk-Eye) was tested and left OFF in the final run because it did not improve holdout performance in this dataset.
+
+## Chosen Fantasy Weights
+
+Final displayed index uses your chosen blend:
+
+```{r weights-table}
+kable(w_tbl, align = "lc", caption = "User-selected component weights for Overall Park Factor index")
+```
+
+## Validation
+
+Validation is rolling out-of-sample by season (train previous 3 years, test next season). Holdout unit is park-half.
+
+### Headline Validation Numbers
+
+- Weighted mean RMSE (model): `r sprintf('%.4f', mean_rmse_model)`
+- Weighted mean RMSE (zero baseline): `r sprintf('%.4f', mean_rmse_zero)`
+- Weighted mean RMSE (previous-years park baseline): `r sprintf('%.4f', mean_rmse_prev)`
+- Weighted mean correlation (predicted vs realized): `r sprintf('%.3f', mean_corr)`
+- Baseline correlation (previous-years park mean): `r sprintf('%.3f', mean_corr_prev)`
+- Weighted mean calibration slope: `r sprintf('%.3f', mean_slope)`
+
+```{r validation-rmse-plot}
+val_long <- bind_rows(
+  val_sum %>% transmute(season, model = "Current model", rmse = rmse_model),
+  val_sum %>% transmute(season, model = "Zero baseline", rmse = rmse_zero),
+  val_sum %>% transmute(season, model = "Previous park mean", rmse = rmse_prev)
+)
+
+ggplot(val_long, aes(x = season, y = rmse, color = model)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("Current model" = "#1b9e77", "Zero baseline" = "#d95f02", "Previous park mean" = "#7570b3")) +
+  labs(
+    title = "Rolling Holdout RMSE by Season",
+    x = "Holdout season",
+    y = "RMSE",
+    color = ""
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+```{r validation-scatter}
+set.seed(42)
+plot_dat <- fit_vs_realized
+if (nrow(plot_dat) > 3000) {
+  plot_dat <- plot_dat %>% sample_n(3000)
+}
+
+ggplot(plot_dat, aes(x = pred_effect, y = realized)) +
+  geom_point(alpha = 0.35, size = 1.2, color = "#2c7fb8") +
+  geom_smooth(method = "lm", se = FALSE, color = "#d95f02", linewidth = 1) +
+  geom_abline(slope = 1, intercept = 0, linetype = 2, color = "#666666") +
+  labs(
+    title = "Holdout Park-Half Fit: Predicted vs Realized Residual",
+    x = "Predicted park-half residual",
+    y = "Realized park-half residual"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+## Stability and Invariance Checks
+
+Goal: park factors should be agnostic to roster quality.
+
+- Corr(park effect, home-team xwOBAcon): `r sprintf('%.3f', off_corr)`
+- Corr(park effect, home-team defense composite): `r sprintf('%.3f', def_corr)`
+
+Both are near zero, consistent with successful decontamination of team quality.
+
+## 2026 Overall Park Factor Snapshot
+
+```{r overall-top-bottom-table}
+show_top <- overall_tbl %>% slice_head(n = 10)
+show_bottom <- overall_tbl %>% arrange(`Overall Park Factor`) %>% slice_head(n = 10)
+
+kable(show_top, caption = "Top 10 hitter-friendly parks (2026 usable parks)")
+kable(show_bottom, caption = "Top 10 pitcher-friendly parks (2026 usable parks)")
+```
+
+```{r overall-bar-plot}
+plot_overall <- overall_tbl %>%
+  mutate(ParkLabel = paste0(Team, " - ", Park)) %>%
+  arrange(`Overall Park Factor`) %>%
+  mutate(ParkLabel = factor(ParkLabel, levels = ParkLabel))
+
+ggplot(plot_overall, aes(x = ParkLabel, y = `Overall Park Factor`, fill = `Overall Park Factor` >= 100)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c("TRUE" = "#d7301f", "FALSE" = "#2b8cbe"), guide = "none") +
+  geom_hline(yintercept = 100, linetype = 2, color = "#444444") +
+  labs(
+    title = "Overall Park Factor Index (100 = league average)",
+    x = "",
+    y = "Overall PF Index"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+## Known Park Effects (Useful for Streaming)
+
+```{r hr-bacon-gap-plot}
+hb <- known %>% filter(Analysis == "HR vs BACON Gap")
+
+if (nrow(hb) > 0) {
+  ggplot(hb, aes(x = reorder(paste(Team, Park, sep = " - "), Difference), y = Difference, fill = Difference > 0)) +
+    geom_col() +
+    coord_flip() +
+    scale_fill_manual(values = c("TRUE" = "#d7301f", "FALSE" = "#2b8cbe"), guide = "none") +
+    geom_hline(yintercept = 0, linetype = 2, color = "#444444") +
+    labs(
+      title = "HR PF minus BACON PF (positive = more HR-friendly than hit-friendly)",
+      x = "",
+      y = "PF difference"
+    ) +
+    theme_minimal(base_size = 11)
+}
+```
+
+```{r half-split-plot}
+plot_half <- h_split %>% slice_head(n = 15) %>%
+  mutate(label = paste(Team, Park, sep = " - "))
+
+ggplot(plot_half, aes(x = reorder(label, `2H-1H`), y = `2H-1H`, fill = `2H-1H` > 0)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c("TRUE" = "#d7301f", "FALSE" = "#2b8cbe"), guide = "none") +
+  geom_hline(yintercept = 0, linetype = 2, color = "#444444") +
+  labs(
+    title = "Largest 1H vs 2H Overall PF Movers",
+    subtitle = "Positive means park plays more hitter-friendly in 2H",
+    x = "",
+    y = "2H minus 1H PF"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+## Comparison to Public Park Factor Frameworks
+
+This model is intentionally different from common public park-factor outputs:
+
+- **Statcast Park Factors (Savant)**: excellent event-quality framework, but published outputs are not directly defense-decontaminated with explicit team-defense controls in this format.
+- **FanGraphs Park Factors**: stable and widely used, but generally oriented to run/stat outcomes at aggregate level rather than BBE-level residual decomposition with explicit defense filtering.
+- **This model**: event-level residual architecture with mixed-effects controls for batter/pitcher/team quality and explicit defensive composite adjustment.
+
+Important caveat: a strict apples-to-apples out-of-sample RMSE race versus Savant/FanGraphs is not currently published in a directly comparable target/unit format (park-half residual prediction). In this build, we benchmarked against strong internal baselines (zero effect and trailing park mean) and validated invariance against team quality.
+
+## Assumptions and Limits
+
+- Excludes 2020 entirely.
+- Park-era correctness depends on `park_era_events.csv`; errors there propagate.
+- Weather/drag terms are included when present but are noisy.
+- 1H/2H split captures broad seasonal effects, not game-level weather micro-effects.
+- New park eras (or one-year samples) remain higher variance despite hierarchical shrinkage.
+
+## Practical Usage for Streaming
+
+Use `Overall Park Factor` as the default environment flag, then adjust for pitcher profile:
+
+- Fly-ball/HR-risk SP: weight `HR Park Factor` more heavily.
+- Contact-management/GB SP: weight `BACON Park Factor` more heavily.
+- Parks with large HR-BACON divergence should drive matchup-specific overrides.
+
+## Sources
+
+- Baseball Savant Statcast Search CSV endpoint: <https://baseballsavant.mlb.com/statcast_search/csv>
+- Baseball Savant OAA leaderboard: <https://baseballsavant.mlb.com/leaderboard/outs_above_average>
+- Baseball Savant park factors page: <https://baseballsavant.mlb.com/leaderboard/statcast-park-factors>
+- FanGraphs fielding leaders (DRS, UZR): <https://www.fangraphs.com/leaders/major-league?stats=fld>
+- MLB team pages for 2026 venue verification: <https://www.mlb.com/team>
+- Team/park-era and defense source logs used in build:
+  - `data/manual/mlb_home_parks_2026_verified_sources.csv`
+  - `data/manual/team_defense_2015_2025_sources.csv`
+

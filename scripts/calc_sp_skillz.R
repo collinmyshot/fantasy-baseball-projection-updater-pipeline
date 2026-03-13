@@ -1,239 +1,54 @@
 #!/usr/bin/env Rscript
+source(file.path("R", "utils.R"))
 
-args_raw <- commandArgs(trailingOnly = TRUE)
+# All args are strings here; specialized parsing (parse_weights, etc.) happens after config load.
+parsed <- parse_cli_args(list(
+  config                   = list(flag = "--config",                   default = file.path("config", "pipeline.yml")),
+  season_arg               = list(flag = "--season",                   default = ""),
+  source_url_arg           = list(flag = "--source-url",               default = ""),
+  input_csv_arg            = list(flag = "--input-csv",                default = ""),
+  num_teams_arg            = list(flag = "--num-teams",                default = ""),
+  sp_depth_arg             = list(flag = "--sp-depth",                 default = ""),
+  start_share_min_arg      = list(flag = "--start-share-min",          default = ""),
+  use_ip_paradigms_arg     = list(flag = "--use-ip-paradigms",         default = ""),
+  low_ip_max_start_ip_arg  = list(flag = "--low-ip-max-start-ip",     default = ""),
+  high_ip_min_start_ip_arg = list(flag = "--high-ip-min-start-ip",    default = ""),
+  gs_fallback_threshold_arg = list(flag = "--gs-fallback-threshold",   default = ""),
+  weights_arg              = list(flag = "--weights",                  default = ""),
+  low_ip_weights_arg       = list(flag = "--low-ip-weights",           default = ""),
+  high_ip_weights_arg      = list(flag = "--high-ip-weights",          default = ""),
+  stabilization_points_arg = list(flag = "--stabilization-points",     default = ""),
+  reliability_method_arg   = list(flag = "--reliability-method",       default = ""),
+  eno_sheet_url_arg        = list(flag = "--eno-sheet-url",            default = ""),
+  eno_sheet_tab_arg        = list(flag = "--eno-sheet-tab",            default = ""),
+  include_eno_stuff_arg    = list(flag = "--include-eno-stuff",        default = "")
+))
 
-config_path <- file.path("config", "pipeline.yml")
-season_arg <- ""
-source_url_arg <- ""
-input_csv_arg <- ""
-num_teams_arg <- ""
-sp_depth_arg <- ""
-start_share_min_arg <- ""
-use_ip_paradigms_arg <- ""
-low_ip_max_start_ip_arg <- ""
-high_ip_min_start_ip_arg <- ""
-gs_fallback_threshold_arg <- ""
-weights_arg <- ""
-low_ip_weights_arg <- ""
-high_ip_weights_arg <- ""
-stabilization_points_arg <- ""
-reliability_method_arg <- ""
-eno_sheet_url_arg <- ""
-eno_sheet_tab_arg <- ""
-include_eno_stuff_arg <- ""
-
-i <- 1
-while (i <= length(args_raw)) {
-  arg <- args_raw[[i]]
-  if (arg == "--config" && i < length(args_raw)) {
-    config_path <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--config=")) {
-    config_path <- sub("^--config=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--season" && i < length(args_raw)) {
-    season_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--season=")) {
-    season_arg <- sub("^--season=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--source-url" && i < length(args_raw)) {
-    source_url_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--source-url=")) {
-    source_url_arg <- sub("^--source-url=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--input-csv" && i < length(args_raw)) {
-    input_csv_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--input-csv=")) {
-    input_csv_arg <- sub("^--input-csv=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--num-teams" && i < length(args_raw)) {
-    num_teams_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--num-teams=")) {
-    num_teams_arg <- sub("^--num-teams=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--sp-depth" && i < length(args_raw)) {
-    sp_depth_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--sp-depth=")) {
-    sp_depth_arg <- sub("^--sp-depth=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--start-share-min" && i < length(args_raw)) {
-    start_share_min_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--start-share-min=")) {
-    start_share_min_arg <- sub("^--start-share-min=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--use-ip-paradigms" && i < length(args_raw)) {
-    use_ip_paradigms_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--use-ip-paradigms=")) {
-    use_ip_paradigms_arg <- sub("^--use-ip-paradigms=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--low-ip-max-start-ip" && i < length(args_raw)) {
-    low_ip_max_start_ip_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--low-ip-max-start-ip=")) {
-    low_ip_max_start_ip_arg <- sub("^--low-ip-max-start-ip=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--high-ip-min-start-ip" && i < length(args_raw)) {
-    high_ip_min_start_ip_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--high-ip-min-start-ip=")) {
-    high_ip_min_start_ip_arg <- sub("^--high-ip-min-start-ip=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--gs-fallback-threshold" && i < length(args_raw)) {
-    gs_fallback_threshold_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--gs-fallback-threshold=")) {
-    gs_fallback_threshold_arg <- sub("^--gs-fallback-threshold=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--weights" && i < length(args_raw)) {
-    weights_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--weights=")) {
-    weights_arg <- sub("^--weights=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--low-ip-weights" && i < length(args_raw)) {
-    low_ip_weights_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--low-ip-weights=")) {
-    low_ip_weights_arg <- sub("^--low-ip-weights=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--high-ip-weights" && i < length(args_raw)) {
-    high_ip_weights_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--high-ip-weights=")) {
-    high_ip_weights_arg <- sub("^--high-ip-weights=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--stabilization-points" && i < length(args_raw)) {
-    stabilization_points_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--stabilization-points=")) {
-    stabilization_points_arg <- sub("^--stabilization-points=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--reliability-method" && i < length(args_raw)) {
-    reliability_method_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--reliability-method=")) {
-    reliability_method_arg <- sub("^--reliability-method=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--eno-sheet-url" && i < length(args_raw)) {
-    eno_sheet_url_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--eno-sheet-url=")) {
-    eno_sheet_url_arg <- sub("^--eno-sheet-url=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--eno-sheet-tab" && i < length(args_raw)) {
-    eno_sheet_tab_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--eno-sheet-tab=")) {
-    eno_sheet_tab_arg <- sub("^--eno-sheet-tab=", "", arg)
-    i <- i + 1
-    next
-  }
-  if (arg == "--include-eno-stuff" && i < length(args_raw)) {
-    include_eno_stuff_arg <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--include-eno-stuff=")) {
-    include_eno_stuff_arg <- sub("^--include-eno-stuff=", "", arg)
-    i <- i + 1
-    next
-  }
-  stop(sprintf("Unknown argument: %s", arg))
-}
+config_path              <- parsed$config
+season_arg               <- parsed$season_arg
+source_url_arg           <- parsed$source_url_arg
+input_csv_arg            <- parsed$input_csv_arg
+num_teams_arg            <- parsed$num_teams_arg
+sp_depth_arg             <- parsed$sp_depth_arg
+start_share_min_arg      <- parsed$start_share_min_arg
+use_ip_paradigms_arg     <- parsed$use_ip_paradigms_arg
+low_ip_max_start_ip_arg  <- parsed$low_ip_max_start_ip_arg
+high_ip_min_start_ip_arg <- parsed$high_ip_min_start_ip_arg
+gs_fallback_threshold_arg <- parsed$gs_fallback_threshold_arg
+weights_arg              <- parsed$weights_arg
+low_ip_weights_arg       <- parsed$low_ip_weights_arg
+high_ip_weights_arg      <- parsed$high_ip_weights_arg
+stabilization_points_arg <- parsed$stabilization_points_arg
+reliability_method_arg   <- parsed$reliability_method_arg
+eno_sheet_url_arg        <- parsed$eno_sheet_url_arg
+eno_sheet_tab_arg        <- parsed$eno_sheet_tab_arg
+include_eno_stuff_arg    <- parsed$include_eno_stuff_arg
 
 source(file.path("R", "pipeline_config.R"))
 source(file.path("R", "sp_skillz.R"))
 
 cfg <- load_pipeline_config(config_path)
 sp_cfg <- cfg$pitcher$sp_skillz
-
-parse_num <- function(x, fallback) {
-  if (!nzchar(x)) {
-    return(fallback)
-  }
-  val <- suppressWarnings(as.numeric(trimws(x)))
-  if (length(val) != 1 || is.na(val)) {
-    stop(sprintf("Invalid numeric value: %s", x))
-  }
-  val
-}
 
 parse_int <- function(x, fallback) {
   as.integer(round(parse_num(x, fallback)))

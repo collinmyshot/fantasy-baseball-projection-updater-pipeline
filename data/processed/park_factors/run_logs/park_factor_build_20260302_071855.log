@@ -1,0 +1,46 @@
+Reading BBE input: data/raw/statcast_bbe_store.csv
+Warning message:
+No schedule venue data available; falling back to team-based park IDs. This can conflate same-team multi-park seasons/eras. 
+Loaded defense composite for 300 team-seasons.
+Modeling rows: 1634138
+Seasons in model data: 2015, 2016, 2017, 2018, 2019, 2021, 2022, 2023, 2024, 2025
+Skipping measurement-era ON/OFF comparison because --measurement-era=off.
+Using measurement-era term: FALSE
+Starting main rolling validation with selected model...
+Validation fold: target=2018 train=2015-2017 rows(train=502484, hold=165435) include_measurement_era=FALSE
+boundary (singular) fit: see help('isSingular')
+Validation fold complete: target=2018 rmse_model=0.023029 rmse_prev=0.016037 corr=0.5816 slope=0.8538
+Validation fold: target=2019 train=2016-2018 rows(train=514683, hold=171089) include_measurement_era=FALSE
+boundary (singular) fit: see help('isSingular')
+Validation fold complete: target=2019 rmse_model=0.030830 rmse_prev=0.014746 corr=0.5553 slope=0.8417
+Validation fold: target=2021 train=2017-2019 rows(train=517460, hold=149428) include_measurement_era=FALSE
+boundary (singular) fit: see help('isSingular')
+Validation fold complete: target=2021 rmse_model=0.022051 rmse_prev=0.020807 corr=0.5551 slope=0.9599
+Validation fold: target=2022 train=2018-2021 rows(train=485952, hold=160176) include_measurement_era=FALSE
+Validation fold complete: target=2022 rmse_model=0.016920 rmse_prev=0.019142 corr=0.5692 slope=0.7927
+Validation fold: target=2023 train=2019-2022 rows(train=480693, hold=168030) include_measurement_era=FALSE
+Validation fold complete: target=2023 rmse_model=0.020674 rmse_prev=0.013982 corr=0.5360 slope=0.7554
+Validation fold: target=2024 train=2021-2023 rows(train=477634, hold=153571) include_measurement_era=FALSE
+Validation fold complete: target=2024 rmse_model=0.015421 rmse_prev=0.015622 corr=0.4573 slope=0.5730
+Validation fold: target=2025 train=2022-2024 rows(train=481777, hold=163925) include_measurement_era=FALSE
+Validation fold complete: target=2025 rmse_model=0.018816 rmse_prev=0.018165 corr=0.4546 slope=0.8905
+Main rolling validation complete.
+Fitting final park-factor model on full dataset...
+Fitting model with formula: resid ~ half + defense_composite + (1 | park_era_id) + (1 | park_era_half_id) +     (1 | batter_season_id) + (1 | pitcher_season_id) + (1 | fielding_team_season_id) +     (1 | batting_team_season_id)
+Rows: 1634138
+Final park-factor model fit complete.
+Extracting half/overall park-factor tables...
+Fitting BACON residual component model...
+BACON residual component model fit complete (outcome=bacon_resid).
+Fitting HR residual component model...
+HR residual component model fit complete (outcome=hr_resid).
+Fitting XBH residual component model...
+XBH residual component model fit complete (outcome=xbh_resid).
+Fitting 2B residual component model...
+2B residual component model fit complete (outcome=double_resid).
+Fitting 3B residual component model...
+3B residual component model fit complete (outcome=triple_resid).
+Building Savant-style display table...
+Built Savant-style park factor table: data/processed/park_factors/park_factors_savant_style.csv
+Park factor build complete.
+Output directory: data/processed/park_factors

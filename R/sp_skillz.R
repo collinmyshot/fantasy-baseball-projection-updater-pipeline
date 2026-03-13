@@ -1,8 +1,4 @@
-if (!exists("%||%")) {
-  `%||%` <- function(x, y) {
-    if (is.null(x)) y else x
-  }
-}
+if (!exists("%||%")) source(file.path("R", "utils.R"))
 
 SP_SKILLZ_METRICS <- c(
   "tbf",
@@ -68,7 +64,7 @@ DEFAULT_SP_SKILLZ_STABILIZATION_POINTS <- c(
   siera = 30,
   xfip = 30,
   k_minus_bb_pct = 120,
-  contact_pct = 150,
+  contact_pct = 300,
   csw_pct = 200,
   ball_pct = 150,
   stuff_plus = 100,

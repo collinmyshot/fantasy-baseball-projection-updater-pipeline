@@ -1,30 +1,13 @@
 #!/usr/bin/env Rscript
 
-args_raw <- commandArgs(trailingOnly = TRUE)
-
-config_path <- file.path("config", "pipeline.yml")
-args <- character(0)
-i <- 1
-while (i <= length(args_raw)) {
-  arg <- args_raw[[i]]
-  if (arg == "--config" && i < length(args_raw)) {
-    config_path <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--config=")) {
-    config_path <- sub("^--config=", "", arg)
-    i <- i + 1
-    next
-  }
-  args <- c(args, arg)
-  i <- i + 1
-}
-
 source(file.path("R", "pipeline_config.R"))
 source(file.path("R", "gsheets_auth.R"))
 
-cfg <- load_pipeline_config(config_path)
+parsed <- parse_cli_args(list(
+  config = list(flag = "--config", default = file.path("config", "pipeline.yml"))
+))
+args <- parsed$positional
+cfg <- load_pipeline_config(parsed$config)
 
 sheet_url <- if (length(args) >= 1) args[[1]] else cfg$google_sheets$workbook_url
 run_data_tab <- if (length(args) >= 2) args[[2]] else cfg$google_sheets$run_data_tab
@@ -36,13 +19,6 @@ if (!nzchar(sheet_url)) {
 
 if (!requireNamespace("googlesheets4", quietly = TRUE)) {
   stop("Package 'googlesheets4' is required.")
-}
-
-safe_read_csv <- function(path) {
-  if (!nzchar(path) || !file.exists(path)) {
-    return(NULL)
-  }
-  tryCatch(utils::read.csv(path, stringsAsFactors = FALSE, check.names = FALSE), error = function(e) NULL)
 }
 
 parse_weight_pairs <- function(pair_text) {

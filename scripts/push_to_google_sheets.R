@@ -1,29 +1,13 @@
 #!/usr/bin/env Rscript
 
-args_raw <- commandArgs(trailingOnly = TRUE)
-
-config_path <- file.path("config", "pipeline.yml")
-args <- character(0)
-i <- 1
-while (i <= length(args_raw)) {
-  arg <- args_raw[[i]]
-  if (arg == "--config" && i < length(args_raw)) {
-    config_path <- args_raw[[i + 1]]
-    i <- i + 2
-    next
-  }
-  if (startsWith(arg, "--config=")) {
-    config_path <- sub("^--config=", "", arg)
-    i <- i + 1
-    next
-  }
-  args <- c(args, arg)
-  i <- i + 1
-}
-
 source(file.path("R", "pipeline_config.R"))
 source(file.path("R", "gsheets_auth.R"))
-cfg <- load_pipeline_config(config_path)
+
+parsed <- parse_cli_args(list(
+  config = list(flag = "--config", default = file.path("config", "pipeline.yml"))
+))
+args <- parsed$positional
+cfg <- load_pipeline_config(parsed$config)
 
 sheet_url <- if (length(args) >= 1) args[[1]] else cfg$google_sheets$workbook_url
 csv_path <- if (length(args) >= 2) args[[2]] else file.path(cfg$paths$processed_dir, sprintf("%s_hitters_z_scored_aggregate_projection_output.csv", cfg$season))
@@ -39,25 +23,6 @@ if (!file.exists(csv_path)) {
 
 if (!requireNamespace("googlesheets4", quietly = TRUE)) {
   stop("Package 'googlesheets4' is required.")
-}
-
-normalize_df_for_compare <- function(df) {
-  out <- as.data.frame(df, stringsAsFactors = FALSE)
-  for (nm in names(out)) {
-    if (is.numeric(out[[nm]])) {
-      out[[nm]] <- ifelse(is.na(out[[nm]]), NA, round(out[[nm]], 6))
-    } else {
-      out[[nm]] <- trimws(as.character(out[[nm]]))
-      out[[nm]][out[[nm]] == ""] <- NA
-    }
-  }
-  out
-}
-
-frames_equal <- function(a, b) {
-  if (!identical(names(a), names(b))) return(FALSE)
-  if (nrow(a) != nrow(b)) return(FALSE)
-  identical(normalize_df_for_compare(a), normalize_df_for_compare(b))
 }
 
 message("Reading local CSV...")

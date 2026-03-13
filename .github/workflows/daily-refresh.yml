@@ -3,22 +3,11 @@ name: Daily Google Sheets Refresh (No Shiny)
 on:
   workflow_dispatch:
   schedule:
-    # Standard Time months (PT = UTC-8): Jan, Feb, Dec.
-    - cron: '0 11 * 1,2,12 *'
-    # Daylight Time months (PT = UTC-7): Apr-Oct.
-    - cron: '0 10 * 4-10 *'
-    # March transition handling:
-    # Mar 1-7 is always standard time, Mar 15-31 is always daylight time,
-    # and Mar 8-14 can contain the DST flip depending on year.
-    - cron: '0 11 1-7 3 *'
-    - cron: '0 10 15-31 3 *'
-    - cron: '0 10 8-14 3 *'
-    - cron: '0 11 8-14 3 *'
-    # November transition handling:
-    # Nov 8-30 is always standard time, and Nov 1-7 can contain the DST flip.
-    - cron: '0 10 1-7 11 *'
-    - cron: '0 11 1-7 11 *'
-    - cron: '0 11 8-30 11 *'
+    # Run once daily at 11:00 UTC (3 AM PST / 4 AM PDT).
+    # Active Dec 24 – Apr 15 (Christmas Eve through Opening Day window).
+    - cron: '0 11 24-31 12 *'   # Dec 24-31
+    - cron: '0 11 * 1,2,3 *'    # Jan, Feb, Mar (all days)
+    - cron: '0 11 1-15 4 *'     # Apr 1-15 (covers any Opening Day date)
 
 permissions:
   contents: write
@@ -35,33 +24,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Scope guard (Sheets only)
-        run: |
-          echo "This workflow updates Google Sheets only."
-          echo "It does not deploy or update shinyapps.io."
-
-      - name: Gate schedule to 3 AM Pacific hour
-        id: gate
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "run_pipeline=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          PT_HOUR=$(TZ=America/Los_Angeles date +%H)
-          PT_MIN=$(TZ=America/Los_Angeles date +%M)
-          if [ "$PT_HOUR" = "03" ]; then
-            echo "run_pipeline=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "run_pipeline=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Setup R
-        if: steps.gate.outputs.run_pipeline == 'true'
         uses: r-lib/actions/setup-r@v2
 
       - name: Install R deps
-        if: steps.gate.outputs.run_pipeline == 'true'
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
@@ -70,7 +36,6 @@ jobs:
             any::googlesheets4
 
       - name: Write Google service account key
-        if: steps.gate.outputs.run_pipeline == 'true'
         env:
           GSHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GSHEETS_SERVICE_ACCOUNT_JSON }}
         run: |
@@ -83,11 +48,9 @@ jobs:
           echo "GSHEETS_SERVICE_ACCOUNT_FILE=$KEY_FILE" >> "$GITHUB_ENV"
 
       - name: Run full pipeline
-        if: steps.gate.outputs.run_pipeline == 'true'
         run: Rscript scripts/run_pipeline.R --config config/pipeline.yml
 
       - name: Commit refreshed data
-        if: steps.gate.outputs.run_pipeline == 'true'
         run: |
           if [ -z "$(git status --porcelain data)" ]; then
             echo "No data changes to commit."

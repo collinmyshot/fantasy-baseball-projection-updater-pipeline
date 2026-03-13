@@ -1,3 +1,3 @@
-"metric","avg_z_sum","budget_bats","numstartingbats","dollars_per_slot","total_budget","num_teams","hitter_budget_share","min_bid"
-"z_total_equal",2.35631282587167,2730,210,13,260,15,0.7,1
-"z_total_custom",2.98444964956981,2730,210,13,260,15,0.7,1
+"metric","z_replacement","z_above_replacement_total","budget_bats","numstartingbats","total_budget","num_teams","hitter_budget_share","min_bid"
+"z_total_equal_starter",-6.04957666725488,1270.41110012352,2730,210,260,15,0.7,1
+"z_total_custom_starter",-7.10745607902327,1492.56577659489,2730,210,260,15,0.7,1

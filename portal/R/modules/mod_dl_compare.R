@@ -73,9 +73,13 @@ dlc_join_adp <- function(df, adp_data) {
   merged
 }
 
+# Character columns — returned as-is, no numeric coercion
+DLC_CHAR_COLS <- c("name", "team", "positions")
+
 # Format a single value for display in a cell
 dlc_fmt <- function(val, col) {
   if (is.null(val) || length(val) == 0 || is.na(val)) return("\u2014")
+  if (col %in% DLC_CHAR_COLS) return(as.character(val))
   if (col == "dollar_value") return(paste0("$", formatC(suppressWarnings(as.numeric(val)), format = "f", digits = 0)))
   rd <- if (col %in% names(DLC_ROUNDING)) DLC_ROUNDING[[col]] else 1
   formatC(suppressWarnings(as.numeric(val)), format = "f", digits = rd)
@@ -283,25 +287,22 @@ dlCompareServer <- function(id, proj_results, adp_data) {
       )
     })
 
-    # ── Hitter panel: 5 inputs + table ───────────────────────────────────────
+    # ── Hitter panel: 5 inputs (stacked) + table ─────────────────────────────
     output$h_panel <- renderUI({
       hd <- h_data()
       ch <- dlc_choices(hd)
       tagList(
         div(class = "pag-panel",
-          div(
-            style = "display:grid; grid-template-columns:repeat(5,1fr); gap:10px;",
-            lapply(seq_len(5), function(i) {
-              selectizeInput(
-                ns(paste0("sel_h_", i)),
-                label   = paste("Hitter", i),
-                choices = ch,
-                selected = isolate(input[[paste0("sel_h_", i)]] %||% ""),
-                options = list(placeholder = "Select\u2026", create = FALSE,
-                               selectOnTab = TRUE, closeAfterSelect = TRUE)
-              )
-            })
-          )
+          lapply(seq_len(5), function(i) {
+            selectizeInput(
+              ns(paste0("sel_h_", i)),
+              label   = paste("Hitter", i),
+              choices = ch,
+              selected = isolate(input[[paste0("sel_h_", i)]] %||% ""),
+              options = list(placeholder = "Select\u2026", create = FALSE,
+                             selectOnTab = TRUE, closeAfterSelect = TRUE)
+            )
+          })
         ),
         div(style = "margin-top:16px;", uiOutput(ns("comp_h_table")))
       )
@@ -328,25 +329,22 @@ dlCompareServer <- function(id, proj_results, adp_data) {
       div(class = "pag-panel", dlc_player_table(df, cols, labels))
     })
 
-    # ── Pitcher panel: 5 inputs + table ──────────────────────────────────────
+    # ── Pitcher panel: 5 inputs (stacked) + table ────────────────────────────
     output$p_panel <- renderUI({
       pd <- p_data()
       ch <- dlc_choices(pd)
       tagList(
         div(class = "pag-panel",
-          div(
-            style = "display:grid; grid-template-columns:repeat(5,1fr); gap:10px;",
-            lapply(seq_len(5), function(i) {
-              selectizeInput(
-                ns(paste0("sel_p_", i)),
-                label   = paste("Pitcher", i),
-                choices = ch,
-                selected = isolate(input[[paste0("sel_p_", i)]] %||% ""),
-                options = list(placeholder = "Select\u2026", create = FALSE,
-                               selectOnTab = TRUE, closeAfterSelect = TRUE)
-              )
-            })
-          )
+          lapply(seq_len(5), function(i) {
+            selectizeInput(
+              ns(paste0("sel_p_", i)),
+              label   = paste("Pitcher", i),
+              choices = ch,
+              selected = isolate(input[[paste0("sel_p_", i)]] %||% ""),
+              options = list(placeholder = "Select\u2026", create = FALSE,
+                             selectOnTab = TRUE, closeAfterSelect = TRUE)
+            )
+          })
         ),
         div(style = "margin-top:16px;", uiOutput(ns("comp_p_table")))
       )
@@ -401,21 +399,17 @@ dlCompareServer <- function(id, proj_results, adp_data) {
                              selectOnTab = TRUE, closeAfterSelect = TRUE)
             )
           ),
-          tags$p(class = "dl-howto-title", style = "margin-bottom:6px;", "PA Thresholds"),
-          div(
-            style = "display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:12px;",
-            lapply(seq_len(5), function(i) {
-              numericInput(ns(paste0("hyp_pa_", i)), label = paste("PA", i),
-                           value = pa_vals[i], min = 1, step = 10)
-            })
-          ),
           tags$p(class = "dl-howto-title", style = "margin-bottom:6px;",
-                 "Threshold Weights (probability of each outcome)"),
+                 "PA Thresholds & Weights (probability of each outcome)"),
           div(
-            style = "display:grid; grid-template-columns:repeat(5,1fr); gap:10px;",
+            style = "display:grid; grid-template-columns:repeat(5,1fr); gap:12px;",
             lapply(seq_len(5), function(i) {
-              numericInput(ns(paste0("hyp_wt_", i)), label = paste("Wt", i),
-                           value = wt_vals[i], min = 0, max = 1, step = 0.01)
+              div(
+                numericInput(ns(paste0("hyp_pa_", i)), label = paste("PA", i),
+                             value = pa_vals[i], min = 1, step = 10),
+                numericInput(ns(paste0("hyp_wt_", i)), label = paste("Weight", i),
+                             value = wt_vals[i], min = 0, max = 1, step = 0.01)
+              )
             })
           )
         ),

@@ -321,9 +321,13 @@ dlCompareServer <- function(id, proj_results, adp_data) {
       if (is.null(hd)) return(NULL)
       df <- hd[hd$name %in% keys, , drop = FALSE]
       if (nrow(df) == 0) return(NULL)
-      # Preserve selection order
-      df <- df[match(keys, df$name), , drop = FALSE]
       df <- df[!is.na(df$name), , drop = FALSE]
+      # Sort by $Value (roto) or Total Pts (points), descending
+      sort_col <- if (mode() == "roto") "dollar_value" else "total_pts"
+      if (sort_col %in% names(df)) {
+        df <- df[order(suppressWarnings(as.numeric(df[[sort_col]])), decreasing = TRUE,
+                       na.last = TRUE), , drop = FALSE]
+      }
       cols   <- if (mode() == "roto") DLC_H_ROTO_COLS   else DLC_H_PTS_COLS
       labels <- if (mode() == "roto") DLC_H_ROTO_LABELS else DLC_H_PTS_LABELS
       div(class = "pag-panel", dlc_player_table(df, cols, labels))
@@ -363,8 +367,13 @@ dlCompareServer <- function(id, proj_results, adp_data) {
       if (is.null(pd)) return(NULL)
       df <- pd[pd$name %in% keys, , drop = FALSE]
       if (nrow(df) == 0) return(NULL)
-      df <- df[match(keys, df$name), , drop = FALSE]
       df <- df[!is.na(df$name), , drop = FALSE]
+      # Sort by Z-Score (roto) or Total Pts (points), descending
+      sort_col <- if (mode() == "roto") "z_total_s" else "total_pts"
+      if (sort_col %in% names(df)) {
+        df <- df[order(suppressWarnings(as.numeric(df[[sort_col]])), decreasing = TRUE,
+                       na.last = TRUE), , drop = FALSE]
+      }
       cols   <- if (mode() == "roto") DLC_P_ROTO_COLS   else DLC_P_PTS_COLS
       labels <- if (mode() == "roto") DLC_P_ROTO_LABELS else DLC_P_PTS_LABELS
       div(class = "pag-panel", dlc_player_table(df, cols, labels))
@@ -402,9 +411,9 @@ dlCompareServer <- function(id, proj_results, adp_data) {
           tags$p(class = "dl-howto-title", style = "margin-bottom:6px;",
                  "PA Thresholds & Weights (probability of each outcome)"),
           div(
-            style = "display:grid; grid-template-columns:repeat(5,1fr); gap:12px;",
+            style = "display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; max-width:340px;",
             lapply(seq_len(5), function(i) {
-              div(
+              list(
                 numericInput(ns(paste0("hyp_pa_", i)), label = paste("PA", i),
                              value = pa_vals[i], min = 1, step = 10),
                 numericInput(ns(paste0("hyp_wt_", i)), label = paste("Weight", i),

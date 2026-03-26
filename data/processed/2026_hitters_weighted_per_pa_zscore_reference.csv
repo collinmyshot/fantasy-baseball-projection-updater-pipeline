@@ -1,12 +1,12 @@
 "baseline","category","source_column","mean","sd","pa_floor","player_count","starter_count","starter_rank_metric"
 "overall_pool","PA","weighted_pa",458.497814603175,133.905145992054,200,350,,
-"overall_pool","R_per_PA","weighted_r_per_pa",0.119033637988283,0.0122915491304571,200,350,,
+"overall_pool","R_per_PA","weighted_r_per_pa",0.119036956388814,0.0122879863190873,200,350,,
 "overall_pool","RBI_per_PA","weighted_rbi_per_pa",0.114928895513043,0.0178277795992611,200,350,,
 "overall_pool","HR_per_PA","weighted_hr_per_pa",0.0314658316410861,0.0111676262048801,200,350,,
 "overall_pool","SB_per_PA_LOG","weighted_sb_per_pa_log",0.0186653540360822,0.0152242024876294,200,350,,
-"overall_pool","H_per_PA","weighted_h_per_pa",0.220238121626271,0.016456069279656,200,350,,
-"overall_pool","AVG","weighted_avg",0.246440556618225,0.0169904016327717,200,350,,
-"overall_pool","OBP","weighted_obp",0.30582710527625,0.0218033286158703,200,350,,
+"overall_pool","H_per_PA","weighted_h_per_pa",0.220241440026802,0.016455292410177,200,350,,
+"overall_pool","AVG","weighted_avg",0.246443329728544,0.01698885851028,200,350,,
+"overall_pool","OBP","weighted_obp",0.30583042367678,0.021801006881715,200,350,,
 "starter_pool","PA","weighted_pa",545.460411640212,78.2339230561735,200,210,210,"z_total_custom"
 "starter_pool","R_per_PA","weighted_r_per_pa",0.124738476686655,0.0117470325972971,200,210,210,"z_total_custom"
 "starter_pool","RBI_per_PA","weighted_rbi_per_pa",0.122381631438317,0.0173145829162643,200,210,210,"z_total_custom"

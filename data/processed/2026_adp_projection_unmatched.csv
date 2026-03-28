@@ -1,5 +1,6 @@
 "player_name","team","pa","bb","hr","sb","r","rbi","avg","obp","adp","adp_match_method"
-"Jonathan Wetherholt","STL",485.8,45.8,10.6,10,55.7,46.3,0.247,0.312,600.98,"filled_max_adp"
+"Oswald Peraza","LAA",277.1,20.1,7.8,9.9,30.1,27.5,0.223,0.274,600.98,"filled_max_adp"
+"Everson Pereira","CHW",225.2,17.7,8.2,3.9,25.4,25.2,0.224,0.281,600.98,"filled_max_adp"
 "Sam Haggerty","TEX",223,18.3,3.5,11.6,26.9,18.9,0.241,0.297,600.98,"filled_max_adp"
 "José Tena","WSN",222.9,15.1,4.2,6.4,23.2,21.1,0.244,0.292,600.98,"filled_max_adp"
 "Jesse Winker",,216.1,26.8,5.7,3.3,25.3,22.5,0.234,0.324,600.98,"filled_max_adp"

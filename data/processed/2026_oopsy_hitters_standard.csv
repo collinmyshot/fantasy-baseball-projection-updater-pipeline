@@ -774,6 +774,7 @@
 "oopsy","oopsy",2026,35110,"Nick Kurtz","ATH",538,616,143,28,2,71,3,87,35,98,3,1,0.266587
 "oopsy","oopsy",2026,35177,"Carson Benge","NYM",364,413,88,17,3,39,5,53,12,45,7,2,0.241503
 "oopsy","oopsy",2026,35322,"Hyeseong Kim","LAD",71,77,16,3,0,5,1,8,2,8,4,1,0.224832
+"oopsy","oopsy",2026,35376,"Konnor Griffin","PIT",426,469,109,20,2,27,11,55,13,50,27,7,0.255673
 "oopsy","oopsy",2026,37120,"Munetaka Murakami","CHW",488,588,108,18,1,89,6,75,30,77,12,4,0.220654
 "oopsy","oopsy",2026,37123,"Kazuma Okamoto","TOR",492,560,115,24,1,58,6,67,25,75,3,1,0.23294
 "oopsy","oopsy",2026,,"A.J. Ewing","NYM",1,1,0,0,0,0,0,0,0,0,0,0,0.231327
@@ -1054,7 +1055,7 @@
 "oopsy","oopsy",2026,,"Brock Wilken","MIL",36,42,7,1,0,5,0,5,1,4,0,0,0.199317
 "oopsy","oopsy",2026,,"Brody Moore","STL",1,1,0,0,0,0,0,0,0,0,0,0,0.219909
 "oopsy","oopsy",2026,,"Brooks Brannon","BOS",1,1,0,0,0,0,0,0,0,0,0,0,0.221094
-"oopsy","oopsy",2026,,"Bryan Acuna","MIN",1,1,0,0,0,0,0,0,0,0,0,0,0.192733
+"oopsy","oopsy",2026,,"Bryan Acuña","MIN",1,1,0,0,0,0,0,0,0,0,0,0,0.192733
 "oopsy","oopsy",2026,,"Bryan Andrade","ATH",1,1,0,0,0,0,0,0,0,0,0,0,0.21527
 "oopsy","oopsy",2026,,"Bryan Arendt","ATH",1,1,0,0,0,0,0,0,0,0,0,0,0.202221
 "oopsy","oopsy",2026,,"Bryan Broecker","TBR",1,1,0,0,0,0,0,0,0,0,0,0,0.182863
@@ -1101,7 +1102,7 @@
 "oopsy","oopsy",2026,,"Caleb McNeely",,1,1,0,0,0,0,0,0,0,0,0,0,0.20132
 "oopsy","oopsy",2026,,"Caleb Pendleton",,1,1,0,0,0,0,0,0,0,0,0,0,0.194766
 "oopsy","oopsy",2026,,"Caleb Ricketts","PHI",1,1,0,0,0,0,0,0,0,0,0,0,0.230355
-"oopsy","oopsy",2026,,"Caleb Roberts","ARI",1,1,0,0,0,0,0,0,0,0,0,0,0.207833
+"oopsy","oopsy",2026,,"Caleb Roberts",,1,1,0,0,0,0,0,0,0,0,0,0,0.207833
 "oopsy","oopsy",2026,,"Callan Moss","PIT",1,1,0,0,0,0,0,0,0,0,0,0,0.225268
 "oopsy","oopsy",2026,,"Calvin Harris","CHW",1,1,0,0,0,0,0,0,0,0,0,0,0.213902
 "oopsy","oopsy",2026,,"Cam Cannarella","MIA",1,1,0,0,0,0,0,0,0,0,0,0,0.231129
@@ -1268,7 +1269,7 @@
 "oopsy","oopsy",2026,,"Creed Willems","BAL",1,1,0,0,0,0,0,0,0,0,0,0,0.220805
 "oopsy","oopsy",2026,,"Cristhian Vaquero","WSN",1,1,0,0,0,0,0,0,0,0,0,0,0.199987
 "oopsy","oopsy",2026,,"Cristian Gonzalez",,1,1,0,0,0,0,0,0,0,0,0,0,0.203892
-"oopsy","oopsy",2026,,"Cristian Hernandez","MIA",1,1,0,0,0,0,0,0,0,0,0,0,0.216817
+"oopsy","oopsy",2026,,"Cristian Hernández","MIA",1,1,0,0,0,0,0,0,0,0,0,0,0.216817
 "oopsy","oopsy",2026,,"Cristian Jauregui","PIT",1,1,0,0,0,0,0,0,0,0,0,0,0.206833
 "oopsy","oopsy",2026,,"Cristian Santana","DET",1,1,0,0,0,0,0,0,0,0,0,0,0.171053
 "oopsy","oopsy",2026,,"Cristofer Torin","ARI",1,1,0,0,0,0,0,0,0,0,0,0,0.231091
@@ -1285,7 +1286,7 @@
 "oopsy","oopsy",2026,,"Dalton Davis","SEA",1,1,0,0,0,0,0,0,0,0,0,0,0.216713
 "oopsy","oopsy",2026,,"Dalton McIntyre","ATL",1,1,0,0,0,0,0,0,0,0,0,0,0.209966
 "oopsy","oopsy",2026,,"Dalton Shuffield",,1,1,0,0,0,0,0,0,0,0,0,0,0.214748
-"oopsy","oopsy",2026,,"Dalvy Rosario","MIA",1,1,0,0,0,0,0,0,0,0,0,0,0.205035
+"oopsy","oopsy",2026,,"Dalvy Rosario",,1,1,0,0,0,0,0,0,0,0,0,0,0.205035
 "oopsy","oopsy",2026,,"Dameury Pena","MIN",1,1,0,0,0,0,0,0,0,0,0,0,0.227016
 "oopsy","oopsy",2026,,"Damian Bravo","SFG",1,1,0,0,0,0,0,0,0,0,0,0,0.228383
 "oopsy","oopsy",2026,,"Damiano Palmegiani",,1,1,0,0,0,0,0,0,0,0,0,0,0.2081
@@ -1442,7 +1443,7 @@
 "oopsy","oopsy",2026,,"Edwin Arroyo","CIN",19,21,5,1,0,1,0,2,0,2,0,0,0.240603
 "oopsy","oopsy",2026,,"Edwin Brito",,1,1,0,0,0,0,0,0,0,0,0,0,0.195493
 "oopsy","oopsy",2026,,"Edwin Díaz","HOU",1,1,0,0,0,0,0,0,0,0,0,0,0.204375
-"oopsy","oopsy",2026,,"Efren Teran",,1,1,0,0,0,0,0,0,0,0,0,0,0.225576
+"oopsy","oopsy",2026,,"Efren Teran","CHW",1,1,0,0,0,0,0,0,0,0,0,0,0.225576
 "oopsy","oopsy",2026,,"EJ Andrews Jr.",,1,1,0,0,0,0,0,0,0,0,0,0,0.190743
 "oopsy","oopsy",2026,,"Eli Lovich","CHC",1,1,0,0,0,0,0,0,0,0,0,0,0.196826
 "oopsy","oopsy",2026,,"Eli Serrano III","NYM",1,1,0,0,0,0,0,0,0,0,0,0,0.21054
@@ -1582,7 +1583,7 @@
 "oopsy","oopsy",2026,,"George Lombard Jr.","NYY",1,1,0,0,0,0,0,0,0,0,0,0,0.206569
 "oopsy","oopsy",2026,,"George Wolkow","CHW",1,1,0,0,0,0,0,0,0,0,0,0,0.193708
 "oopsy","oopsy",2026,,"Geovanny Planchart","TOR",1,1,0,0,0,0,0,0,0,0,0,0,0.204348
-"oopsy","oopsy",2026,,"Geraldo Quintero","ATL",1,1,0,0,0,0,0,0,0,0,0,0,0.219365
+"oopsy","oopsy",2026,,"Geraldo Quintero",,1,1,0,0,0,0,0,0,0,0,0,0,0.219365
 "oopsy","oopsy",2026,,"Gerardo Rodriguez","BOS",1,1,0,0,0,0,0,0,0,0,0,0,0.235928
 "oopsy","oopsy",2026,,"German Ortiz","ATH",1,1,0,0,0,0,0,0,0,0,0,0,0.2011
 "oopsy","oopsy",2026,,"German Ramirez","HOU",1,1,0,0,0,0,0,0,0,0,0,0,0.195574
@@ -2072,7 +2073,6 @@
 "oopsy","oopsy",2026,,"Kolby Johnson",,1,1,0,0,0,0,0,0,0,0,0,0,0.215147
 "oopsy","oopsy",2026,,"Kole Myers","LAD",1,1,0,0,0,0,0,0,0,0,0,0,0.212259
 "oopsy","oopsy",2026,,"Konner Piotto",,1,1,0,0,0,0,0,0,0,0,0,0,0.204074
-"oopsy","oopsy",2026,,"Konnor Griffin","PIT",426,469,109,20,2,27,11,55,13,50,27,7,0.255673
 "oopsy","oopsy",2026,,"Korey Holland",,1,1,0,0,0,0,0,0,0,0,0,0,0.204067
 "oopsy","oopsy",2026,,"Kristian Robinson","ARI",6,7,1,0,0,1,0,1,0,1,0,0,0.204467
 "oopsy","oopsy",2026,,"Kyle Datres",,1,1,0,0,0,0,0,0,0,0,0,0,0.199261
@@ -2278,7 +2278,7 @@
 "oopsy","oopsy",2026,,"Mikey Kane",,1,1,0,0,0,0,0,0,0,0,0,0,0.216865
 "oopsy","oopsy",2026,,"Mikey Romero","BOS",1,1,0,0,0,0,0,0,0,0,0,0,0.240899
 "oopsy","oopsy",2026,,"Milan Tolentino","CLE",1,1,0,0,0,0,0,0,0,0,0,0,0.209098
-"oopsy","oopsy",2026,,"Milkar Perez","SEA",1,1,0,0,0,0,0,0,0,0,0,0,0.191901
+"oopsy","oopsy",2026,,"Milkar Perez",,1,1,0,0,0,0,0,0,0,0,0,0,0.191901
 "oopsy","oopsy",2026,,"Milo Rushford",,1,1,0,0,0,0,0,0,0,0,0,0,0.18915
 "oopsy","oopsy",2026,,"Misael Urbina",,1,1,0,0,0,0,0,0,0,0,0,0,0.199363
 "oopsy","oopsy",2026,,"Mitch Jebb","PIT",1,1,0,0,0,0,0,0,0,0,0,0,0.236503
@@ -2369,7 +2369,7 @@
 "oopsy","oopsy",2026,,"P.J. Hilson","PIT",1,1,0,0,0,0,0,0,0,0,0,0,0.213829
 "oopsy","oopsy",2026,,"Pablo Aliendo","CIN",1,1,0,0,0,0,0,0,0,0,0,0,0.195579
 "oopsy","oopsy",2026,,"Pablo Guerrero","TEX",1,1,0,0,0,0,0,0,0,0,0,0,0.203687
-"oopsy","oopsy",2026,,"Parker Chavers",,1,1,0,0,0,0,0,0,0,0,0,0,0.205338
+"oopsy","oopsy",2026,,"Parker Chavers","HOU",1,1,0,0,0,0,0,0,0,0,0,0,0.205338
 "oopsy","oopsy",2026,,"Parks Harber","SFG",1,1,0,0,0,0,0,0,0,0,0,0,0.23419
 "oopsy","oopsy",2026,,"Pascanel Ferreras","HOU",1,1,0,0,0,0,0,0,0,0,0,0,0.20772
 "oopsy","oopsy",2026,,"Patrick Clohisy","ATL",1,1,0,0,0,0,0,0,0,0,0,0,0.229123
@@ -2502,7 +2502,7 @@
 "oopsy","oopsy",2026,,"Rubel Cespedes","LAA",1,1,0,0,0,0,0,0,0,0,0,0,0.222607
 "oopsy","oopsy",2026,,"Ruben Ibarra","CIN",1,1,0,0,0,0,0,0,0,0,0,0,0.206228
 "oopsy","oopsy",2026,,"Ruben Santana","ARI",1,1,0,0,0,0,0,0,0,0,0,0,0.193737
-"oopsy","oopsy",2026,,"Rudy Martin","KCR",1,1,0,0,0,0,0,0,0,0,0,0,0.231801
+"oopsy","oopsy",2026,,"Rudy Martin Jr.","KCR",1,1,0,0,0,0,0,0,0,0,0,0,0.231801
 "oopsy","oopsy",2026,,"Ryan Burrowes","CHW",1,1,0,0,0,0,0,0,0,0,0,0,0.20211
 "oopsy","oopsy",2026,,"Ryan Campos","STL",1,1,0,0,0,0,0,0,0,0,0,0,0.218235
 "oopsy","oopsy",2026,,"Ryan Cermak","TBR",1,1,0,0,0,0,0,0,0,0,0,0,0.202552
@@ -2766,7 +2766,7 @@
 "oopsy","oopsy",2026,,"Yilber Herrera","MIN",1,1,0,0,0,0,0,0,0,0,0,0,0.185634
 "oopsy","oopsy",2026,,"Yimy Tovar","SDP",1,1,0,0,0,0,0,0,0,0,0,0,0.213485
 "oopsy","oopsy",2026,,"Yirer Garcia","TBR",1,1,0,0,0,0,0,0,0,0,0,0,0.209856
-"oopsy","oopsy",2026,,"Yoander Rivero","WSN",1,1,0,0,0,0,0,0,0,0,0,0,0.18837
+"oopsy","oopsy",2026,,"Yoander Rivero",,1,1,0,0,0,0,0,0,0,0,0,0,0.18837
 "oopsy","oopsy",2026,,"Yoeilin Cespedes","BOS",1,1,0,0,0,0,0,0,0,0,0,0,0.22133
 "oopsy","oopsy",2026,,"Yoerny Junco",,1,1,0,0,0,0,0,0,0,0,0,0,0.200539
 "oopsy","oopsy",2026,,"Yoffry Solano","MIA",1,1,0,0,0,0,0,0,0,0,0,0,0.217459

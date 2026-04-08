@@ -1,0 +1,5 @@
+Recommended weights (not applied):
+  bacon_resid: opt=1.0000 median=0.6987 (p05=0.2783, p95=1.0000)
+  hr_resid: opt=0.0000 median=0.0000 (p05=0.0000, p95=0.2320)
+  xbh_resid: opt=0.0000 median=0.1461 (p05=0.0000, p95=0.6657)
+Weighted RMSE=0.005144, weighted corr=0.9215 (n=38 park eras).

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hitter Valuation Methodology — CollinMyShot FBB Tools</title>
+<style>
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.8;
+    color: #222;
+    background: #fff;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+
+  h1 {
+    font-family: Georgia, serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    color: #111;
+  }
+
+  .byline {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0 0 2.5rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: Georgia, serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin: 2.8rem 0 0.8rem;
+    color: #111;
+    border-bottom: 2px solid #e8e4d8;
+    padding-bottom: 0.4rem;
+  }
+
+  h3 {
+    font-family: Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 2rem 0 0.5rem;
+    color: #222;
+    font-style: italic;
+  }
+
+  p {
+    margin: 0 0 1.2rem;
+    color: #2a2a2a;
+  }
+
+  .lede {
+    font-size: 1.05rem;
+    color: #444;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+  }
+
+  thead tr {
+    background: #f2ede2;
+    border-bottom: 2px solid #d5ccb4;
+  }
+
+  th {
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid #ece8dc;
+    color: #2a2a2a;
+    vertical-align: top;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:nth-child(even) td {
+    background: #faf8f3;
+  }
+
+  a {
+    color: #9a7b3a;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  a:hover {
+    color: #7a5210;
+  }
+
+  blockquote {
+    border-left: 4px solid #e0d9c8;
+    margin: 1.5rem 0;
+    padding: 0.6rem 1.2rem;
+    color: #555;
+    font-style: italic;
+    font-size: 0.97rem;
+  }
+
+  .stat-label {
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e8e4d8;
+    margin: 3rem 0;
+  }
+
+  sup {
+    font-size: 0.75em;
+    vertical-align: super;
+    line-height: 0;
+  }
+
+  .footer-note {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.82rem;
+    color: #999;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e8e4d8;
+  }
+</style>
+</head>
+<body>
+
+<h1>Building a Hitter Valuation System from Scratch</h1>
+<p class="byline">Methodology Series &middot; Part IV &mdash; Projection Aggregation, Z-Scores &amp; Dollar Values</p>
+
+<p class="lede">There are already some fantastic tools for fantasy baseball player valuation, including Tanner Bell's <a href="https://www.smartfantasybaseball.com/tools/">Smart Fantasy Baseball Suite</a>, the <a href="https://www.fangraphs.com/fantasy-tools/auction-calculator">FanGraphs Auction Calculator</a>, the <a href="https://razzball.com/playerrater-preseason-espnmlb12/">RazzBall Player Rater</a>, and more. However, these existing tools are often somewhat opaque in their methodology, behind a paywall, and/or hard to customize. I wanted to create something that contains all parts of the player valuation process, with a clear explanation of methodology, that is customizable to your preferences and league, for free. So, here it is!</p>
+
+<p>This pipeline has three stages: (1) aggregate multiple projection systems into a single blended forecast, (2) score each player relative to the league-wide talent pool using z-scores, and (3) convert those relative scores into dollar values calibrated to your specific league settings. Each stage involves choices that materially affect the final numbers and give you complete control over creating your best projection values and drafting your best team. Let's get into it.</p>
+
+<p>Good luck out there!</p>
+
+<hr>
+
+<h2>Stage 1: Aggregating Projection Systems</h2>
+
+<p>No single projection system is far-and-away "The Best." THE BAT X, Steamer, ZiPS, OOPSY, ATC, and others all have methodological strengths and weaknesses, and they regularly disagree on players. Rather than relying on any one system exclusively, it has been routinely shown that blending systems into an aggregate produces a more accurate projection than any individual system alone.</p>
+
+<h3>Which systems are included, and why they differ.</h3>
+
+<p>Though the major projection systems often end up in a similar ballpark, they get there in very different ways. I have chosen to include only free public-facing projections available on FanGraphs for this app, consistent with my goals of being both transparent and free.</p>
+
+<p><span class="stat-label">Steamer</span>, created by Jared Cross, is the veteran in the room. It leans heavily on "secondary" rate stats (K%, FIP, walk rate, etc.) and regresses players aggressively toward league average. It tends to produce conservative, floor-oriented estimates. It is a great system that has been around for a long time and is always the first one available to early drafters.</p>
+
+<p><span class="stat-label">ZiPS</span>, created by Dan Szymborski, establishes a performance baseline from weighted recent history and then searches a database of over 185,000 historical player baselines to find the best comparable players, a cohort of "similar" guys, and projects future performance based on how those comps developed over their careers. It's unique among the major systems in how heavily it leans on historical archetypes.</p>
+
+<p><span class="stat-label">THE BAT and THE BAT X</span>, created by Derek Carty: THE BAT is a more traditional regression-based system, conceptually similar to an improved Steamer. THE BAT X takes those projections and adds substantially heavier weighting of Statcast data, making it notably more aggressive at the extremes for players with elite (or poor) underlying contact and power metrics.</p>
+
+<p><span class="stat-label">OOPSY</span>, created by Jordan Rosenblum, is the newest of the group and the most innovative. For hitters, it incorporates bat speed and barrel rate from Baseball Savant, metrics that stabilize quickly and allow the system to differentiate elite talent from average talent more aggressively than traditional systems. For pitchers, it uses Stuff+ to model arsenal quality. In its debut 2025 season, OOPSY ranked second among standalone systems for accuracy for both hitters and pitchers in independent review.</p>
+
+<p><span class="stat-label">ATC</span>, created by Ariel Cohen, is itself an aggregate of other projections. It takes a weighted average of the other systems, but with stat-specific weights based on which systems have historically performed best at projecting each individual category. Think of it as the Nate Silver approach applied to baseball: assign credibility weights to each source based on track record, then combine. It's consistently been one of the most accurate projection systems in the industry.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>System</th>
+      <th>My Default Weights</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>The Bat X</td><td>3</td></tr>
+    <tr><td>OOPSY</td><td>3</td></tr>
+    <tr><td>Steamer</td><td>2</td></tr>
+    <tr><td>ATC</td><td>1</td></tr>
+  </tbody>
+</table>
+
+<p>I built in default weights based on some excellent work at FanGraphs, including <a href="https://blogs.fangraphs.com/reviewing-oopsys-debut-season/">this review of OOPSY's debut season</a>. But the ability to adjust input weights, or exclude systems entirely, based on your own analysis (or ~vibes~) is a key part of creating your player values. If you think OOPSY is over-projecting players based on bat speed data, you can dial it back. Or if you want to rely much more heavily on ATC's aggregation, go for it!</p>
+
+<h3>How the (aggregate) sausage gets made.</h3>
+
+<p>Should be as easy as just taking the counting stats from each system and creating a weighted average, right? Nope! Because these systems often have different playing time (PA) projections, a naive approach like this creates a hidden distortion. If System A projects a player for 30 HR in 600 PA while System B projects the same player for 22.5 HR in 450 PA, a straight average gives you 26.25 HR. However, the disagreement is about playing time, not talent. If you look on a per-PA basis, both System A and System B project this player for 0.05 HR/PA.</p>
+
+<p>To account for this, all counting stats are first converted to per-PA rates. Those rates are then averaged across systems using the assigned weights, with missing systems excluded from the denominator rather than counted as zero.</p>
+
+<p>After the blended per-PA projections are made, we scale them back up using a single PA estimate. Historically, ATC has generally outperformed other systems on playing time projections, so that's set as the default PA source, though you can select any projection system as your PA source.</p>
+
+<hr>
+
+<h2>Stage 2: Z-Scores and Replacement Level</h2>
+
+<p>The blended projection tells you what a given player is projected to do. A z-score tells you how valuable that production is relative to the rest of the player pool. The two are different questions, and this is where the actual valuation work begins.</p>
+
+<h3>A quick note on methodology: Z-scores vs. SGP.</h3>
+
+<p>There are two main approaches to converting projections into player values: z-scores and Standings Gain Points (SGP). In <em>The Process</em>, Jeff Zimmerman and Tanner Bell compared both methods and found an r<sup>2</sup> of .996 between the resulting dollar values, with a maximum difference of just $3.10 per player. They're functionally identical for the vast majority of players. I use z-scores here because they apply to any league, even new ones without years of historical standings data to calibrate on. If you want to go deeper, <em>The Process</em> is an excellent resource on this topic.</p>
+
+<h3>Two-pass z-score calculation.</h3>
+
+<p>Z-scores are calculated in two passes, each serving a different purpose.</p>
+
+<p>The first pass establishes each player's score relative to the entire qualifying population, anyone projected for 200 or more plate appearances (a customizable threshold in the app). This gives you an absolute measure of talent: how does this player compare to everyone who is projected to play, even in a minor or part-time role? It's a great way to create an overall ranking of fantasy players. However, your fantasy team is much shallower than the 30-team pool that is real-life MLB. Because z-scores rely on population mean and standard deviation, including low-volume fringe players artificially inflates how good the top guys look. But the purpose of z-scoring is to determine value over replacement, so we need to identify who the replacements actually are.</p>
+
+<p>The second pass narrows the reference population to just the players who will actually be starting in your league: the top 210 players by first-pass z-score, assuming a 15-team league with 14 hitter roster spots (NFBC standard). Z-scores are recalculated using this starter pool's mean and standard deviation as the reference, re-centering the scoring around the players that actually matter for your draft.</p>
+
+<p>The starter-pool z-scores, and the dollar values derived from them, are what you use to draft.</p>
+
+<h3>Replacement level.</h3>
+
+<p>Replacement level is defined as the worst player in the starter pool: the 210th-ranked player by starter-pool z-score. Every player above that line has surplus value above replacement. Every player below it is, in theory, freely available.</p>
+
+<h3>No positional adjustment?</h3>
+
+<p>Correct. I subscribe to the school of thought that positional adjustments are, at best, unnecessary and at worst, actively misleading. This was written up beautifully by Grey at Razzball in his <a href="https://razzball.com/top-20-catchers-for-2025-fantasy-baseball/">catcher rankings piece</a>:</p>
+
+<blockquote>"Position scarcity doesn't exist. It was made up by someone who had a clever name for something, and shoved their strategy into it. It's a classic case of the tail wagging the dog... At no point did anyone stop in the last 25 years and think, when people made this position scarcity strategy up, it was Mike Piazza hitting 40 homers and .360."</blockquote>
+
+<p>This is a raw valuation of how good each hitter is relative to all other hitters, which is exactly how roto standings are calculated at the end of the season. There's no bonus for getting 25 HR from a catcher vs. 25 HR from a third baseman. They're both 25 HR and should be valued equally.</p>
+
+<p>Yes, you should pay attention to positional cliffs and tiers when building your actual roster in the draft. But building positional scarcity premiums into the dollar values themselves is, in my view, a mistake.</p>
+
+<h3>The CollinMyShot touch.</h3>
+
+<p>Most valuation tools z-score all five standard categories with equal weight. I don't, and I think equal-weight scoring is a mistake. If you are unconvinced by the logic below, you can always set even weights for your own valuations.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Default Weight</th>
+      <th>What's Being Measured</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>PA</td><td>2.3</td><td>Raw plate appearances -- playing time and durability</td></tr>
+    <tr><td>HR</td><td>1.35</td><td>Home run rate (per PA)</td></tr>
+    <tr><td>Hits</td><td>1.0</td><td>Hit rate (per PA), independent of batting average</td></tr>
+    <tr><td>SB</td><td>1.0</td><td>Stolen base rate, log-transformed before scoring</td></tr>
+    <tr><td>AVG</td><td>1.0</td><td>Swappable for OBP in on-base leagues</td></tr>
+    <tr><td>R</td><td>0.6</td><td>Run rate (per PA)</td></tr>
+    <tr><td>RBI</td><td>0.6</td><td>RBI rate (per PA)</td></tr>
+  </tbody>
+</table>
+
+<p>One driving reason for building this tool is that I fundamentally do not believe all 5 stats in standard 5x5 roto are projectable with equal accuracy. I prefer to weight categories based on how reliable the projections are and how much they should actually influence draft decisions. That said, the app lets you weight everything evenly if that's your preference.</p>
+
+<p><span class="stat-label">Project Hits, not AVG.</span> Worth flagging before anything else: this isn't a quirk of this tool, it's how standard z-score and SGP valuations are calculated across the industry. In roto, final standings are calculated as (total team H) / (total team AB), not the average of all team batting averages. This matches our intuitive sense that a .300 AVG over 600 PA (180 H) is not equal to a .300 AVG over 300 PA (90 H) in terms of end-of-season roto value. By scoring Hits directly, we capture this correctly.</p>
+
+<p><span class="stat-label">Batting AVG is noisy -- the sabermetrician's mantra.</span> There's a wealth of data showing batting average is not particularly predictable year-to-year. Player BABIPs fluctuate wildly even over full-season samples (see Yoan Moncada's .406 BABIP across 559 PA in 2019, or Pete Alonso's .205 BABIP across 658 PA in 2023). Assuming league-average K% and 500 AB: a league-average .292 BABIP produces roughly a .253 AVG. An "unlucky" .270 BABIP drops a player to around .237. A "lucky" .310 BABIP pushes them to .267. Just from batted-ball luck or park effects, you can see a 20-30 point swing in batting average, which wildly changes a player's traditional valuation. This is why AVG gets a slight down-weight here. This is not an endorsement to ignore AVG in your draft. It's an acknowledgment of the randomness baked into the statistic.</p>
+
+<p><span class="stat-label">Stolen bases are not normal (in the Gaussian sense).</span> The stolen base distribution is heavily right-skewed. Most players steal 0-10 bags, but a handful steal 40 or 50. Without adjustment, elite base-stealers generate z-scores that pull far outside the normal range and distort overall valuations. A logarithmic transformation compresses the upper tail so that the jump from 0 to 10 steals gets appropriate credit relative to the jump from 30 to 40. There's also the issue of completely unprojectable SB spikes -- looking at 2025 Juan Soto and Josh Naylor, whose stolen base totals bore essentially no relationship to their sprint speed or historical tendencies. Log-transforming helps limit how much those outlier seasons can distort valuations for everyone else.</p>
+
+<p><span class="stat-label">Runs and RBI are not a projectable player-specific skill.</span> Both R and RBI are heavily context-dependent. A player's lineup spot, the quality of hitters around him, and park effects all influence R and RBI more than they influence HR or SB. They're included because they're real scoring categories, but at a discount that reflects their noisiness. It is my opinion that these stats shouldn't heavily influence your in-draft decision-making.</p>
+
+<p><span class="stat-label">Playing time is king.</span> Most valuation systems treat playing time as a passive input. It amplifies your rate stats but isn't scored on its own. This system treats PA as an active scoring category. Rate stats are great for projecting players, but if they don't play, none of it matters. Marcus Semien's legendary run from 2018-2024 (minus COVID 2020), never below 700 PA, is a great example of an unimpressive per-PA player who consistently performed as an elite fantasy option due to sheer volume. By including PA as a direct input, we put our thumb on the scale in favor of players who actually take the field.</p>
+
+<hr>
+
+<h2>Stage 3: Converting Z-Scores to Dollar Values</h2>
+
+<p>Z-scores aren't the easiest to read and interpret, and most analysts refer to "dollars" as a shorthand for player value. This section is how we translate our calculated z-scores into auction values. If you want to go deeper on the math, I strongly recommend <a href="https://www.getbigboard.com/player-valuation-tip-1-playervalues2020/">Harper Wallbanger's Big Board resource</a> on player valuation.</p>
+
+<h3>ADP-implied dollar values.</h3>
+
+<p>I also compute an ADP-implied dollar value using a log-linear formula pulled from the Baseball HQ Forecaster, calibrated on historical data. It's not calibrated to any specific season and shouldn't be treated as unassailable fact, but it provides a useful baseline for comparing projected values to actual draft cost. When a player's model value and ADP-implied value diverge significantly, that's worth investigating further. The exact formula is proprietary to BaseballHQ, so it's not reproduced here, but you can <a href="https://www.baseballhq.com/pricing/baseball-forecaster">purchase the Forecaster</a> if you want the formula, along with a wealth of other great information.</p>
+
+<hr>
+
+<h2>Key Assumptions and Known Limitations</h2>
+
+<p><span class="stat-label">No position scarcity adjustment.</span> Dollar values are calculated across a single unified hitter pool. Catchers aren't inflated for positional scarcity; shortstops aren't penalized. If you believe in a positional adjustment, that's a layer you can apply yourself after exporting the aggregate projection.</p>
+
+<p><span class="stat-label">Pitcher valuations are not included here.</span> Pitchers get their own dedicated module, for good reason: pitching projections are substantially less reliable than hitting projections. Velocity fluctuations, pitch mix changes, arm angle adjustments, and workload decisions can dramatically alter a pitcher's value in ways that are very difficult to project from prior-year stats alone. The hitter pipeline described in this article is built on the assumption that the underlying projections are reasonably stable signals. That assumption holds less well for pitchers, which is why they're handled separately.</p>
+
+<p><span class="stat-label">All defaults are my opinion.</span> The default weights for projection system input, z-score summation, and hitter/pitcher budget split reflect how I draft. They're a starting point, not a universal truth. The app lets you change all of them.</p>
+
+<hr>
+
+<p class="footer-note">CollinMyShot FBB Tools &middot; Hitter Valuation Methodology &middot; Part IV of IV</p>
+
+</body>
+</html>

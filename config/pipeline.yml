@@ -106,7 +106,7 @@ pitcher:
     reliability_method: "sample_over_sample_plus_stab"
     eno:
       sheet_url: "https://docs.google.com/spreadsheets/d/1daR9RNic3GcfDb6FLsm2OZRBS8VkqucOqHSnIS7ru5c/edit?usp=sharing"
-      sheet_tab: "Feb 3 Ranks"
+      sheet_tab: "Mar 13 working ranks"
       include_2026_stuff_plus: true
 
 adp:

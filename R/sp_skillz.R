@@ -73,6 +73,7 @@ DEFAULT_SP_SKILLZ_STABILIZATION_POINTS <- c(
 
 normalize_col_key <- function(x) {
   x <- tolower(as.character(x))
+  x <- gsub("%", "pct", x, fixed = TRUE)  # preserve % as "pct" so K-BB% != K/BB
   gsub("[^a-z0-9]", "", x)
 }
 

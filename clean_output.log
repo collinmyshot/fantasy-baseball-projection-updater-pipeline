@@ -1,0 +1,37 @@
+Wrote clean 2026 park factor table: data/processed/park_factors/park_factors_savant_style_clean_2026.csv
+! Using an auto-discovered, cached token.
+  To suppress this message, modify your code or options to clearly consent to
+  the use of a cached token.
+  See gargle's "Non-interactive auth" vignette for more details:
+  <https://gargle.r-lib.org/articles/non-interactive-auth.html>
+i The googlesheets4 package is using a cached token for
+  'collinisprettygreat@gmail.com'.
+Auto-refreshing stale OAuth token.
+v Reading from "ChatGPT Park Factors".
+v Range ''Overall PF''.
+No changes for tab 'Overall PF'; skipping write.
+v Resizing sheet 'Overall PF' in "ChatGPT Park Factors".
+i No need to change existing dims (130 x 108).
+Conditional format rules on 'Overall PF': before=3 after=3 index_cols=3
+Applied formatting on tab 'Overall PF' (centered + auto-width + frozen header).
+v Reading from "ChatGPT Park Factors".
+v Range ''1H PF''.
+No changes for tab '1H PF'; skipping write.
+v Resizing sheet '1H PF' in "ChatGPT Park Factors".
+i No need to change existing dims (130 x 108).
+Conditional format rules on '1H PF': before=3 after=3 index_cols=3
+Applied formatting on tab '1H PF' (centered + auto-width + frozen header).
+v Reading from "ChatGPT Park Factors".
+v Range ''2H PF''.
+No changes for tab '2H PF'; skipping write.
+v Resizing sheet '2H PF' in "ChatGPT Park Factors".
+i No need to change existing dims (130 x 108).
+Conditional format rules on '2H PF': before=3 after=3 index_cols=3
+Applied formatting on tab '2H PF' (centered + auto-width + frozen header).
+v Reading from "ChatGPT Park Factors".
+v Range ''Known Park Effects''.
+No changes for tab 'Known Park Effects'; skipping write.
+v Resizing sheet 'Known Park Effects' in "ChatGPT Park Factors".
+i No need to change existing dims (131 x 110).
+Conditional format rules on 'Known Park Effects': before=6 after=6 index_cols=2
+Applied formatting on tab 'Known Park Effects' (centered + auto-width + frozen header).

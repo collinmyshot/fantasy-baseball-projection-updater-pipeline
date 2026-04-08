@@ -2,8 +2,8 @@
 .RData
 .Rproj.user/
 .DS_Store
-# Keep Shiny app local-only (not tracked in git).
-app.R
+# Keep root Shiny app local-only (portal/app.R is tracked).
+/app.R
 scripts/deploy_shinyapps.R
 rsconnect/
 .rscignore

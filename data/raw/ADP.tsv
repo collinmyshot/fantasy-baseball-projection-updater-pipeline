@@ -387,7 +387,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 386	9789	O'Neill, Tyler	BAL	OF	390.44	260	517		352		
 387	10263	Ruiz, Keibert	WAS	C	390.45	264	507		352		
 388	9609	Rengifo, Luis	MLW	2B, 3B	392.10	265	557		352		
-389	11603	Norby, Connor	MIA	3B	394.43	261	521		352		
+389	11603	Norby, Connor	MIA	1B, 3B	394.43	261	521		352		
 390	11342	Clemens, Kody	MIN	OF, 2B, 1B	396.43	279	544		352		
 391	11889	Mayo, Coby	BAL	3B, 1B	396.88	223	595		351		
 392	11586	Pfaadt, Brandon	ARZ	P	399.91	247	529		352		
@@ -410,7 +410,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 409	9860	Littell, Zack	WAS	P	418.33	252	597		352		
 410	10626	Yastrzemski, Mike	ATL	OF	420.85	273	562		352		
 411	10350	Larnach, Trevor	MIN	OF	421.10	299	553		352		
-412	11614	Acuna, Luisangel	CWS	2B	421.79	268	598		293		
+412	11614	Acuna, Luisangel	CWS	OF, 2B	421.79	268	598		293		
 413	10287	Liberatore, Matthew	STL	P	424.22	279	576		351		
 414	11594	Olson, Reese	DET	P	424.33	206	595		288		
 415	9417	Benintendi, Andrew	CWS	OF	424.54	314	519		352		
@@ -596,7 +596,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 595	11846	Young, Jacob	WAS	OF	572.76	437	599		179		
 596	8189	Pomeranz, Drew	LAA	P	573.09	321	600		162		
 597	11289	Fortes, Nick	TB	C	574.15	399	600		169		
-598	10234	Jackson, Jeremiah	BAL	OF	575.11	242	600		121		
+598	10234	Jackson, Jeremiah	BAL	2B, OF	575.11	242	600		121		
 599	11283	Crawford, Kutter	BOS	P	575.16	244	600		164		
 600	11675	Martinez, Angel	CLE	2B, OF	575.65	320	600		147		
 601	11965	Amador, Adael	COL	2B	576.04	405	599		102		

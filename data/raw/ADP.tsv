@@ -421,7 +421,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 420	10347	Santillan, Tony	CIN	P	425.93	231	597		348		
 421	11632	Abel, Mick	MIN	P	425.99	225	598		352		
 422	11225	Nootbaar, Lars	STL	OF	426.17	306	554		351		
-423	12010	Nunez, Nasim	WAS	SS	426.37	266	587		335		
+423	12010	Nunez, Nasim	WAS	2B, SS	426.37	266	587		335		
 424	10067	Springs, Jeffrey	ATH	P	427.64	259	552		352		
 425	10355	Casas, Triston	BOS	1B	429.21	241	594		349		
 426	12195	Campbell, Kristian	BOS	2B	429.50	196	594		349		
@@ -743,7 +743,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 742	10691	Heineman, Tyler	TOR	C	597.99	434	599		19		
 743	12323	Sykora, Travis	WAS	P	598.07	392	597		21		
 744	10842	Lee, Dylan	ATL	P	598.07	469	600		35		
-745	12377	Williamson, Ben	TB	3B	598.09	474	600		26		
+745	12377	Williamson, Ben	TB	2B, 3B	598.09	474	600		26		
 746	9549	Garver, Mitch	SEA	C	598.17	413	600		24		
 747	10976	Irvin, Jake	WAS	P	598.18	382	599		23		
 748	10444	Moore, Dylan	PHI	2B, OF	598.24	454	597		19		
@@ -881,7 +881,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 880	8835	Hernandez, Enrique	LAD	1B, 3B, OF	600.29	521	585		6		
 881	10604	Mattson, Isaac	PIT	P	600.30	517	598		6		
 882	11073	Miller, Bobby	LAD	P	600.30	506	565		4		
-883	12158	Holman, Grant	LAD	P	600.30	353	353		1		
+883	12158	Holman, Grant	DET	P	600.30	353	353		1		
 884	12280	Dobbins, Hunter	STL	P	600.31	520	599		9		
 885	9828	Wynns, Austin	ATH	C	600.32	525	599		12		
 886	7150	Kershaw, Clayton	LAD	P	600.32	400	563		2		
@@ -998,7 +998,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 997	12234	Eeles, Payton	MIN	SS	600.89	563	563		1		
 998	12501	Rodriguez, Jesus	SF	C	600.89	575	587		2		
 999	11171	Falter, Bailey	KC	P	600.89	564	564		1		
-1000	7760	Kimbrel, Craig	HOU	P	600.89	580	595		3		
+1000	7760	Kimbrel, Craig	NYM	P	600.89	580	595		3		
 1001	12324	Ferris, Jackson	LAD	P	600.89	564	564		1		
 1002	12382	Gibson, Cade	MIA	P	600.89	564	564		1		
 1003	12208	Evans, Logan	SEA	P	600.89	561	561		1		

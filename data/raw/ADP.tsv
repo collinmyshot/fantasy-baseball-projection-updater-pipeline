@@ -282,7 +282,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 281	10207	Rodriguez, Grayson	LAA	P	288.42	199	473		352		
 282	10417	Vargas, Miguel	CWS	1B, 3B	289.08	215	392		352		
 283	11753	Carter, Evan	TEX	OF	289.66	153	389		352		
-284	11501	Sosa, Lenyn	CWS	1B, 2B	292.73	180	419		352		
+284	11501	Sosa, Lenyn	TOR	1B, 2B	292.73	180	419		352		
 285	9838	Dominguez, Seranthony	CWS	P	294.42	132	600		322		
 286	11060	Uceta, Edwin	TB	P	295.19	155	537		352		
 287	12238	Henderson, Logan	MLW	P	295.49	151	489		352		
@@ -312,7 +312,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 311	9993	McKinstry, Zach	DET	3B, SS, OF	322.38	199	416		352		
 312	12331	Smith, Cam	HOU	OF	322.54	219	442		352		
 313	12226	Beavers, Dylan	BAL	OF	322.88	230	501		352		
-314	10282	Vientos, Mark	NYM	3B	323.24	177	549		352		
+314	10282	Vientos, Mark	NYM	1B, 3B	323.24	177	549		352		
 315	11576	Wallner, Matt	MIN	OF	323.81	111	446		352		
 316	9452	Kelly, Carson	CHC	C	325.94	233	423		352		
 317	11907	Snelling, Robby	MIA	P	326.18	70	521		352		
@@ -619,7 +619,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 618	11645	Hamilton, David	MLW	2B	581.44	364	600		129		
 619	11629	Yoshida, Masataka	BOS	UT	581.66	357	600		129		
 620	11401	Sears, JP	SD	P	581.83	343	599		122		
-621	11736	Encarnacion-Strand, Christian	CIN	1B	582.11	343	600		110		
+621	11736	Encarnacion-Strand, Christian	BAL	1B	582.11	343	600		110		
 622	12450	Crooks, Jimmy	STL	C	582.32	271	600		125		
 623	11863	Gipson-Long, Sawyer	DET	P	582.57	405	599		94		
 624	12439	Karros, Kyle	COL	3B	582.84	411	600		122		
@@ -798,7 +798,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 797	11156	Peraza, Oswald	LAA	2B, 3B	599.52	407	576		7		
 798	12392	Tidwell, Blade	SF	P	599.54	495	600		16		
 799	10259	Gray, Josiah	WAS	P	599.55	515	599		19		
-800	8919	Pham, Tommy	PIT	OF	599.55	485	597		11		
+800	8919	Pham, Tommy	NYM	OF	599.55	485	597		11		
 801	8679	Smith, Dominic	ATL	1B	599.55	484	592		12		
 802	6696	McCutchen, Andrew	TEX	UT	599.56	522	599		16		
 803	11988	Teng, Kai-Wei	HOU	P	599.57	494	598		13		

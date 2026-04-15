@@ -564,7 +564,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 563	12367	Clark, Max	DET	OF	553.49	350	600		243		
 564	10725	Rogers, Tyler	TOR	P	555.33	317	600		221		
 565	9788	Bauers, Jake	MLW	OF, 1B	555.93	375	600		249		
-566	11038	Gonzales, Nick	PIT	2B	557.00	413	600		247		
+566	11038	Gonzales, Nick	PIT	3B, 2B	557.00	413	600		247		
 567	11742	Davis, Henry	PIT	C	557.18	299	600		249		
 568	10210	Conine, Griffin	MIA	OF	557.19	349	599		241		
 569	11528	Gaddis, Hunter	CLE	P	558.13	361	599		245		
@@ -808,7 +808,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 807	12503	Susac, Daniel	SF	C	599.60	505	600		11		
 808	12277	Avila, Luinder	KC	P	599.62	539	597		26		
 809	12213	Bradfield, Enrique	BAL	OF	599.62	455	600		10		
-810	11145	Yorke, Nick	PIT	2B	599.62	408	595		9		
+810	11145	Yorke, Nick	PIT	3B, 2B	599.62	408	595		9		
 811	11399	Outman, James	MIN	OF	599.63	398	590		10		
 812	12167	Sabrowski, Erik	CLE	P	599.63	465	598		7		
 813	11779	Feduccia, Hunter	TB	C	599.63	540	596		17		
@@ -954,7 +954,7 @@ Rank	Player ID	Player	Team	Position(s)	ADP	Min Pick	Max Pick	Difference	# Picks	
 953	11383	Tena, Jose	WAS	3B	600.74	510	510		1		
 954	11141	Johnson, Seth	PHI	P	600.74	548	564		2		
 955	10230	Kelenic, Jarred	ATL	OF	600.75	563	591		4		
-956	9805	Wisdom, Patrick	CHC	1B	600.75	544	595		3		
+956	9805	Wisdom, Patrick	SEA	1B	600.75	544	595		3		
 957	12049	Locklear, Tyler	ARZ	1B	600.76	555	599		4		
 958	10608	Helman, Michael	TEX	OF	600.76	546	570		2		
 959	11938	Thompson, Sterlin	COL	OF	600.76	528	590		2		

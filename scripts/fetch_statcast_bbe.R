@@ -5,7 +5,7 @@ parsed <- parse_cli_args(list(
   output_csv      = list(flag = "--output",          default = file.path("data", "raw", "statcast_bbe_store.csv")),
   chunks_dir      = list(flag = "--chunks-dir",      default = file.path("data", "raw", "statcast_bbe_store_chunks")),
   start_season    = list(flag = "--start-season",    default = 2015, type = "numeric"),
-  end_season      = list(flag = "--end-season",      default = 2025, type = "numeric"),
+  end_season      = list(flag = "--end-season",      default = as.integer(format(Sys.Date(), "%Y")), type = "numeric"),
   exclude_seasons = list(flag = "--exclude-seasons", default = "2020"),
   step_days       = list(flag = "--step-days",       default = 5, type = "numeric"),
   max_time        = list(flag = "--max-time",        default = 90, type = "numeric"),
@@ -439,9 +439,27 @@ for (i in seq_len(nrow(chunks))) {
   chunk_has_cols <- chunk_file_has_required_columns(chunk_file, req_chunk_cols)
   chunk_usable <- chunk_exists && chunk_has_cols
 
-  if (!force && chunk_usable && (is.na(prior_status) || identical(prior_status, "ok"))) {
+  # Skip chunks that start in the future — no data exists yet.
+  chunk_start_date <- as.Date(ch$chunk_start)
+  chunk_end_date   <- as.Date(ch$chunk_end)
+  if (!is.na(chunk_start_date) && chunk_start_date > Sys.Date()) {
+    message(sprintf("[%s/%s] chunk %s starts in the future (%s); skipping.", i, nrow(chunks), chunk_id, ch$chunk_start))
+    next
+  }
+
+  # Re-fetch chunks whose end date is within the last 10 days — they may
+  # have been cached when data was incomplete or not yet available on Savant.
+  chunk_is_recent <- !is.na(chunk_end_date) &&
+    chunk_end_date >= (Sys.Date() - 10) &&
+    chunk_end_date <= Sys.Date()
+
+  if (!force && !chunk_is_recent && chunk_usable && (is.na(prior_status) || identical(prior_status, "ok"))) {
     message(sprintf("[%s/%s] chunk %s already complete; skipping.", i, nrow(chunks), chunk_id))
     next
+  }
+
+  if (!force && chunk_is_recent && chunk_usable) {
+    message(sprintf("[%s/%s] chunk %s is recent (end=%s); re-fetching for freshness.", i, nrow(chunks), chunk_id, ch$chunk_end))
   }
 
   if (!force && chunk_exists && !chunk_has_cols) {

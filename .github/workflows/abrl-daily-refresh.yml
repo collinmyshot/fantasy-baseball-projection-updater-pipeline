@@ -1,0 +1,88 @@
+name: Daily aBrl Refresh + Deploy
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run daily at 10:00 UTC (3 AM PDT / 2 AM PST).
+    # Active mid-March through early October (MLB regular season window).
+    - cron: '0 10 15-31 3 *'    # Mar 15-31
+    - cron: '0 10 * 4,5,6,7,8,9 *'  # Apr through Sep (all days)
+    - cron: '0 10 1-10 10 *'    # Oct 1-10 (covers end of regular season)
+
+permissions:
+  contents: write
+
+concurrency:
+  group: abrl-daily-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh_abrl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install R deps
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::dplyr
+            any::readr
+            any::tidyr
+            any::jsonlite
+            any::googlesheets4
+            any::rsconnect
+
+      - name: Write Google service account key
+        env:
+          GSHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GSHEETS_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$GSHEETS_SERVICE_ACCOUNT_JSON" ]; then
+            echo "Missing required secret: GSHEETS_SERVICE_ACCOUNT_JSON" >&2
+            exit 1
+          fi
+          KEY_FILE="$RUNNER_TEMP/gsheets-service-account.json"
+          printf '%s' "$GSHEETS_SERVICE_ACCOUNT_JSON" > "$KEY_FILE"
+          echo "GSHEETS_SERVICE_ACCOUNT_FILE=$KEY_FILE" >> "$GITHUB_ENV"
+
+      - name: Run aBrl pipeline (fetch + build + sheets + copy)
+        run: Rscript scripts/run_abrl_pipeline.R --current-season-only
+
+      - name: Commit updated data
+        run: |
+          if [ -z "$(git status --porcelain data .claude/worktrees/frosty-moore/fbb-tools/data)" ]; then
+            echo "No data changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data .claude/worktrees/frosty-moore/fbb-tools/data
+          git commit -m "chore: daily aBrl refresh ($(date -u +%Y-%m-%d))"
+          git push
+
+      - name: Deploy fbb-tools to shinyapps.io
+        env:
+          SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
+          SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+        run: |
+          Rscript -e "
+            rsconnect::setAccountInfo(
+              name   = Sys.getenv('SHINYAPPS_ACCOUNT'),
+              token  = Sys.getenv('SHINYAPPS_TOKEN'),
+              secret = Sys.getenv('SHINYAPPS_SECRET')
+            )
+            rsconnect::deployApp(
+              appDir  = '.claude/worktrees/frosty-moore/fbb-tools',
+              appName = 'fbb-tools',
+              account = Sys.getenv('SHINYAPPS_ACCOUNT'),
+              forceUpdate = TRUE
+            )
+          "

@@ -28,6 +28,13 @@ norm_name <- function(x) tolower(trimws(gsub("[^a-z ]", "", iconv(x, to="ASCII//
 # ── CONFIG — update each swap ─────────────────────────────────────────────────
 
 XLSX_PATH <- "/Users/ckaufman/Downloads/auction_values_roto_2026-04-26(5).xlsx"
+if (!file.exists(XLSX_PATH)) stop(paste0(
+  "File not found: ", XLSX_PATH, "\n",
+  "  Update XLSX_PATH above with the current filename.\n",
+  "  If you switched machines (Mac ↔ Windows), also update the path prefix:\n",
+  "    Mac:     /Users/ckaufman/Downloads/<filename>\n",
+  "    Windows: C:/Users/Collin/Downloads/<filename>"
+))
 
 # ── ROSTER — update names/boosts each swap ────────────────────────────────────
 # rank_pos:   primary position used for positional rank (C/1B/2B/3B/SS/OF/UT)

@@ -12,7 +12,14 @@ suppressPackageStartupMessages({
   library(dplyr); library(readr); library(jsonlite); library(curl); library(httr)
 })
 
-base <- "/Users/ckaufman/Documents/New project/.claude/worktrees/frosty-moore/fbb-tools"
+base <- tryCatch({
+  normalizePath(file.path(dirname(rstudioapi::getSourceEditorContext()$path), "../.."))
+}, error = function(e) {
+  args <- commandArgs(trailingOnly = FALSE)
+  f    <- grep("^--file=", args, value = TRUE)
+  if (length(f) > 0) normalizePath(file.path(dirname(sub("^--file=", "", f[1])), "../.."))
+  else file.path(getwd(), "fbb-tools")
+})
 source(file.path(base, "R/sp_skillz.R"))
 source(file.path(base, "R/modules/mod_sp_skillz.R"))
 source(file.path(base, "R/modules/mod_team_rater.R"))
@@ -22,6 +29,13 @@ norm_name <- function(x) tolower(trimws(gsub("[^a-z ]", "", iconv(x, to="ASCII//
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 FANTRAX_PATH   <- "/Users/ckaufman/Downloads/Fantrax-Players-A Slog to Rigor Mortis(3).csv"
+if (!file.exists(FANTRAX_PATH)) stop(paste0(
+  "File not found: ", FANTRAX_PATH, "\n",
+  "  Update FANTRAX_PATH above with the current filename.\n",
+  "  If you switched machines (Mac ↔ Windows), also update the path prefix:\n",
+  "    Mac:     /Users/ckaufman/Downloads/<filename>\n",
+  "    Windows: C:/Users/Collin/Downloads/<filename>"
+))
 WEEK1_START    <- "2026-04-27"; WEEK1_END <- "2026-05-03"
 WEEK2_START    <- "2026-05-04"; WEEK2_END <- "2026-05-10"
 RKOVER_MAX     <- 650L     # wire SPs; tighter cap than hitters to avoid deep fringe

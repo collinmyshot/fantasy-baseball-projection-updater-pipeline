@@ -20,7 +20,14 @@ suppressPackageStartupMessages({
   library(dplyr); library(jsonlite); library(curl); library(httr)
 })
 
-base <- "/Users/ckaufman/Documents/New project/.claude/worktrees/frosty-moore/fbb-tools"
+base <- tryCatch({
+  normalizePath(file.path(dirname(rstudioapi::getSourceEditorContext()$path), "../.."))
+}, error = function(e) {
+  args <- commandArgs(trailingOnly = FALSE)
+  f    <- grep("^--file=", args, value = TRUE)
+  if (length(f) > 0) normalizePath(file.path(dirname(sub("^--file=", "", f[1])), "../.."))
+  else file.path(getwd(), "fbb-tools")
+})
 source(file.path(base, "R/sp_skillz.R"))
 source(file.path(base, "R/modules/mod_sp_skillz.R"))
 source(file.path(base, "R/modules/mod_team_rater.R"))

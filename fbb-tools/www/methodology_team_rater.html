@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Rater Methodology — CollinMyShot FBB Tools</title>
+<style>
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.8;
+    color: #222;
+    background: #fff;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+
+  h1 {
+    font-family: Georgia, serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    color: #111;
+  }
+
+  .byline {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0 0 2.5rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: Georgia, serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin: 2.8rem 0 0.8rem;
+    color: #111;
+    border-bottom: 2px solid #e8e4d8;
+    padding-bottom: 0.4rem;
+  }
+
+  h3 {
+    font-family: Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 2rem 0 0.5rem;
+    color: #222;
+    font-style: italic;
+  }
+
+  p {
+    margin: 0 0 1.2rem;
+    color: #2a2a2a;
+  }
+
+  .lede {
+    font-size: 1.05rem;
+    color: #444;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+  }
+
+  thead tr {
+    background: #f2ede2;
+    border-bottom: 2px solid #d5ccb4;
+  }
+
+  th {
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid #ece8dc;
+    color: #2a2a2a;
+    vertical-align: top;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:nth-child(even) td {
+    background: #faf8f3;
+  }
+
+  .formula-block {
+    background: #f8f5ef;
+    border-left: 4px solid #c8a96e;
+    border-radius: 0 6px 6px 0;
+    padding: 0.9rem 1.4rem;
+    margin: 1.4rem 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.92rem;
+    color: #3a2a0a;
+    line-height: 1.9;
+  }
+
+  ul {
+    margin: 0 0 1.2rem;
+    padding-left: 1.5rem;
+  }
+
+  ul li {
+    margin-bottom: 0.4rem;
+    color: #2a2a2a;
+  }
+
+  a {
+    color: #9a7b3a;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  a:hover {
+    color: #7a5210;
+  }
+
+  .stat-label {
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e8e4d8;
+    margin: 3rem 0;
+  }
+
+  .footer-note {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.82rem;
+    color: #999;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e8e4d8;
+  }
+</style>
+</head>
+<body>
+
+<h1>The Team Rater: Ranking All 30 MLB Offenses for Pitcher Streaming</h1>
+<p class="byline">Methodology Series &middot; Part III &mdash; Team Offensive Index</p>
+
+<p class="lede">When evaluating a starting pitcher as a streaming option, one of the most important variables is the quality of opponent. Looking at team wOBA can give a good estimate, but we can do better! With this goal in mind, I created a Team Rater index to identify strong targets and avoids for streaming pitcher matchups.</p>
+
+<p>This Team Rater feeds directly into the SP Streamonator tool as one of its three core inputs (along with SP Skillz and Park Factor), but it also stands on its own as a quick reference for any situation where you need a fast, data-driven read on which offenses are impotent and which are dangerous for your streaming decisions.</p>
+
+<hr>
+
+<h2>What the Index Measures</h2>
+
+<p>The goal of the Team Rater Index is to create a single number on a "+" scale (like wRC+, OPS+, etc.) centered around league average = 100, that quickly identifies and ranks teams based on how confident you should feel when streaming a pitcher against them.</p>
+
+<p>In a fantasy-specific context, this requires variables that directly connect with pitching volatility: on-base ability (BB%, wOBA), strikeout likelihood (K%), blow-up potential (HR), and overall team offense quality (wOBA, R).</p>
+
+<p>Z-scoring and summing these inputs (HR, R, BB%, K%, and wOBA) produces a composite offensive index for all 30 MLB teams across four separate contexts that are specifically relevant when making streaming decisions: full season to date, last 30 days, vs. LHP, and vs. RHP.</p>
+
+<p>The FanGraphs Team Batting Leaderboard used as the data source can be found <a href="https://www.fangraphs.com/leaders/major-league?pos=all&stats=bat&lg=all&qual=0&ind=0&team=0%2Cts&rost=0&filter=&players=0&type=c%2C6%2C11%2C12%2C34%2C35%2C50&month=0&v_cr=202301&startdate=&enddate=&season1=2026&season=2026">here</a>.</p>
+
+<hr>
+
+<h2>How the Index is Calculated</h2>
+
+<p>For each of the five stats, mean and standard deviation are calculated across all 30 teams. Each team then gets a z-score for that stat:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Stat</th>
+      <th>Direction</th>
+      <th>Why</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>HR</td><td>Higher = better</td><td>Raw power production</td></tr>
+    <tr><td>R</td><td>Higher = better</td><td>Run-scoring ability</td></tr>
+    <tr><td>BB%</td><td>Higher = better</td><td>Plate discipline and on-base</td></tr>
+    <tr><td>K%</td><td>Lower = better</td><td>Contact quality, fewer outs</td></tr>
+    <tr><td>wOBA</td><td>Higher = better</td><td>Overall offensive value</td></tr>
+  </tbody>
+</table>
+
+<p>Each team's raw Team Rater z-score is computed as an equal (non-weighted) sum of its component z-scores.</p>
+
+<p>The raw z-score sum is then standardized to produce the final index:</p>
+
+<div class="formula-block">
+  Index = 100 + ((composite z &minus; mean of all 30 composite z scores) / SD of all 30 composite z scores) &times; 10
+</div>
+
+<p>This produces a scale where:</p>
+<ul>
+  <li><strong>100</strong> = exactly league average</li>
+  <li><strong>&plusmn;10 points</strong> = &plusmn;1 standard deviation from the mean</li>
+</ul>
+
+<hr>
+
+<h2>How I Use This In My Own Process</h2>
+
+<p>The overarching goal is to make the Team Rater Index itself a useful number at-a-glance. However, the index can be useful beyond that single output. Here are a few other use cases for the Team Rater.</p>
+
+<p><span class="stat-label">Matching pitcher profile to opponent tendencies.</span> When choosing a streaming pitcher, you can dig deeper than just the overall number. If I am considering a SP with a high walk rate, I will often check this against the BB% component of the leaderboard and be extra cautious about a team with a high BB% even if their overall Team Rater Index is average or below, as their team strength aligns poorly with this streaming SP's weakness. The inverse can also be true. A high-BB% pitcher going against a team who seems allergic to taking a walk could be a particularly interesting start that is not captured by the overall Team Rater Index.</p>
+
+<p><span class="stat-label">Identifying surging or slumping offenses.</span> The Last 30 Days split is especially helpful mid-season. A team that gets off to a hot start in April might cool off dramatically in May, or suffer some significant injury that impacts lineup quality. Comparing Season to Date vs. Last 30 Days gives you a quick read on whether a team's current trajectory matches their season-long reputation. A team at 108 full-season but 89 over the last 30 days is potentially less risky than you might realize.</p>
+
+<p><span class="stat-label">Chasing strikeouts against high-K offenses.</span> Often, streaming SPs off the wire are available because they are not very good, especially at generating whiffs. Identifying teams that strike out at a greater than average clip can be a way to sneak a 5-6 K game out of a pitcher who normally does not profile as a K/IP type of arm.</p>
+
+<p><span class="stat-label">Handedness-specific targeting.</span> The vs. LHP and vs. RHP splits make the index immediately actionable once you know which side your streaming target throws from. A team might be a perfectly average offense overall but genuinely bad (or terrifyingly good) against same-handed pitching due to roster construction or platoon tendencies. This vLHP/vRHP split may reveal additional streaming opportunities that the full-season composite would otherwise bury.</p>
+
+<hr>
+
+<p class="footer-note">CollinMyShot FBB Tools &middot; Team Rater Methodology &middot; Part III of IV</p>
+
+</body>
+</html>

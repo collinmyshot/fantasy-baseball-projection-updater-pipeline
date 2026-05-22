@@ -50,8 +50,8 @@ pitcher:
     sp_skillz_tab: "Pitcher SP Skillz"
     auto_export: true
   sp_skillz:
-    source_url: "https://www.fangraphs.com/leaders/major-league?pos=all&stats=pit&lg=all&type=c%2C7%2C8%2C14%2C13%2C55%2C57%2C-1%2C6%2C62%2C122%2C42%2C-1%2C120%2C331%2C121%2C29%2C31%2C-1%2C105%2C110%2C-1%2C386%2C387%2C388&month=0&ind=0&team=0&rost=0&age=0&filter&players=0&startdate&enddate&v_cr=legacy&qual=5&season1=2025&season=2025"
-    lookback_season: 2025
+    source_url: "https://www.fangraphs.com/leaders/major-league?pos=all&stats=pit&lg=all&type=c%2C7%2C8%2C14%2C13%2C55%2C57%2C-1%2C6%2C62%2C122%2C42%2C-1%2C120%2C331%2C121%2C29%2C31%2C-1%2C105%2C110%2C-1%2C386%2C387%2C388&month=0&ind=0&team=0&rost=0&age=0&filter&players=0&startdate&enddate&v_cr=legacy&qual=0&season1=2026&season=2026"
+    lookback_season: 2026
     num_teams: 15
     sp_depth: 10
     start_share_min: 0.67

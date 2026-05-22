@@ -44,39 +44,186 @@ TOOL_CATALOG <- list(
     category  = "In-Season Tools",
     cat_id    = "inseason",
     emoji     = "\U0001F4CA",
-    cat_desc  = "Real-time tools for managing and optimizing your roster",
+    cat_desc  = "Rest-of-season projections, player evaluation, and team rankings",
     tools = list(
       list(
-        nav_value = "sp_skillz",
-        name      = "SP Skillz",
-        desc      = "Pitcher evaluation via weighted metrics and reliability scoring",
+        nav_value = "inseason_lab",
+        name      = "RoS Projection Values",
+        desc      = "Rest-of-season projections: aggregate across systems, calculate values, and compare players",
         status    = "available"
       ),
       list(
-        nav_value = "sp_stream",
-        name      = "SP Streamonator",
-        desc      = "Streaming SP recommendations based on schedule and matchup data",
-        status    = "soon"
+        nav_value = "player_rater",
+        name      = "Player Rater",
+        desc      = "Season-to-date player performance ratings across counting stats and rate metrics",
+        status    = "available"
       ),
       list(
-        nav_value = "hit_stream",
-        name      = "Hitter Streamonator",
-        desc      = "Streaming hitter recommendations using park factors and platoon splits",
-        status    = "soon"
+        nav_value = "team_rater",
+        name      = "Team Rater",
+        desc      = "MLB team offense ranked by composite z-score across HR, R, BB%, K%, and wOBA",
+        status    = "available"
       )
     )
   ),
 
   list(
-    category  = "Park Factors",
-    cat_id    = "park",
-    emoji     = "\U0001F3DF\uFE0F",
-    cat_desc  = "Stadium-level analysis to inform fantasy decisions",
+    category  = "Leaderboards",
+    cat_id    = "leaderboards",
+    emoji     = "\U0001F3C6",
+    cat_desc  = "Pitcher and hitter leaderboards with park context",
     tools = list(
       list(
+        nav_value = "sp_skillz",
+        name      = "SP Skillz",
+        desc      = "Starting pitcher quality index via weighted metrics, IP paradigms, and reliability scoring",
+        status    = "available"
+      ),
+      list(
+        nav_value = "rp_skillz",
+        name      = "RP Skillz",
+        desc      = "Reliever quality index \u2014 velo, Stuff+, K%, CSW%, Shutdowns\u2013Meltdowns, and gmLI",
+        status    = "available"
+      ),
+      list(
+        nav_value = "gsm",
+        name      = "Good Start Metric",
+        desc      = "Per-start quality score (0\u20134): IP, K rate, ER (sliding), and WHIP. GSM% = starts scoring 3+.",
+        status    = "available"
+      ),
+      list(
+        nav_value = "hit_dashboard",
+        name      = "Hitter Dashboard",
+        desc      = "Statcast-powered hitter leaderboard: Luck, Power, and Plate Skills with xBA, Barrel%, and more",
+        status    = "available"
+      ),
+      list(
+        nav_value = "pit_dashboard",
+        name      = "Pitcher Dashboard",
+        desc      = "Statcast + FanGraphs + PitchingBot pitcher leaderboard: K%, command, ERA estimators, and Stuff+",
+        status    = "available"
+      ),
+      list(
         nav_value = "park_factors",
-        name      = "Park Factor Tool",
+        name      = "Park Factors",
         desc      = "Hierarchical park factor model with fantasy-weighted BACON, HR, and XBH components",
+        status    = "available"
+      ),
+      list(
+        nav_value = "abrl_leaderboard",
+        name      = "Adjusted Barrels (aBrl)",
+        desc      = "Season-adjusted barrel rates with player trends and % lost to park/environment",
+        status    = "available"
+      )
+    )
+  ),
+
+  list(
+    category  = "Streamonators",
+    cat_id    = "streamonators",
+    emoji     = "\U0001F30A",
+    cat_desc  = "Weekly streaming recommendations powered by schedule, skill, and matchup data",
+    tools = list(
+      list(
+        nav_value = "sp_stream",
+        name      = "SP Streamonator",
+        desc      = "Streaming SP recommendations based on schedule, SP Skillz, park factors, and opponent quality",
+        status    = "available"
+      ),
+      list(
+        nav_value = "hit_stream",
+        name      = "Hitter Streamonator",
+        desc      = "Streaming hitter recommendations using park factors and platoon splits",
+        status    = "available"
+      ),
+      list(
+        nav_value = "sp_outlook",
+        name      = "SP Outlook",
+        desc      = "Forward-looking SP start matrix \u2014 confirmed probables and projected starts ranked by SP Skillz",
+        status    = "available"
+      )
+    )
+  ),
+
+  list(
+    category  = "Methodology",
+    cat_id    = "methodology",
+    emoji     = "\U0001F4D6",
+    cat_desc  = "How the models work: detailed write-ups on scoring, weights, and validation",
+    tools = list(
+      list(
+        nav_value = "methodology_streamonator_appendix",
+        name      = "Streamonator: Weights & Thresholds",
+        desc      = "Weight derivation and threshold validation for the SP and Hitter Streamonators",
+        status    = "available"
+      ),
+      list(
+        nav_value = "methodology_sp_skillz",
+        name      = "SP Skillz",
+        desc      = "SP Skillz scoring methodology, metric weights, and reliability framework",
+        status    = "available"
+      ),
+      list(
+        nav_value = "methodology_park_factors",
+        name      = "Park Factors",
+        desc      = "Hierarchical Bayesian park factor model: estimation, priors, and fantasy weighting",
+        status    = "available"
+      ),
+      list(
+        nav_value = "methodology_team_rater",
+        name      = "Team Rater",
+        desc      = "Team offensive strength composite: z-score methodology and component weights",
+        status    = "available"
+      ),
+      list(
+        nav_value = "methodology_hitter",
+        name      = "Hitter Valuation",
+        desc      = "Projection aggregation, z-score normalization, and dollar value conversion",
+        status    = "available"
+      )
+    )
+  ),
+
+  list(
+    category  = "Research",
+    cat_id    = "research",
+    emoji     = "\U0001F52C",
+    cat_desc  = "Interactive explorations of Statcast data, pitch modeling, and park effects",
+    tools = list(
+      list(
+        nav_value = "research_hr_ev",
+        name      = "HR\u2013EV Relationship",
+        desc      = "How exit velocity relates to home run probability across launch angles",
+        status    = "available"
+      ),
+      list(
+        nav_value = "research_bat_speed",
+        name      = "Bat Speed & EV",
+        desc      = "Bat speed as a predictor of exit velocity and power output",
+        status    = "available"
+      ),
+      list(
+        nav_value = "research_csw",
+        name      = "Pitcher K% Prediction",
+        desc      = "CSW%, SwStr%, and other correlates of pitcher strikeout rate",
+        status    = "available"
+      ),
+      list(
+        nav_value = "research_hitter_whiff",
+        name      = "Hitter K% Prediction",
+        desc      = "Swing-and-miss drivers of hitter strikeout rate from a batter\u2019s perspective",
+        status    = "available"
+      ),
+      list(
+        nav_value = "research_park_hr_barrel",
+        name      = "Park HR/Barrel",
+        desc      = "How park dimensions and environment affect home run rate per barrel",
+        status    = "available"
+      ),
+      list(
+        nav_value = "research_adj_barrel",
+        name      = "Adjusted Barrels (aBrl)",
+        desc      = "The aBrl research article: why standard barrels mislead and how the adjustment works",
         status    = "available"
       )
     )
@@ -111,23 +258,19 @@ tool_row_ui <- function(ns, tool) {
   )
 }
 
-category_card_ui <- function(ns, cat) {
-  card(
-    class = paste0("cat-card cat-card-", cat$cat_id),
-    full_screen = FALSE,
-    card_header(
-      class = "cat-card-header",
+category_accordion_panel <- function(ns, cat) {
+  accordion_panel(
+    title = div(
+      class = "cat-header-inner",
+      tags$span(class = "cat-emoji", cat$emoji),
       div(
-        class = "cat-header-inner",
-        tags$span(class = "cat-emoji", cat$emoji),
-        div(
-          h3(class = "cat-name", cat$category),
-          p(class = "cat-desc", cat$cat_desc)
-        )
+        h3(class = "cat-name", cat$category),
+        p(class = "cat-desc", cat$cat_desc)
       )
     ),
-    card_body(
-      class = "cat-card-body",
+    value = cat$cat_id,
+    div(
+      class = paste0("cat-card-body cat-card-body-", cat$cat_id),
       tagList(lapply(cat$tools, tool_row_ui, ns = ns))
     )
   )
@@ -142,18 +285,63 @@ homeUI <- function(id) {
     # ── Hero ──────────────────────────────────────────────────────────────────
     div(
       class = "home-hero",
-      tags$img(src = "logo_collinmyshot.png", class = "hero-logo", alt = "Collinmyshot Fantasy Baseball")
+      div(
+        class = "hero-logo-wrap",
+        tags$img(src = "logo_collinmyshot.png", class = "hero-logo", alt = "Collinmyshot Fantasy Baseball"),
+        tags$span(class = "hero-est", "Est. 2026")
+      ),
+      p(
+        class = "hero-tagline",
+        "Player Valuation",
+        tags$span(class = "hero-dot", "\u00b7"),
+        "Pitcher Skillz",
+        tags$span(class = "hero-dot", "\u00b7"),
+        "Leaderboards",
+        tags$span(class = "hero-dot", "\u00b7"),
+        "Streamonators"
+      )
     ),
 
-    # ── Tool Cards ────────────────────────────────────────────────────────────
+    # ── Tool Accordions ──────────────────────────────────────────────────────
     div(
       class = "home-tools-section",
       p(class = "tools-section-label", "Available Tools"),
-      do.call(
-        layout_columns,
-        c(
-          list(col_widths = c(4, 4, 4), gap = "20px"),
-          lapply(TOOL_CATALOG, category_card_ui, ns = ns)
+      layout_columns(
+        col_widths = c(6, 6),
+        gap = "20px",
+
+        # Left column: Draft, Leaderboards, Methodology
+        div(
+          class = "home-accordion-col",
+          do.call(
+            accordion,
+            c(
+              list(id = ns("acc_left"), open = FALSE, multiple = TRUE,
+                   class = "home-accordion"),
+              lapply(
+                TOOL_CATALOG[vapply(TOOL_CATALOG, function(x)
+                  x$cat_id %in% c("draft", "leaderboards", "methodology"), logical(1))],
+                category_accordion_panel, ns = ns
+              )
+            )
+          )
+        ),
+
+        # Right column: In-Season, Streamonators, Research
+        div(
+          class = "home-accordion-col",
+          do.call(
+            accordion,
+            c(
+              list(id = ns("acc_right"), open = FALSE, multiple = TRUE,
+                   class = "home-accordion"),
+              lapply(
+                TOOL_CATALOG[vapply(TOOL_CATALOG, function(x)
+                  x$cat_id %in% c("inseason", "streamonators", "research"), logical(1))],
+                category_accordion_panel, ns = ns
+              )
+            )
+          )
         )
       )
     )

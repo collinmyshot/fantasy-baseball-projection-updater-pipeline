@@ -46,7 +46,7 @@ read_year <- function(year) {
     xfip = suppressWarnings(as.numeric(d$xFIP)),
     k_minus_bb_pct = suppressWarnings(as.numeric(d[["K-BB%"]])),
     contact_pct = suppressWarnings(as.numeric(d[["Contact%"]])),
-    csw_pct = suppressWarnings(as.numeric(d[["C+SwStr%"]])),
+    swstr_pct = suppressWarnings(as.numeric(d[["SwStr%"]])),
     balls = suppressWarnings(as.numeric(d$Balls)),
     pitches = suppressWarnings(as.numeric(d$Pitches)),
     ball_pct = NA_real_,
@@ -101,7 +101,7 @@ pairs$profile <- ifelse(
   ifelse(!is.na(pairs$start_ip) & pairs$start_ip >= sp$high_ip_min_start_ip, "high_ip", "blended_ip")
 )
 
-metrics <- c("siera", "xfip", "k_minus_bb_pct", "contact_pct", "csw_pct", "ball_pct", "stuff_plus", "pitching_plus")
+metrics <- c("siera", "xfip", "k_minus_bb_pct", "contact_pct", "swstr_pct", "ball_pct", "stuff_plus", "pitching_plus")
 targets <- c("next_era", "next_whip", "next_k_pct")
 target_sign <- c(next_era = -1, next_whip = -1, next_k_pct = 1) # lower-better targets get -1
 metric_quality_sign <- c(
@@ -109,7 +109,7 @@ metric_quality_sign <- c(
   xfip = -1,
   k_minus_bb_pct = 1,
   contact_pct = -1,
-  csw_pct = 1,
+  swstr_pct = 1,
   ball_pct = -1,
   stuff_plus = 1,
   pitching_plus = 1

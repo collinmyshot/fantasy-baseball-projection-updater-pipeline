@@ -1,0 +1,7 @@
+predictor,target,r,r_sq
+SwStr%,K%,0.838,0.703
+SwStr%,SIERA,-0.701,0.491
+CSW%,K%,0.825,0.68
+CSW%,SIERA,-0.754,0.568
+Whiff%,K%,0.872,0.761
+Whiff%,SIERA,-0.674,0.454

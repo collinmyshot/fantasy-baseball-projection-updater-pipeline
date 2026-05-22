@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SP Skillz Methodology — CollinMyShot FBB Tools</title>
+<style>
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.8;
+    color: #222;
+    background: #fff;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+
+  h1 {
+    font-family: Georgia, serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    color: #111;
+  }
+
+  .byline {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0 0 2.5rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: Georgia, serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin: 2.8rem 0 0.8rem;
+    color: #111;
+    border-bottom: 2px solid #e8e4d8;
+    padding-bottom: 0.4rem;
+  }
+
+  h3 {
+    font-family: Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 2rem 0 0.5rem;
+    color: #222;
+    font-style: italic;
+  }
+
+  p {
+    margin: 0 0 1.2rem;
+    color: #2a2a2a;
+  }
+
+  .lede {
+    font-size: 1.05rem;
+    color: #444;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+  }
+
+  thead tr {
+    background: #f2ede2;
+    border-bottom: 2px solid #d5ccb4;
+  }
+
+  th {
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid #ece8dc;
+    color: #2a2a2a;
+    vertical-align: top;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:nth-child(even) td {
+    background: #faf8f3;
+  }
+
+  .formula-block {
+    background: #f8f5ef;
+    border-left: 4px solid #c8a96e;
+    border-radius: 0 6px 6px 0;
+    padding: 0.9rem 1.4rem;
+    margin: 1.4rem 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.92rem;
+    color: #3a2a0a;
+    line-height: 1.9;
+  }
+
+  .stat-label {
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  a {
+    color: #9a7b3a;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  a:hover {
+    color: #7a5210;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e8e4d8;
+    margin: 3rem 0;
+  }
+
+  .footer-note {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.82rem;
+    color: #999;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e8e4d8;
+  }
+</style>
+</head>
+<body>
+
+<h1>SP Skillz: Evaluating Starting Pitchers on Skill, Not Outcomes</h1>
+<p class="byline">Methodology Series &middot; Part I &mdash; Pitcher Skill Index</p>
+
+<p>Starting pitcher evaluation is uniquely difficult in fantasy baseball. ERA and WHIP are noisy outputs that are heavily influenced by defense, ballpark, and batted ball luck entirely outside of a pitcher's control. But even after controlling for those factors, analysts are still faced with the reality that pitchers actually change. And can change both rapidly and significantly. Altering pitch mix, tweaking a pitch grip, adding two extra miles per hour in spring training &mdash; any of these can make last year's stats irrelevant almost overnight. The goal of the SP Skillz Index is to create a single-number reference that estimates a pitcher's &ldquo;True Talent&rdquo; for fantasy baseball specifically.</p>
+
+<p>Corbin Burnes posted an 8.82 ERA in 2019, overhauled his pitch mix, and then posted a 2.86 ERA over the next four years with a Cy Young in the middle. Hunter Brown carried a 9.78 ERA through his first six starts of 2024, added a sinker on May 5th, and went 2.51 ERA over his remaining starts that year. In 2025, he was 2.43. In both cases (and many others), there were pitch-level metrics that reflected the real talent well before the ERA did.</p>
+
+<p>SP Skillz produces a single composite index score for every qualifying SP, built from eight metrics that collectively predict future ERA, WHIP, and strikeout rate better than any individual component.</p>
+
+<hr>
+
+<h2>What the Score Measures</h2>
+
+<p>Like any &ldquo;+&rdquo; metric (OPS+, wRC+, etc.), the SP Skillz Index is centered at 100, where 100 is exactly the starter pool average and every 10 points represents roughly one standard deviation.</p>
+
+<p>The eight metrics that feed the score were chosen because they measure process rather than results. ERA tells you what happened. These metrics tell you how the pitcher is actually throwing the ball.</p>
+
+<hr>
+
+<h2>The Eight Metrics</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Direction</th>
+      <th>What It Captures</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>SIERA</td><td>Lower = better</td><td>Skill-based ERA estimator using K%, BB%, and weak contact rates.</td></tr>
+    <tr><td>xFIP</td><td>Lower = better</td><td>FIP predicts ERA based on HR, K, and BB; xFIP normalizes home run rate to league average to remove HR/FB variance.</td></tr>
+    <tr><td>K-BB%</td><td>Higher = better</td><td>Strikeout rate minus walk rate. Striking guys out and not walking guys is good.</td></tr>
+    <tr><td>Contact%</td><td>Lower = better</td><td>Rate at which batters make contact on swings. Avoiding contact is good.</td></tr>
+    <tr><td>SwStr%</td><td>Higher = better</td><td>Swinging Strike Rate. Percentage of total pitches resulting in a swing and miss. The better K% predictor at every time horizon — same-season, half-to-half, and year-over-year — and stabilizes faster than CSW% (r=0.73 at 50 TBF vs. CSW% requiring ~300 TBF to reach the same threshold).</td></tr>
+    <tr><td>Ball%</td><td>Lower = better</td><td>Balls per pitch thrown. Faster-stabilizing than BB% because it is measured per pitch rather than per plate appearance.</td></tr>
+    <tr><td>Stuff+</td><td>Higher = better</td><td>Pitch-modeling metric measuring raw pitch quality. Heavily influences HR/FB, BABIP, and K%.</td></tr>
+    <tr><td>Pitching+</td><td>Higher = better</td><td>Pitch-modeling that incorporates location data into Stuff+.</td></tr>
+  </tbody>
+</table>
+
+<p>A few of these deserve more explanation.</p>
+
+<p><span class="stat-label">The Best* ERA Estimators: SIERA and xFIP.</span> They are purpose-built to predict future ERA, well-validated in the research, and get more reliable as innings pile up. They form the backbone of the score's ERA-prediction component. xFIP looks at K, BB, and normalizes HR/FB to league average, while SIERA incorporates additional factors like weak contact (GB% and PU%). xERA is a great metric, but it's based on xwOBA which gets updated for league environment at the end of each season, so I prefer run environment-independent estimators for in-season analysis. <em>*available on FanGraphs</em></p>
+
+<p><span class="stat-label">K-BB%: Simple yet extremely effective.</span> K-BB% gets you about 90% of the way to what SIERA and xFIP are trying to measure. Everything else those estimators capture &mdash; ground ball rate, HR/FB normalization &mdash; gets you a little closer to true talent, but K-BB% is a remarkably efficient single number. It stabilizes faster than SIERA or xFIP and is included both on its own merits and because it reinforces the run-prevention signal from the estimators. K% and BB% are not included individually &mdash; they would be redundant with K-BB%, and including them separately would give that underlying signal excess weight in the composite without adding new information.</p>
+
+<p><span class="stat-label">SwStr%: The better K% predictor, and it stabilizes fastest.</span> Swinging Strike Rate measures the percentage of total pitches that result in a swing and miss. Despite being simpler than CSW% (which adds called strikes), SwStr% is the superior K% predictor at every time horizon &mdash; same-season (r=0.838 vs. 0.825), half-to-half (r=0.643 vs. 0.587), and year-over-year (r=0.639 vs. 0.584). It also stabilizes dramatically faster: split-half reliability reaches r=0.73 at just 50 total batters faced, while CSW% doesn&rsquo;t hit that threshold until approximately 300 TBF. CSW% edges SwStr% for SIERA prediction (r=&minus;0.754 vs. &minus;0.701), likely because called strikes capture command information that SwStr% misses &mdash; but SIERA is already represented directly in the composite via its own dedicated weight. These findings come from an internal analysis of FanGraphs pitcher data, 2015&ndash;2025 (excl. 2020), available in the app under Research &rarr; CSW% vs SwStr%.</p>
+
+<p><span class="stat-label">Small-Sample Signal: Stuff+ and Pitching+.</span> These pitch-modeling metrics stabilize quickly because they are derived from pitch characteristics (velocity, movement, release point, extension, etc.) rather than outcomes. This is how the SP Skillz model can be so quick to identify real signal in changes to a pitcher's arsenal. When Cristopher Sanchez showed up to 2025 spring training throwing 97-98 mph on a fastball that averaged 94.5 mph the year before, his Stuff+ jumped from 107 in 2024 to 118 in 2025 &mdash; a full standard deviation improvement that showed up within his first handful of starts. He went on to post a 26.3% K rate (up from 20.3%) and a 2.50 ERA, finishing as the NL Cy Young runner-up. ERA would have taken months to confirm what the pitch metrics flagged almost immediately.</p>
+
+<p><span class="stat-label">Don't forget about WHIP: Ball%.</span> Command directly drives walk rate, and walks drive WHIP. Walks also increase pitch counts and prevent pitchers from going deep into games, and all those extra baserunners have chances to score. Ball% was chosen over BB% because (i) BB% is already included in K-BB%, and (ii) it stabilizes quickly due to its per-pitch denominator.</p>
+
+<hr>
+
+<h2>How Fast Do These Metrics Stabilize?</h2>
+
+<p>One of the core design goals of SP Skillz is actionability at any point in the season &mdash; including the first 1-3 starts for prospect call-ups, returns from injury, and to help identify pitchers who are good trade-for or trade-away candidates. The component metrics become reliable at different rates. The table below shows the stabilization point for each metric and roughly how many starts that equates to.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Stabilization Point</th>
+      <th>Sample Unit</th>
+      <th>Approx. Starts to Stabilize</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Stuff+</td><td>100</td><td>Pitches</td><td>1-2 starts</td></tr>
+    <tr><td>Ball%</td><td>150</td><td>Pitches</td><td>1-2 starts</td></tr>
+    <tr><td>SwStr%</td><td>100</td><td>Pitches</td><td>1-2 starts</td></tr>
+    <tr><td>Pitching+</td><td>300</td><td>Pitches</td><td>3-4 starts</td></tr>
+    <tr><td>K-BB%</td><td>120</td><td>Batters faced</td><td>4-5 starts</td></tr>
+    <tr><td>SIERA</td><td>30</td><td>Start-IP</td><td>5-6 starts</td></tr>
+    <tr><td>xFIP</td><td>30</td><td>Start-IP</td><td>5-6 starts</td></tr>
+    <tr><td>Contact%</td><td>300</td><td>Batters faced</td><td>10-12 starts</td></tr>
+    <tr><td><strong>SP Skillz (Low-IP)</strong></td><td>&mdash;</td><td>Composite</td><td><strong>2-3 starts</strong></td></tr>
+    <tr><td><strong>SP Skillz (High-IP)</strong></td><td>&mdash;</td><td>Composite</td><td><strong>8-10 starts</strong></td></tr>
+  </tbody>
+</table>
+
+<p>Because of this difference in time-to-stabilization, I split SP Skillz into two models: one for low-IP, and one for high-IP. A pitcher in his first two or three starts has almost no SIERA or xFIP signal worth trusting, but his Stuff+ is already meaningful. The low-IP paradigm heavily weights the fast-stabilizing metrics while minimizing the slower-stabilizing ones. This allows you to make an actionable decision on a given SP as quickly as possible.</p>
+
+<hr>
+
+<h2>How the Score Is Calculated</h2>
+
+<h3>Step 1: Assign each pitcher to an IP paradigm.</h3>
+
+<p>SP Skillz uses an IP-based paradigm split, using Start-IP (innings thrown specifically as a starter) as the threshold:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Start-IP</th>
+      <th>Paradigm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>80 or fewer</td><td>Low-IP</td></tr>
+    <tr><td>100 or more</td><td>High-IP</td></tr>
+    <tr><td>Between 80 and 100</td><td>Blended (linear interpolation)</td></tr>
+  </tbody>
+</table>
+
+<p>The low-IP paradigm up-weights the fast-stabilizing pitch-level and contact metrics and down-weights the ERA estimators that haven't had enough innings to be trusted yet. The high-IP paradigm shifts weight toward SIERA and xFIP &mdash; the robust run-prevention estimators that are most predictive of future performance at full-season scale. The blending zone between 80 and 100 IP linearly interpolates between the two weight sets.</p>
+
+<h3>Step 2: Apply reliability weighting to each metric.</h3>
+
+<p>Every metric also gets an individual reliability score based on how much sample the pitcher has accumulated for that specific metric:</p>
+
+<div class="formula-block">Reliability = sample / (sample + stabilization point)</div>
+
+<p>A pitcher with 10 Start-IP (~2 GS) has a SIERA reliability of 10 / (10 + 30) = 0.25, meaning SIERA contributes only 25% of its full paradigm weight to the composite score. The full weight increases gradually as the pitcher throws more innings.</p>
+
+<h3>Step 3: Z-score each metric and compute the composite.</h3>
+
+<p>Non-plus metrics (SIERA, xFIP, K-BB%, Contact%, SwStr%, Ball%) are z-scored within the starter pool. A pitcher exactly at the pool average on a given metric scores zero for that metric.</p>
+
+<p>Plus metrics (Stuff+, Pitching+) are already designed with 100 as league average and roughly 10 points per standard deviation, so no pool-dependent normalization is needed.</p>
+
+<div class="formula-block">Composite = sum of (z-score &times; effective weight) / sum of |effective weights| &times; scaling constant<br>where effective weight = paradigm weight &times; reliability</div>
+
+<h3>Step 4: Rescale to the 100-point index.</h3>
+
+<div class="formula-block">Index = 100 + ((composite &minus; pool mean) / pool SD) &times; 10</div>
+
+<hr>
+
+<h2>How the Weights Were Derived</h2>
+
+<p>The default weights were not chosen by feel. They were derived from running historical year-over-year correlation analysis (from 2022-2025) to measure how strongly each metric predicted next-year ERA, WHIP, and K%. The three target outcomes were blended with equal weight.</p>
+
+<p>The final weights differ between paradigms because the historical correlations differ at different sample sizes:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Paradigm</th>
+      <th>SIERA</th>
+      <th>xFIP</th>
+      <th>K-BB%</th>
+      <th>Contact%</th>
+      <th>SwStr%</th>
+      <th>Ball%</th>
+      <th>Stuff+</th>
+      <th>Pitching+</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Low-IP</td><td>&minus;0.76</td><td>&minus;0.42</td><td>1.23</td><td>&minus;2.00</td><td>1.76</td><td>&minus;0.01</td><td>1.75</td><td>1.06</td></tr>
+    <tr><td>High-IP</td><td>&minus;1.61</td><td>&minus;1.34</td><td>2.00</td><td>&minus;1.73</td><td>1.84</td><td>&minus;0.58</td><td>1.60</td><td>1.63</td></tr>
+  </tbody>
+</table>
+
+<p>Negative weights indicate metrics where lower values = better pitchers. The near-zero Ball% weight in the low-IP paradigm reflects its limited predictive power in small samples.</p>
+
+<p>The SP Skillz Leaderboard allows for adjustments if you would like to tweak any of these variables to better match your beliefs about the relative importance of each component statistic.</p>
+
+<hr>
+
+<h2>How SP Skillz Feeds the Streamonator</h2>
+
+<p>SP Skillz is one of three inputs to the SP Streamonator's final streaming recommendation, alongside Team Rater (opponent offense) and Park Factor (ballpark environment). When the Streamonator runs, it looks up each pitcher's SP Skillz index and combines it with the opponent's Team Rater composite and the relevant park factor via a weighted average. The weights for all three components default to equal but are user-adjustable.</p>
+
+<p>The Team Rater and Park Factor inputs are inverted before entering the formula (200 minus the index) because stronger opponents and more hitter-friendly parks are bad for the pitcher. SP Skillz is kept as-is because higher skill is better. The result is a Streamer Score where higher always means a better streaming candidate.</p>
+
+<p>Pitchers not found in the SP Skillz starter pool default to an index of 100 and are flagged with an asterisk in the display.</p>
+
+<hr>
+
+<h2>Known Limitations</h2>
+
+<p><span class="stat-label">Skill, not rankings.</span> The SP Skillz Index is a context-independent leaderboard, not a fantasy SP ranking. Think of it like sorting hitters by wOBA &mdash; useful signal, but not a draft board. True SP rankings need to incorporate additional context: team defense, park factors, opponent quality, job security, injury history, and more. SP Skillz isolates one piece of that picture &mdash; how well the pitcher is actually throwing the ball &mdash; and does that one thing as well as possible.</p>
+
+<p><span class="stat-label">No injury tracking.</span> The model uses FanGraphs leaderboard snapshots. If a pitcher is injured mid-season and their stats are frozen, they will hold their last-computed score with no health discount applied. A pitcher who exits a start early with an injury will have that bad outing reflected in the numbers. Similarly, a pitcher returning from the IL who isn't back at full strength will be dinged by the index until his stats recover.</p>
+
+<p><span class="stat-label">Single pool of SP.</span> All qualifying starters are scored against the same pool regardless of role or workload. A five-inning-per-start pitcher and a seven-inning workhorse are compared using the same z-score calculation. I've dabbled with a volume-based and volume-exclusive model in the past and generally found this to be the better approach.</p>
+
+<p><span class="stat-label">Equal sub-model weighting is fixed (for now).</span> The three predicted outcomes (ERA, WHIP, K%) are blended with equal weight in the derivation. Users who care only about strikeouts can't shift that balance, though they can adjust the metric weights manually in the app.</p>
+
+<hr>
+
+<p class="footer-note">CollinMyShot FBB Tools &middot; SP Skillz Methodology &middot; Part I of IV</p>
+
+</body>
+</html>

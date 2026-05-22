@@ -19,12 +19,13 @@ STREAM_MLB_ID_TO_ABR <- c(
   `144`="ATL", `145`="CHW", `146`="MIA", `147`="NYY", `158`="MIL"
 )
 
-STREAM_PF_FILE       <- "data/processed/park_factors/park_factors_savant_style_clean_2026_with_id.csv"
-STREAM_SPZ_2025_FILE <- "data/processed/2025_sp_skillz_scores_2026_plus_model.csv"
+STREAM_PF_FILE        <- "data/processed/park_factors/park_factors_savant_style_clean_2026_with_id.csv"
+STREAM_SPZ_2025_FILE  <- "data/processed/2025_sp_skillz_scores_2026_plus_model.csv"
 STREAM_SPZ_2026_FILES <- list(
   std = "data/processed/2026_sp_skillz_scores_std.csv",
   l30 = "data/processed/2026_sp_skillz_scores_l30.csv"
 )
+STREAM_STUFF_ADJ_FILE <- "data/processed/park_factors/stuff_plus_by_park.csv"
 
 # Team abbrev map: FanGraphs → park factor team_norm
 STREAM_TEAM_MAP <- c(
@@ -129,6 +130,73 @@ stream_load_spz <- function(year = "2025", period = "std") {
   path <- if (year == "2025") STREAM_SPZ_2025_FILE else STREAM_SPZ_2026_FILES[[period]]
   if (is.null(path) || !file.exists(path)) return(NULL)
   tryCatch(read.csv(path, stringsAsFactors = FALSE, check.names = FALSE), error = function(e) NULL)
+}
+
+# Month-based roof rules for retractable parks where open vs closed Stuff+ deltas
+# differ meaningfully.  Months not listed in either vector fall back to the default
+# state (the roof status that has the most starts in the historical data).
+#
+# Sources: general climate knowledge for each city + the n_starts counts in the CSV.
+#   SEA default → open  (691 open vs 132 closed)
+#   TOR default → open  (436 open vs 287 closed)
+#   TEX default → closed (705 closed vs 111 open)
+RETRACTABLE_ROOF_RULES <- list(
+  SEA = list(open_months   = c(6L, 7L, 8L),
+             closed_months = c(3L, 4L, 5L, 9L, 10L),
+             default_roof  = "open"),
+  TOR = list(open_months   = c(6L, 7L, 8L),
+             closed_months = c(3L, 4L, 5L, 9L, 10L),
+             default_roof  = "open"),
+  TEX = list(open_months   = c(3L, 4L),
+             closed_months = c(5L, 6L, 7L, 8L, 9L, 10L),
+             default_roof  = "closed")
+)
+
+# Loads park-level Stuff+ deltas from stuff_plus_by_park.csv.
+# Returns a list:
+#   $fixed       — named numeric vector (team_key → stuff_delta) for parks with a
+#                  single state (outdoor, dome, or most-common-state for minor splits)
+#   $retractable — data frame (team_key, roof_status, stuff_delta) for the three
+#                  parks handled with date-based month rules (SEA, TOR, TEX)
+#   $rules       — RETRACTABLE_ROOF_RULES (passed through for use in stream_build)
+stream_load_stuff_adj <- function() {
+  if (!file.exists(STREAM_STUFF_ADJ_FILE)) return(NULL)
+  df <- tryCatch(
+    read.csv(STREAM_STUFF_ADJ_FILE, stringsAsFactors = FALSE, check.names = FALSE),
+    error = function(e) NULL
+  )
+  if (is.null(df) || !all(c("Team", "Stuff+ Delta", "Roof Status", "n_starts") %in% names(df)))
+    return(NULL)
+
+  df$team_key    <- stream_norm_team(df$Team)
+  df$stuff_delta <- suppressWarnings(as.numeric(df[["Stuff+ Delta"]]))
+  df$roof_status <- trimws(tolower(df[["Roof Status"]]))
+  df$n_starts    <- suppressWarnings(as.integer(df$n_starts))
+
+  rule_teams <- names(RETRACTABLE_ROOF_RULES)   # "SEA", "TOR", "TEX"
+
+  # ── Retractable (date-sensitive) parks ─────────────────────────────────────
+  df_retract <- df[df$team_key %in% rule_teams, , drop = FALSE]
+
+  # ── All other parks ─────────────────────────────────────────────────────────
+  df_other <- df[!df$team_key %in% rule_teams, , drop = FALSE]
+
+  # Resolve any duplicate team keys in the fixed set by keeping the row with the
+  # most historical starts (i.e. the more common roof state for that park).
+  dup_keys <- df_other$team_key[duplicated(df_other$team_key)]
+  for (tk in unique(dup_keys)) {
+    rows <- which(df_other$team_key == tk)
+    keep <- rows[which.max(df_other$n_starts[rows])]
+    df_other <- df_other[-setdiff(rows, keep), , drop = FALSE]
+  }
+
+  fixed_delta <- setNames(df_other$stuff_delta, df_other$team_key)
+
+  list(
+    fixed       = fixed_delta,
+    retractable = df_retract[, c("team_key", "roof_status", "stuff_delta"), drop = FALSE],
+    rules       = RETRACTABLE_ROOF_RULES
+  )
 }
 
 stream_index_spz <- function(spz, col = "sp_skillz_score_stabilized") {
@@ -529,7 +597,8 @@ stream_score <- function(..., weights) {
 
 # ── Main build ─────────────────────────────────────────────────────────────────
 
-stream_build <- function(probables, spz_std, spz_l30 = NULL, pf, tr_data = NULL,
+stream_build <- function(probables, spz_std, spz_l30 = NULL, pf, stuff_adj = NULL,
+                          tr_data = NULL,
                           week_start = NULL, week_end = NULL,
                           w_sp    = 6,
                           w_spz_std = 1, w_spz_l30 = 0,
@@ -558,6 +627,130 @@ stream_build <- function(probables, spz_std, spz_l30 = NULL, pf, tr_data = NULL,
   # Flag pitchers not found in SP Skillz and default to 100 (league avg)
   df$spz_placeholder <- is.na(df$sp_skillz_index)
   df$sp_skillz_index[df$spz_placeholder] <- 100
+
+  # ── Park Stuff+ adjustment to SP Skillz index ────────────────────────────────
+  # For each start, look up the park's mean Stuff+ delta (from stuff_plus_by_park.csv).
+  # We then adjust the pitcher's raw Stuff+ by the park delta and re-derive their
+  # SP Skillz score using that adjusted value.
+  #
+  # Conceptual flow per start:
+  #   1. raw_stuff_plus  — from the SP Skillz CSV (e.g. 105)
+  #   2. stuff_plus_adj  — adjusted for the park  (e.g. 105 - 3.93 = 101.07 at Coors)
+  #   3. Stuff+ uses a fixed scale in SP Skillz: z = (stuff_plus - 100) / 10
+  #      Old score contribution: w_eff * (raw - 100) / 10 / target_abs_weight
+  #      New score contribution: w_eff * (adj - 100) / 10 / target_abs_weight
+  #   4. adj_score = original_score - old_contribution + new_contribution
+  #   5. adj_index = 100 + (adj_score - mu) / sigma * 10
+  #
+  # target_abs_weight is the normalization denominator used by compute_sp_skillz_scores()
+  # (max of summed |weights| across all IP paradigms).
+  # The original (unadjusted) index is preserved as sp_skillz_index_raw.
+
+  df$sp_skillz_index_raw <- df$sp_skillz_index
+  df$stuff_plus_adj      <- NA_real_
+  df$stuff_delta         <- NA_real_
+
+  if (!is.null(stuff_adj) && is.list(stuff_adj) &&
+      all(c("fixed", "retractable", "rules") %in% names(stuff_adj))) {
+
+    lookup_team <- ifelse(df$home_away == "A", df$opponent_team, df$pitcher_team)
+
+    # Look up the Stuff+ delta for each start.
+    # Fixed parks: direct named-vector lookup.
+    # Date-sensitive retractable parks (SEA, TOR, TEX): choose open/closed based
+    # on the start's calendar month, falling back to the park's default state.
+    df$stuff_delta <- vapply(seq_len(nrow(df)), function(i) {
+      tk <- lookup_team[i]
+      if (tk %in% names(stuff_adj$rules)) {
+        rule <- stuff_adj$rules[[tk]]
+        m    <- as.integer(format(df$date[i], "%m"))
+        roof <- if (m %in% rule$open_months)   "open"
+                else if (m %in% rule$closed_months) "closed"
+                else rule$default_roof
+        rows <- stuff_adj$retractable[stuff_adj$retractable$team_key == tk &
+                                      stuff_adj$retractable$roof_status == roof, ]
+        if (nrow(rows) == 0) NA_real_ else rows$stuff_delta[1L]
+      } else {
+        unname(stuff_adj$fixed[tk])
+      }
+    }, numeric(1))
+
+    # target_abs_weight: max sum of |non-zero weights| across all paradigms.
+    # Computed from SP Skillz constants (available globally since app.R sources sp_skillz.R);
+    # falls back to the known value for the default paradigms if constants not found.
+    target_abs_weight <- tryCatch({
+      if (exists("DEFAULT_SP_SKILLZ_WEIGHTS") &&
+          exists("DEFAULT_LOW_IP_PARADIGM_WEIGHTS") &&
+          exists("DEFAULT_HIGH_IP_PARADIGM_WEIGHTS")) {
+        wvecs <- list(DEFAULT_SP_SKILLZ_WEIGHTS,
+                      DEFAULT_LOW_IP_PARADIGM_WEIGHTS,
+                      DEFAULT_HIGH_IP_PARADIGM_WEIGHTS)
+        max(vapply(wvecs, function(w) sum(abs(w[w != 0])), numeric(1)))
+      } else {
+        11.65  # max(9.5, 8.58, 11.65) — known value for default weight sets
+      }
+    }, error = function(e) 11.65)
+
+    # For a given SP Skillz source (std or l30), compute the park-adjusted index
+    # for each start by:
+    #   (a) fetching the pitcher's raw stuff_plus and w_eff_stuff_plus
+    #   (b) computing stuff_plus_adj = raw + park_delta
+    #   (c) replacing the old stuff+ contribution in the score with the new one
+    #   (d) converting adjusted score to index with the source's mu/sigma
+    compute_adj_spz_idx <- function(spz) {
+      needed <- c("player_name", "stuff_plus", "sp_skillz_score_stabilized", "w_eff_stuff_plus")
+      if (is.null(spz) || nrow(spz) == 0 || !all(needed %in% names(spz)))
+        return(rep(NA_real_, nrow(df)))
+
+      scores <- suppressWarnings(as.numeric(spz$sp_skillz_score_stabilized))
+      mu     <- mean(scores, na.rm = TRUE)
+      sigma  <- sd(scores,   na.rm = TRUE)
+      if (is.na(sigma) || sigma == 0) return(rep(NA_real_, nrow(df)))
+
+      midx         <- stream_match_names(df$pitcher_name, spz$player_name)
+      raw_stuff    <- suppressWarnings(as.numeric(spz$stuff_plus[midx]))
+      weff         <- suppressWarnings(as.numeric(spz$w_eff_stuff_plus[midx]))
+      orig_score   <- scores[midx]
+
+      # Step (b): park-adjusted Stuff+
+      stuff_plus_adj <- raw_stuff + df$stuff_delta
+
+      # Step (c): swap old contribution for new in the stabilized score
+      # Stuff+ uses fixed-scale standardization: z = (x - 100) / 10
+      old_contrib <- weff * (raw_stuff    - 100) / 10 / target_abs_weight
+      new_contrib <- weff * (stuff_plus_adj - 100) / 10 / target_abs_weight
+      adj_score   <- orig_score - old_contrib + new_contrib
+
+      # Step (d): convert to index
+      100 + (adj_score - mu) / sigma * 10
+    }
+
+    adj_idx_std <- compute_adj_spz_idx(spz_std)
+    adj_idx_l30 <- compute_adj_spz_idx(spz_l30)
+
+    # Blend adjusted indices with the same weights as the raw SP Skillz blend above.
+    # Fall back to 100 (league avg) only if no source is available and the pitcher
+    # was already a placeholder; otherwise keep the un-park-adjusted index.
+    adj_idx_blended <- vapply(seq_len(nrow(df)), function(i) {
+      v <- c(adj_idx_std[i], adj_idx_l30[i])
+      w <- c(w_spz_std, w_spz_l30)
+      ok <- !is.na(v) & w > 0
+      if (!any(ok)) return(NA_real_)
+      sum(v[ok] * w[ok]) / sum(w[ok])
+    }, numeric(1))
+
+    # Where we got a valid adjusted index, replace; otherwise keep the original
+    has_adj <- !is.na(adj_idx_blended)
+    df$sp_skillz_index[has_adj] <- round(adj_idx_blended[has_adj], 1)
+
+    # Store the adjusted Stuff+ value for the first matched spz source (for display/audit)
+    midx_std <- stream_match_names(df$pitcher_name,
+                                   if (!is.null(spz_std)) spz_std$player_name else character(0))
+    if (!is.null(spz_std) && nrow(spz_std) > 0 && "stuff_plus" %in% names(spz_std)) {
+      raw_for_display <- suppressWarnings(as.numeric(spz_std$stuff_plus[midx_std]))
+      df$stuff_plus_adj <- round(raw_for_display + df$stuff_delta, 2)
+    }
+  }
 
   # ── Park Factor join ─────────────────────────────────────────────────────────
   if (!is.null(pf) && nrow(pf) > 0) {
@@ -640,21 +833,21 @@ stream_format_display <- function(df) {
   spz_display <- ifelse(spz_ph, paste0(df$sp_skillz_index, "*"), as.character(df$sp_skillz_index))
   tr_display  <- ifelse(tr_ph,  paste0(df$team_rater, "*"),      as.character(df$team_rater))
   data.frame(
-    Date             = format(df$date, "%a %b %d"),
-    Pitcher          = p_label,
-    Team             = df$pitcher_team,
-    Opp              = opp_label,
-    `SP Skillz`      = spz_display,
-    `Team Rater`     = tr_display,
-    `Park Factor`    = df$park_factor,
-    `Streamer Score` = df$streamer_score,
-    `Pitcher`        = p_label,
-    `.susp`          = as.integer(susp),
+    Date              = format(df$date, "%a %b %d"),
+    Pitcher           = p_label,
+    Team              = df$pitcher_team,
+    Opp               = opp_label,
+    `SPZ (adj)†` = spz_display,
+    `Team Rater`      = tr_display,
+    `Park Factor`     = df$park_factor,
+    `Streamer Score`  = df$streamer_score,
+    `Pitcher`         = p_label,
+    `.susp`           = as.integer(susp),
     # Hidden numeric sort columns — keeps "100*" display but lets DT sort correctly
-    `.spz_sort`      = as.numeric(df$sp_skillz_index),
-    `.tr_sort`       = as.numeric(df$team_rater),
-    check.names      = FALSE,
-    stringsAsFactors = FALSE
+    `.spz_sort`       = as.numeric(df$sp_skillz_index),
+    `.tr_sort`        = as.numeric(df$team_rater),
+    check.names       = FALSE,
+    stringsAsFactors  = FALSE
   )
 }
 
@@ -668,7 +861,7 @@ stream_render_dt <- function(df) {
 
   has_susp     <- ".susp" %in% names(df) && any(df$.susp == 1, na.rm = TRUE)
   susp_col     <- which(names(df) == ".susp")     - 1L   # 0-based for JS
-  spz_col      <- which(names(df) == "SP Skillz") - 1L   # 0-based
+  spz_col      <- which(names(df) == "SPZ (adj)†") - 1L   # 0-based
   tr_col       <- which(names(df) == "Team Rater")- 1L   # 0-based
   spz_sort_col <- which(names(df) == ".spz_sort") - 1L   # 0-based hidden
   tr_sort_col  <- which(names(df) == ".tr_sort")  - 1L   # 0-based hidden
@@ -719,7 +912,7 @@ stream_render_dt <- function(df) {
       backgroundColor = styleInterval(c(95,100,105), c("#f7e4d8","#fff9f5","#eef5ec","#d4edda"))
     ) |>
     formatStyle("Pitcher",   fontWeight = "650", color = "#172733") |>
-    formatStyle(c("SP Skillz","Park Factor","Team Rater"),
+    formatStyle(c("SPZ (adj)†","Park Factor","Team Rater"),
                 color = "#4a5a4f", textAlign = "center") |>
     formatStyle("Date",  color = "#4a5a4f", fontSize = "0.83rem") |>
     formatStyle("Opp",   color = "#4a5a4f", fontSize = "0.83rem")
@@ -810,7 +1003,7 @@ spStreamUI <- function(id) {
                   numericInput(ns("w_spz_std"), NULL, 1, 0, 10, 0.5, width = "90px")),
               div(class = "sps-weight-item",
                   tags$span(class = "sps-weight-label", "Last 30"),
-                  numericInput(ns("w_spz_l30"), NULL, 1, 0, 10, 0.5, width = "90px"))
+                  numericInput(ns("w_spz_l30"), NULL, 0, 0, 10, 0.5, width = "90px"))
             )
           ),
           div(class = "sps-weight-divider"),
@@ -825,10 +1018,10 @@ spStreamUI <- function(id) {
                   numericInput(ns("w_tr_std"),   NULL, 1, 0, 10, 0.5, width = "90px")),
               div(class = "sps-weight-item",
                   tags$span(class = "sps-weight-label", "Last 30"),
-                  numericInput(ns("w_tr_l30"),   NULL, 1, 0, 10, 0.5, width = "90px")),
+                  numericInput(ns("w_tr_l30"),   NULL, 0, 0, 10, 0.5, width = "90px")),
               div(class = "sps-weight-item",
                   tags$span(class = "sps-weight-label", "vs Hand"),
-                  numericInput(ns("w_tr_vhand"), NULL, 1, 0, 10, 0.5, width = "90px"))
+                  numericInput(ns("w_tr_vhand"), NULL, 2, 0, 10, 0.5, width = "90px"))
             )
           )
         )
@@ -919,10 +1112,11 @@ spStreamServer <- function(id, spz_data_ext = NULL, team_rater_data = NULL,
     ns <- session$ns
 
     rv <- reactiveValues(
-      probables    = NULL,
-      park_factors = stream_load_pf(),
-      status       = "Click \u2018Fetch Probables\u2019 to load this week\u2019s schedule.",
-      diag         = ""
+      probables      = NULL,
+      park_factors   = stream_load_pf(),
+      stuff_park_adj = stream_load_stuff_adj(),
+      status         = "Click \u2018Fetch Probables\u2019 to load this week\u2019s schedule.",
+      diag           = ""
     )
 
     # ── Week ──────────────────────────────────────────────────────────────────
@@ -981,54 +1175,56 @@ spStreamServer <- function(id, spz_data_ext = NULL, team_rater_data = NULL,
     output$raw_diag <- renderText({ rv$diag })
 
     observeEvent(input$fetch, {
-      rv$status    <- "Fetching\u2026"
-      rv$probables <- NULL
-      rv$diag      <- ""
-      tryCatch({
-        raw    <- stream_fg_fetch(STREAM_PROBABLES_URL)
-        parsed <- stream_parse_probables(raw)
-        rv$probables <- parsed$data
-        rv$diag      <- parsed$diag
+      withProgress(message = "Fetching probables…", value = 0, {
+        rv$status    <- "Fetching…"
+        rv$probables <- NULL
+        rv$diag      <- ""
+        tryCatch({
+          incProgress(0.1, detail = "Connecting…")
+          raw    <- stream_fg_fetch(STREAM_PROBABLES_URL)
+          incProgress(0.6, detail = "Parsing schedule…")
+          parsed <- stream_parse_probables(raw)
+          rv$probables <- parsed$data
+          rv$diag      <- parsed$diag
 
-        # Auto-advance to Next Week if current week has no games in the fetched data
-        wk_cur   <- stream_week_range(Sys.Date(), "current")
-        in_cur   <- !is.na(parsed$data$date) &
-                    parsed$data$date >= wk_cur$start &
-                    parsed$data$date <= wk_cur$end
-        if (!any(in_cur) && (input$which_week %||% "current") == "current") {
-          updateRadioButtons(session, "which_week", selected = "next")
-        }
+          # Auto-advance to Next Week if current week has no games in the fetched data
+          wk_cur   <- stream_week_range(Sys.Date(), "current")
+          in_cur   <- !is.na(parsed$data$date) &
+                      parsed$data$date >= wk_cur$start &
+                      parsed$data$date <= wk_cur$end
+          if (!any(in_cur) && (input$which_week %||% "current") == "current") {
+            updateRadioButtons(session, "which_week", selected = "next")
+          }
 
-        n_prob <- nrow(parsed$data)
-        n_pit  <- length(unique(parsed$data$pitcher_name))
+          n_prob <- nrow(parsed$data)
+          n_pit  <- length(unique(parsed$data$pitcher_name))
 
-        # ── SP Skillz: trigger module fetch if not yet loaded this session ────
-        spz_live  <- if (is.function(spz_data_ext)) spz_data_ext() else NULL
-        spz_note  <- if (!is.null(spz_live$std)) "SP Skillz: cached" else {
+          incProgress(0.2, detail = "Triggering SP Skillz…")
+          # ── SP Skillz: always re-fetch fresh data when probables are fetched ────
           if (!is.null(spz_fetch_trigger))
             spz_fetch_trigger(spz_fetch_trigger() + 1L)
-          "SP Skillz: fetching\u2026"
-        }
+          spz_note <- "SP Skillz: fetching…"
 
-        # ── Team Rater: trigger module fetch if not yet loaded this session ───
-        tr_live  <- if (is.function(team_rater_data)) team_rater_data() else NULL
-        tr_note  <- if (!is.null(tr_live$std)) "Team Rater: cached" else {
-          if (!is.null(tr_fetch_trigger))
-            tr_fetch_trigger(tr_fetch_trigger() + 1L)
-          "Team Rater: fetching\u2026"
-        }
+          # ── Team Rater: trigger module fetch if not yet loaded this session ───
+          tr_live  <- if (is.function(team_rater_data)) team_rater_data() else NULL
+          tr_note  <- if (!is.null(tr_live$std)) "Team Rater: cached" else {
+            if (!is.null(tr_fetch_trigger))
+              tr_fetch_trigger(tr_fetch_trigger() + 1L)
+            "Team Rater: fetching…"
+          }
 
-        rv$status <- sprintf(
-          "%d starts / %d pitchers \u2014 fetched %s | %s | %s",
-          n_prob, n_pit, format(Sys.time(), "%I:%M %p"),
-          spz_note, tr_note
-        )
-      }, error = function(e) {
-        rv$status <- paste0("Error: ", conditionMessage(e))
-        rv$diag   <- conditionMessage(e)
+          incProgress(0.1)
+          rv$status <- sprintf(
+            "%d starts / %d pitchers — fetched %s | %s | %s",
+            n_prob, n_pit, format(Sys.time(), "%I:%M %p"),
+            spz_note, tr_note
+          )
+        }, error = function(e) {
+          rv$status <- paste0("Error: ", conditionMessage(e))
+          rv$diag   <- conditionMessage(e)
+        })
       })
     })
-
     # ── Scored table ──────────────────────────────────────────────────────────
     scored <- reactive({
       req(rv$probables)
@@ -1040,6 +1236,7 @@ spStreamServer <- function(id, spz_data_ext = NULL, team_rater_data = NULL,
         spz_std    = spz$std,
         spz_l30    = spz$l30,
         pf         = rv$park_factors,
+        stuff_adj  = rv$stuff_park_adj,
         tr_data    = tr,
         week_start = wk$start, week_end = wk$end,
         w_sp       = max(0, input$w_sp       %||% 1),
@@ -1074,6 +1271,13 @@ spStreamServer <- function(id, spz_data_ext = NULL, team_rater_data = NULL,
       "Value set to 100 (league avg) \u2014 data not yet available for this pitcher or team. ",
       "Scores will update once enough games have been played."
     )
+    spz_adj_note <- tags$p(
+      class = "sps-susp-note",
+      tags$span(style = "font-weight:700;", "\u2020 "),
+      tags$b("SPZ (adj):"),
+      " SP Skillz index adjusted for the start\u2019s park (Stuff+ delta applied per ballpark). ",
+      "This adjusted value is also used in the Streamer Score."
+    )
 
     output$all_ui <- renderUI({
       if (is.null(rv$probables))
@@ -1082,6 +1286,7 @@ spStreamServer <- function(id, spz_data_ext = NULL, team_rater_data = NULL,
       has_susp <- !is.null(df) && any(df$suspicious_rest, na.rm = TRUE)
       has_placeholder <- !is.null(df) && (any(df$spz_placeholder, na.rm = TRUE) || any(df$tr_placeholder, na.rm = TRUE))
       tagList(DTOutput(ns("all_dt")),
+              spz_adj_note,
               if (has_placeholder) spz_placeholder_note,
               if (has_susp) susp_note)
     })
@@ -1102,6 +1307,7 @@ spStreamServer <- function(id, spz_data_ext = NULL, team_rater_data = NULL,
       has_susp <- !is.null(two_df) && any(two_df$suspicious_rest, na.rm = TRUE)
       has_placeholder <- !is.null(two_df) && any(two_df$spz_placeholder, na.rm = TRUE)
       tagList(DTOutput(ns("two_start_dt")),
+              spz_adj_note,
               if (has_placeholder) spz_placeholder_note,
               if (has_susp) susp_note)
     })

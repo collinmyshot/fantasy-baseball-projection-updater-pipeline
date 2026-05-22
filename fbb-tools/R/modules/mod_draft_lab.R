@@ -71,110 +71,19 @@ draftLabUI <- function(id) {
     div(
       class = "dl-howto",
       div(class = "dl-howto-title", "How Draft Lab Works"),
-      div(
-        class = "dl-howto-steps",
-        div(
-          class = "dl-howto-step",
-          div(class = "dl-howto-step-num", "1"),
-          div(
-            class = "dl-howto-step-body",
-            tags$b("Load data"),
-            p("Upload exports from NFBC ADP Scraper and Auction Value Calculator,
-              or generate fresh data from the ADP and Projections tabs.")
-          )
-        ),
-        div(
-          class = "dl-howto-step",
-          div(class = "dl-howto-step-num", "2"),
-          div(
-            class = "dl-howto-step-body",
-            tags$b("Explore"),
-            p("Browse ADP, review SP Skillz with draft context, and compare
-              players head-to-head with hypothetical custom PA/IP projections.")
-          )
-        ),
-        div(
-          class = "dl-howto-step",
-          div(class = "dl-howto-step-num", "3"),
-          div(
-            class = "dl-howto-step-body",
-            tags$b("Build your team"),
-            p("Import your draft picks into the Team tab and track your roster
-              against NFBC 80th-percentile winning targets by category.")
-          )
-        )
+      tags$ol(
+        class = "dl-howto-list",
+        tags$li(tags$b("ADP"), " \u2014 Scrape or upload NFBC draft-pick data"),
+        tags$li(tags$b("Projection Aggregator"), " \u2014 Choose systems & weights, click Fetch Projections to build raw stat aggregate"),
+        tags$li(tags$b("Auction Value Calculator"), " \u2014 Set roto or points scoring; player rankings auto-update (roto: $ values; points: total pts + Pts/G\u00b7IP)"),
+        tags$li(tags$b("SP Ranking Summary"), " \u2014 Skills-based SP tiers for draft context"),
+        tags$li(tags$b("Team"), " \u2014 Import your picks; track projected stats vs. 80th-pct benchmarks (\u00b15% color coding)")
       )
     ),
 
     # ── Sub-tab navigation ──────────────────────────────────────────────────
     navset_pill(
       id = ns("active_tab"),
-
-      # ═══════════════════════════════════════════════════════════════════════
-      # GROUP 1: Data Import / Setup
-      # ═══════════════════════════════════════════════════════════════════════
-      nav_panel(
-        title = tagList(tags$span(class = "dl-tab-icon", HTML("&#x2699;")), "Setup"),
-        value = "setup",
-
-        div(
-          class = "dl-setup-page",
-
-          # Status row
-          div(
-            class = "dl-status-row",
-            div(
-              class = "dl-status-card",
-              div(class = "dl-status-card-title", HTML("&#x1F4CB;  ADP Data")),
-              uiOutput(ns("adp_status_badge")),
-              uiOutput(ns("adp_status_detail"))
-            ),
-            div(
-              class = "dl-status-card",
-              div(class = "dl-status-card-title", HTML("&#x1F4CA;  Projections")),
-              uiOutput(ns("proj_status_badge")),
-              uiOutput(ns("proj_status_detail"))
-            )
-          ),
-
-          # Upload row
-          div(
-            class = "dl-upload-row",
-            div(
-              class = "dl-upload-card",
-              div(class = "dl-upload-card-title", "Upload ADP CSV"),
-              p(
-                class = "dl-upload-instructions",
-                "Go to ", tags$b("NFBC ADP Scraper"), " \u2192 configure settings \u2192 click ",
-                tags$b("Generate"), " \u2192 click ", tags$b("Export .csv"),
-                ". Then upload that file here, or use the ", tags$b("ADP tab"),
-                " to generate directly."
-              ),
-              fileInput(
-                ns("adp_upload"),
-                label       = NULL,
-                accept      = ".csv",
-                buttonLabel = "Choose ADP CSV",
-                placeholder = "No file chosen"
-              ),
-              uiOutput(ns("adp_upload_error"))
-            ),
-            div(
-              class = "dl-upload-card",
-              div(class = "dl-upload-card-title", "Upload Projections CSV"),
-              p(
-                class = "dl-upload-instructions",
-                "Go to ", tags$b("Auction Value Calculator"), " \u2192 configure projection sources ",
-                "and scoring settings \u2192 click ", tags$b("Calculate"), " \u2192 click ",
-                tags$b("Export .xlsx"), ". Then upload that file here, or use the ",
-                tags$b("Projections tab"), " to build inline."
-              ),
-              p(class = "dl-upload-instructions",
-                tags$em("Note: Projections upload is not yet supported. Use the Projections tab to generate values directly."))
-            )
-          )
-        )
-      ),
 
       nav_panel(
         title = tagList(tags$span(class = "dl-tab-icon", HTML("&#x1F4CB;")), "ADP"),
@@ -183,9 +92,15 @@ draftLabUI <- function(id) {
       ),
 
       nav_panel(
-        title = tagList(tags$span(class = "dl-tab-icon", HTML("&#x1F4CA;")), "Projections"),
-        value = "proj_tab",
-        div(class = "dl-proj-tab", aucValUI(ns("auc_val")))
+        title = tagList(tags$span(class = "dl-tab-icon", HTML("&#x1F4CA;")), "Projection Aggregator"),
+        value = "proj_agg_tab",
+        div(class = "dl-proj-tab", aucValAggUI(ns("auc_val")))
+      ),
+
+      nav_panel(
+        title = tagList(tags$span(class = "dl-tab-icon", HTML("&#x1F4B0;")), "Auction Value Calculator"),
+        value = "proj_val_tab",
+        div(class = "dl-proj-tab", aucValCalcUI(ns("auc_val")))
       ),
 
       # ── Visual divider ──────────────────────────────────────────────────
@@ -195,9 +110,9 @@ draftLabUI <- function(id) {
       # GROUP 2: Reference Data
       # ═══════════════════════════════════════════════════════════════════════
       nav_panel(
-        title = tagList(tags$span(class = "dl-tab-icon", HTML("&#x26BE;")), "SP Skillz"),
+        title = tagList(tags$span(class = "dl-tab-icon", HTML("&#x1F4CA;")), "SP Ranking Summary"),
         value = "spz_tab",
-        div(class = "dl-spz-tab", spSkillzUI(ns("sp_skillz"), draft_mode = TRUE))
+        div(class = "dl-spz-tab", spRankOverviewUI(ns("sp_rank")))
       ),
 
       # ── Visual divider ──────────────────────────────────────────────────
@@ -217,12 +132,8 @@ draftLabUI <- function(id) {
       nav_panel(
         title = tagList(tags$span(class = "dl-tab-icon", HTML("&#x1F3C6;")), "Team"),
         value = "team_tab",
-        dl_placeholder_ui(
-          title     = "Team Importer",
-          icon_html = "&#x1F3C6;",
-          desc      = "Import your draft picks, see your roster projections,
-                       and compare team totals against NFBC 80th-percentile winning targets.",
-          phase     = 5
+        div(style = "margin-top:16px;",
+          teamImporterUI(ns("team_importer"))
         )
       )
     )
@@ -250,16 +161,29 @@ draftLabServer <- function(id) {
 
     # ── Projections sub-module (Auc Val with ADP join) ────────────────────
     # Pass shared ADP data so tables get Pos + ADP columns
-    proj_results <- aucValServer("auc_val", adp_data = reactive(dl_rv$adp_data))
+    proj_results <- aucValServer("auc_val", adp_data = reactive(dl_rv$adp_data),
+                                 context = "draftlab")
 
-    # ── SP Skillz sub-module (with ADP join) ──────────────────────────────
-    spSkillzServer("sp_skillz", adp_data = reactive(dl_rv$adp_data), draft_mode = TRUE)
+    # ── SP Rank Overview sub-module ────────────────────────────────────────
+    spr_rv <- spRankOverviewServer("sp_rank", adp_data = reactive(dl_rv$adp_data))
 
-    # ── Compare sub-module (uses proj_results + dl_rv$adp_data) ───────────
+    # ── Compare sub-module (uses proj_results + dl_rv$adp_data + spr_rv) ──
     dlCompareServer("dl_compare",
+      proj_results = proj_results,
+      adp_data     = reactive(dl_rv$adp_data),
+      spr_data     = spr_rv$display_df
+    )
+
+    # ── Team Importer sub-module ───────────────────────────────────────────
+    ti_rv <- teamImporterServer("team_importer",
       proj_results = proj_results,
       adp_data     = reactive(dl_rv$adp_data)
     )
+
+    # "Go to Projections" button inside Team tab navigates to the proj_tab
+    observeEvent(ti_rv$go_to_proj(), {
+      updateNavsetPill(session, "active_tab", selected = "proj_val_tab")
+    }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
     # When ADP tab generates data, sync to Draft Lab state
     observeEvent(adp_from_tab(), {
@@ -271,78 +195,6 @@ draftLabServer <- function(id) {
       }
     }, ignoreNULL = TRUE)
 
-    # ── ADP CSV upload (Setup tab) ─────────────────────────────────────────
-    observeEvent(input$adp_upload, {
-      req(input$adp_upload)
-      result <- parse_adp_csv_upload(input$adp_upload$datapath)
-      if (inherits(result, "error")) {
-        dl_rv$adp_source <- "error"
-        dl_rv$adp_label  <- conditionMessage(result)
-        showNotification(paste("ADP upload error:", conditionMessage(result)),
-                         type = "error", duration = 8)
-      } else {
-        dl_rv$adp_data   <- result
-        dl_rv$adp_source <- "uploaded"
-        dl_rv$adp_label  <- paste0(input$adp_upload$name, " \u2022 ", nrow(result), " players")
-        showNotification(
-          sprintf("ADP uploaded: %d players from %s", nrow(result), input$adp_upload$name),
-          type = "message", duration = 4
-        )
-      }
-    }, ignoreNULL = TRUE)
-
-    # ── Status badge ────────────────────────────────────────────────────────
-    output$adp_status_badge <- renderUI({
-      switch(dl_rv$adp_source,
-        "none"      = div(class = "dl-status-badge dl-status-badge--none",      "Not loaded"),
-        "generated" = div(class = "dl-status-badge dl-status-badge--generated", "Generated"),
-        "uploaded"  = div(class = "dl-status-badge dl-status-badge--uploaded",  "Uploaded"),
-        "error"     = div(class = "dl-status-badge dl-status-badge--error",     "Error"),
-        div(class = "dl-status-badge dl-status-badge--none", "Not loaded")
-      )
-    })
-
-    output$adp_status_detail <- renderUI({
-      if (nzchar(dl_rv$adp_label)) {
-        p(class = "dl-status-detail", dl_rv$adp_label)
-      } else {
-        p(class = "dl-status-detail", "Use the ADP tab or upload a CSV below.")
-      }
-    })
-
-    output$adp_upload_error <- renderUI({
-      if (dl_rv$adp_source == "error") {
-        div(class = "dl-upload-error", dl_rv$adp_label)
-      }
-    })
-
-    # ── Projections status badge ─────────────────────────────────────────
-    proj_loaded <- reactive({
-      rh <- tryCatch(proj_results$result_h(), error = function(e) NULL)
-      rp <- tryCatch(proj_results$result_p(), error = function(e) NULL)
-      !is.null(rh) || !is.null(rp)
-    })
-
-    output$proj_status_badge <- renderUI({
-      if (proj_loaded()) {
-        div(class = "dl-status-badge dl-status-badge--generated", "Calculated")
-      } else {
-        div(class = "dl-status-badge dl-status-badge--none", "Not loaded")
-      }
-    })
-
-    output$proj_status_detail <- renderUI({
-      if (proj_loaded()) {
-        rh <- tryCatch(proj_results$result_h(), error = function(e) NULL)
-        rp <- tryCatch(proj_results$result_p(), error = function(e) NULL)
-        n_h <- if (!is.null(rh)) nrow(rh) else 0L
-        n_p <- if (!is.null(rp)) nrow(rp) else 0L
-        p(class = "dl-status-detail",
-          sprintf("%d hitters \u2022 %d pitchers", n_h, n_p))
-      } else {
-        p(class = "dl-status-detail", "Use the Projections tab to calculate values.")
-      }
-    })
 
     # Return shared data for potential future cross-module use
     list(

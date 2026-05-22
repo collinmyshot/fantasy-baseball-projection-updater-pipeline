@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SP Streamonator — Weight &amp; Threshold Validation</title>
+<style>
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.8;
+    color: #222;
+    background: #fff;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+
+  h1 {
+    font-family: Georgia, serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    color: #111;
+  }
+
+  .byline {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0 0 2.5rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: Georgia, serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin: 2.8rem 0 0.8rem;
+    color: #111;
+    border-bottom: 2px solid #e8e4d8;
+    padding-bottom: 0.4rem;
+  }
+
+  h3 {
+    font-family: Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 2rem 0 0.5rem;
+    color: #222;
+    font-style: italic;
+  }
+
+  p {
+    margin: 0 0 1.2rem;
+    color: #2a2a2a;
+  }
+
+  .lede {
+    font-size: 1.05rem;
+    color: #444;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.2rem 0 2rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.86rem;
+  }
+
+  thead tr {
+    background: #f2ede2;
+    border-bottom: 2px solid #d5ccb4;
+  }
+
+  th {
+    text-align: right;
+    padding: 0.55rem 0.8rem;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.76rem;
+  }
+
+  th:first-child {
+    text-align: left;
+  }
+
+  td {
+    padding: 0.5rem 0.8rem;
+    border-bottom: 1px solid #ece8dc;
+    color: #2a2a2a;
+    text-align: right;
+    vertical-align: middle;
+  }
+
+  td:first-child {
+    text-align: left;
+    font-weight: 600;
+  }
+
+  tr:last-child td {
+    border-bottom: 2px solid #d5ccb4;
+    font-style: italic;
+    color: #555;
+  }
+
+  tr.overall-row td {
+    border-top: 2px solid #d5ccb4;
+    border-bottom: none;
+    background: #faf8f3;
+    font-style: italic;
+    color: #555;
+  }
+
+  .formula-block {
+    background: #f8f5ef;
+    border-left: 4px solid #c8a96e;
+    border-radius: 0 6px 6px 0;
+    padding: 0.9rem 1.4rem;
+    margin: 1.2rem 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.91rem;
+    color: #3a2a0a;
+    line-height: 2.0;
+  }
+
+  .stat-label {
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  .verdict-box {
+    background: #f0f5ec;
+    border-left: 4px solid #5a8a3c;
+    border-radius: 0 6px 6px 0;
+    padding: 0.9rem 1.4rem;
+    margin: 1.4rem 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.92rem;
+    color: #1e3a10;
+    line-height: 1.7;
+  }
+
+  .verdict-box strong {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    color: #3a6020;
+  }
+
+  .table-caption {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.82rem;
+    color: #777;
+    margin: -0.8rem 0 1.4rem;
+    font-style: italic;
+  }
+
+  .section-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 1.4rem 0 2rem;
+  }
+
+  .section-pair .pair-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: 0.4rem;
+  }
+
+  .highlight-6 td:first-child { border-left: 3px solid #1f3556; }
+  .highlight-1 td:first-child { border-left: 3px solid #a0522d; }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e8e4d8;
+    margin: 3rem 0;
+  }
+
+  .footer-note {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.82rem;
+    color: #999;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e8e4d8;
+  }
+
+  .meta-row {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.82rem;
+    color: #777;
+    background: #faf8f3;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    margin: 0 0 1.8rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-row span { white-space: nowrap; }
+
+  @media (max-width: 620px) {
+    .section-pair { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>SP Streamonator: Weight &amp; Threshold Validation</h1>
+<p class="byline">Methodology Series &middot; Appendix A &mdash; Empirical Calibration</p>
+
+<p class="lede">The Streamonator collapses three signals &mdash; pitcher skill (SP Skillz), opponent offense (Team Rater), and ballpark environment (Park Factor) &mdash; into a single composite score. Two design choices drive how useful that score actually is: the relative weights given to each component, and the thresholds that divide the score range into actionable buckets. This appendix documents how both were calibrated against historical data.</p>
+
+<hr>
+
+<h2>The Good Start Metric</h2>
+
+<p>Every validation analysis here is grounded in a single outcome variable: the <span class="stat-label">Good Start Score</span>, a 0&ndash;4 integer that measures how well a start went for a fantasy manager. One point is awarded for each of the following criteria met in a given outing:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Criterion</th>
+      <th>Threshold</th>
+      <th>Rationale</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Innings pitched</td><td>IP &ge; 5.0</td><td>Minimum length for a fantasy-meaningful outing</td></tr>
+    <tr><td>Strikeouts</td><td>K &ge; floor(IP) &minus; 1</td><td>Roughly one strikeout per inning, one forgiven</td></tr>
+    <tr><td>Earned runs (sliding)</td><td>IP &ge; 6: ER &le; 2 &nbsp;|&nbsp; IP 5&ndash;5.2: ER &le; 3 &nbsp;|&nbsp; IP 4&ndash;4.2: ER &le; 2 &nbsp;|&nbsp; IP &lt; 4: ER &le; 1</td><td>ER threshold scales with depth; more runs are forgiven for longer outings</td></tr>
+    <tr><td>WHIP</td><td>WHIP &lt; 1.20</td><td>Direct fantasy scoring component in most formats</td></tr>
+  </tbody>
+</table>
+
+<p>A score of 3&ndash;4 is a &ldquo;good&rdquo; start from a fantasy standpoint &mdash; quality contribution on most scoring criteria. A 0&ndash;1 is a bad start (early exit, blown game, or both). The 2 tier is a middle ground: met most criteria but fell short in one key area. In the 22,917-start validation sample (2021&ndash;2025), the overall split is 54.5% good (3&ndash;4), 20.0% OK (2), and 25.5% bad (0&ndash;1).</p>
+
+<hr>
+
+<h2>The Composite Score Formula</h2>
+
+<p>Each component is expressed as an index centered at 100. The Team Rater and Park Factor are <em>inverted</em> before entering the formula (200 &minus; index), so that a stronger opponent or more hitter-friendly park lowers the score. SP Skillz enters as-is. The composite is a weighted average:</p>
+
+<div class="formula-block">
+Stream Score = (w<sub>SPZ</sub> &times; SPZ<sub>index</sub>) + (w<sub>TR</sub> &times; (200 &minus; TR<sub>index</sub>)) + (w<sub>PF</sub> &times; (200 &minus; PF<sub>index</sub>))<br>
+where w<sub>SPZ</sub> + w<sub>TR</sub> + w<sub>PF</sub> = 1
+</div>
+
+<p>For the Team Rater sub-component specifically, the index fed into this formula blends two signals: the full-season standard TR index and the vs.-handedness split (vs. LHP or vs. RHP depending on the pitcher's arm), weighted 1:2. This was validated as optimal via grid search on the same historical sample &mdash; the handedness-split adds independent signal, especially for left-handed starters who face lineups that swing dramatically depending on platoon composition.</p>
+
+<hr>
+
+<h2>Validating the Outer Weights: 6:3:1 vs. 1:1:1</h2>
+
+<p>The two most natural weighting schemes to compare are <span class="stat-label">6:3:1 (SPZ-dominant)</span>, which reflects the intuition that pitcher skill is far more predictive than opponent or park, and <span class="stat-label">1:1:1 (equal weight)</span>, which treats all three inputs as equally informative. The validation used Spearman rank correlation between the composite score and the Good Start Score across all 22,917 starts.</p>
+
+<div class="meta-row">
+  <span><strong>6:3:1 weights</strong> &mdash; Spearman &rho; = <strong>0.2955</strong></span>
+  <span><strong>1:1:1 weights</strong> &mdash; Spearman &rho; = <strong>0.2523</strong></span>
+  <span>Difference: &Delta;&rho; = <strong>+0.0432</strong> in favor of 6:3:1</span>
+  <span>Sample: 22,917 starts &middot; 2021&ndash;2025</span>
+</div>
+
+<p>The gap is substantial. A +0.043 Spearman improvement over ~23,000 observations is not noise &mdash; it reflects the genuine reality that SP Skillz (pitcher talent) is the dominant predictor of whether a given start goes well. Team Rater and Park Factor add real information at the margin but cannot substitute for pitcher quality. Treating all three as equivalent dilutes the most informative signal.</p>
+
+<hr>
+
+<h2>Bucket Thresholds: 95/105 vs. 90/110</h2>
+
+<p>The composite score is translated into three action buckets: <span class="stat-label">Start</span> (score above threshold), <span class="stat-label">Flip</span> (borderline), and <span class="stat-label">Sit</span> (score below threshold). The thresholds determine how aggressively the model forces a recommendation vs. deferring to judgment.</p>
+
+<p><span class="stat-label">Tighter thresholds (95/105)</span> classify more starts as actionable &mdash; about 49% fall in the Start or Sit buckets, giving managers a clear lean on roughly half the schedule. <span class="stat-label">Wider thresholds (90/110)</span> are much more conservative, reserving the Start and Sit labels for only the most extreme scores (about 16% of starts), and routing the remaining 84% to the Flip/judgment zone.</p>
+
+<p>The right trade-off depends on how you want to use the tool. Tighter thresholds are more useful for managers who want a larger set of actionable recommendations and are willing to accept more variance. Wider thresholds are appropriate when you only want high-confidence calls and are comfortable making most decisions independently.</p>
+
+<hr>
+
+<h2>Appendix A: Bucket Performance Tables</h2>
+
+<p>The tables below show outcome distributions and average stat lines for each combination of weighting scheme and threshold. The analysis sample is 22,917 qualifying starts from 2021&ndash;2025. &ldquo;Good&rdquo; = score 3&ndash;4, &ldquo;OK&rdquo; = score 2, &ldquo;Bad&rdquo; = score 0&ndash;1. The bucket composite is the simple average of %Good in the Start bucket and %Bad in the Sit bucket &mdash; a summary measure of how well each configuration separates the good from the bad.</p>
+
+<!-- ══ TABLE 1: 6:3:1, 95/105 ══ -->
+<h3>Table A1 &mdash; 6:3:1 Weights, 95/105 Thresholds <span style="font-weight:normal;font-style:normal;font-size:0.85rem;color:#777;">(current defaults)</span></h3>
+<div class="meta-row">
+  <span>Spearman &rho; = <strong>0.2955</strong></span>
+  <span>Bucket composite = <strong>54.2%</strong></span>
+  <span>Start bucket = top 27.2% of scores &nbsp;|&nbsp; Sit bucket = bottom 21.6%</span>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Bucket</th>
+      <th>N</th>
+      <th>% of Starts</th>
+      <th>% Good (3&ndash;4)</th>
+      <th>% OK (2)</th>
+      <th>% Bad (0&ndash;1)</th>
+      <th>Avg IP</th>
+      <th>Avg ER</th>
+      <th>Avg K</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-6">
+      <td>Start (&gt;105)</td>
+      <td>6,225</td>
+      <td>27.2%</td>
+      <td><strong>69.9%</strong></td>
+      <td>16.2%</td>
+      <td>13.9%</td>
+      <td>5.67</td>
+      <td>2.03</td>
+      <td>6.3</td>
+    </tr>
+    <tr class="highlight-6">
+      <td>Flip (95&ndash;105)</td>
+      <td>11,752</td>
+      <td>51.3%</td>
+      <td>53.2%</td>
+      <td>20.7%</td>
+      <td>26.1%</td>
+      <td>5.24</td>
+      <td>2.48</td>
+      <td>4.7</td>
+    </tr>
+    <tr class="highlight-6">
+      <td>Sit (&lt;95)</td>
+      <td>4,940</td>
+      <td>21.6%</td>
+      <td>38.2%</td>
+      <td>23.2%</td>
+      <td><strong>38.6%</strong></td>
+      <td>4.94</td>
+      <td>2.95</td>
+      <td>3.7</td>
+    </tr>
+    <tr class="overall-row">
+      <td>Overall</td>
+      <td>22,917</td>
+      <td>100%</td>
+      <td>54.5%</td>
+      <td>20.0%</td>
+      <td>25.5%</td>
+      <td>5.29</td>
+      <td>2.46</td>
+      <td>4.9</td>
+    </tr>
+  </tbody>
+</table>
+<p class="table-caption">Start bucket is 31.7 points better than Sit on %Good (69.9% vs. 38.2%). The stat line gradient is clean and monotonic across all three metrics.</p>
+
+<!-- ══ TABLE 2: 1:1:1, 95/105 ══ -->
+<h3>Table A2 &mdash; 1:1:1 Weights, 95/105 Thresholds</h3>
+<div class="meta-row">
+  <span>Spearman &rho; = <strong>0.2523</strong></span>
+  <span>Bucket composite = <strong>53.8%</strong></span>
+  <span>Start bucket = top 22.3% &nbsp;|&nbsp; Sit bucket = bottom 15.9%</span>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Bucket</th>
+      <th>N</th>
+      <th>% of Starts</th>
+      <th>% Good (3&ndash;4)</th>
+      <th>% OK (2)</th>
+      <th>% Bad (0&ndash;1)</th>
+      <th>Avg IP</th>
+      <th>Avg ER</th>
+      <th>Avg K</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-1">
+      <td>Start (&gt;105)</td>
+      <td>5,107</td>
+      <td>22.3%</td>
+      <td>68.9%</td>
+      <td>16.6%</td>
+      <td>14.5%</td>
+      <td>5.64</td>
+      <td>2.00</td>
+      <td>6.1</td>
+    </tr>
+    <tr class="highlight-1">
+      <td>Flip (95&ndash;105)</td>
+      <td>14,164</td>
+      <td>61.8%</td>
+      <td>53.5%</td>
+      <td>20.6%</td>
+      <td>26.0%</td>
+      <td>5.25</td>
+      <td>2.48</td>
+      <td>4.8</td>
+    </tr>
+    <tr class="highlight-1">
+      <td>Sit (&lt;95)</td>
+      <td>3,646</td>
+      <td>15.9%</td>
+      <td>38.5%</td>
+      <td>22.7%</td>
+      <td>38.8%</td>
+      <td>4.95</td>
+      <td>3.04</td>
+      <td>3.9</td>
+    </tr>
+    <tr class="overall-row">
+      <td>Overall</td>
+      <td>22,917</td>
+      <td>100%</td>
+      <td>54.5%</td>
+      <td>20.0%</td>
+      <td>25.5%</td>
+      <td>5.29</td>
+      <td>2.46</td>
+      <td>4.9</td>
+    </tr>
+  </tbody>
+</table>
+<p class="table-caption">The Start and Sit buckets are smaller than in Table A1 because equal weighting compresses the score distribution. %Good in Start is nearly identical to A1 (68.9% vs. 69.9%), but the Flip zone swells to 62% of all starts &mdash; less useful for managers seeking an actionable recommendation.</p>
+
+<!-- ══ TABLE 3: 6:3:1, 90/110 ══ -->
+<h3>Table A3 &mdash; 6:3:1 Weights, 90/110 Thresholds</h3>
+<div class="meta-row">
+  <span>Spearman &rho; = <strong>0.2955</strong></span>
+  <span>Bucket composite = <strong>60.0%</strong></span>
+  <span>Start bucket = top 10.2% &nbsp;|&nbsp; Sit bucket = bottom 5.6%</span>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Bucket</th>
+      <th>N</th>
+      <th>% of Starts</th>
+      <th>% Good (3&ndash;4)</th>
+      <th>% OK (2)</th>
+      <th>% Bad (0&ndash;1)</th>
+      <th>Avg IP</th>
+      <th>Avg ER</th>
+      <th>Avg K</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-6">
+      <td>Start (&gt;110)</td>
+      <td>2,331</td>
+      <td>10.2%</td>
+      <td><strong>74.5%</strong></td>
+      <td>14.8%</td>
+      <td>10.6%</td>
+      <td>5.78</td>
+      <td>1.88</td>
+      <td>7.0</td>
+    </tr>
+    <tr class="highlight-6">
+      <td>Flip (90&ndash;110)</td>
+      <td>19,302</td>
+      <td>84.2%</td>
+      <td>53.6%</td>
+      <td>20.5%</td>
+      <td>25.9%</td>
+      <td>5.26</td>
+      <td>2.48</td>
+      <td>4.8</td>
+    </tr>
+    <tr class="highlight-6">
+      <td>Sit (&lt;90)</td>
+      <td>1,284</td>
+      <td>5.6%</td>
+      <td>32.4%</td>
+      <td>22.2%</td>
+      <td><strong>45.4%</strong></td>
+      <td>4.82</td>
+      <td>3.21</td>
+      <td>3.3</td>
+    </tr>
+    <tr class="overall-row">
+      <td>Overall</td>
+      <td>22,917</td>
+      <td>100%</td>
+      <td>54.5%</td>
+      <td>20.0%</td>
+      <td>25.5%</td>
+      <td>5.29</td>
+      <td>2.46</td>
+      <td>4.9</td>
+    </tr>
+  </tbody>
+</table>
+<p class="table-caption">Wider thresholds produce the most extreme bucket outcomes &mdash; 74.5% good in Start, 45.4% bad in Sit &mdash; but at the cost of routing 84% of starts to the Flip zone. The bucket composite of 60.0% is elevated, but the Flip zone is too large to be operationally useful.</p>
+
+<!-- ══ TABLE 4: 1:1:1, 90/110 ══ -->
+<h3>Table A4 &mdash; 1:1:1 Weights, 90/110 Thresholds</h3>
+<div class="meta-row">
+  <span>Spearman &rho; = <strong>0.2523</strong></span>
+  <span>Bucket composite = <strong>62.3%</strong></span>
+  <span>Start bucket = top 4.6% &nbsp;|&nbsp; Sit bucket = bottom 3.4%</span>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Bucket</th>
+      <th>N</th>
+      <th>% of Starts</th>
+      <th>% Good (3&ndash;4)</th>
+      <th>% OK (2)</th>
+      <th>% Bad (0&ndash;1)</th>
+      <th>Avg IP</th>
+      <th>Avg ER</th>
+      <th>Avg K</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-1">
+      <td>Start (&gt;110)</td>
+      <td>1,047</td>
+      <td>4.6%</td>
+      <td>76.2%</td>
+      <td>13.9%</td>
+      <td>9.8%</td>
+      <td>5.81</td>
+      <td>1.75</td>
+      <td>6.9</td>
+    </tr>
+    <tr class="highlight-1">
+      <td>Flip (90&ndash;110)</td>
+      <td>21,083</td>
+      <td>92.0%</td>
+      <td>54.4%</td>
+      <td>20.3%</td>
+      <td>25.4%</td>
+      <td>5.28</td>
+      <td>2.46</td>
+      <td>4.9</td>
+    </tr>
+    <tr class="highlight-1">
+      <td>Sit (&lt;90)</td>
+      <td>787</td>
+      <td>3.4%</td>
+      <td>30.0%</td>
+      <td>21.7%</td>
+      <td>48.3%</td>
+      <td>4.84</td>
+      <td>3.37</td>
+      <td>3.4</td>
+    </tr>
+    <tr class="overall-row">
+      <td>Overall</td>
+      <td>22,917</td>
+      <td>100%</td>
+      <td>54.5%</td>
+      <td>20.0%</td>
+      <td>25.5%</td>
+      <td>5.29</td>
+      <td>2.46</td>
+      <td>4.9</td>
+    </tr>
+  </tbody>
+</table>
+<p class="table-caption">The equal-weight 1:1:1 composite under wide thresholds concentrates only ~8% of starts into actionable buckets. While the composite metric looks strong in isolation (62.3%), this reflects extreme score compression &mdash; 92% of starts land in the Flip zone, making it effectively inoperational as a streaming guide.</p>
+
+<hr>
+
+<h2>Summary Comparison</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Configuration</th>
+      <th>Spearman &rho;</th>
+      <th>Bucket Composite</th>
+      <th>% Actionable</th>
+      <th>Start: %Good</th>
+      <th>Sit: %Bad</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>6:3:1, 95/105</strong> <span style="font-size:0.78rem;color:#5a8a3c;">&larr; defaults</span></td>
+      <td><strong>0.2955</strong></td>
+      <td>54.2%</td>
+      <td><strong>48.7%</strong></td>
+      <td>69.9%</td>
+      <td>38.6%</td>
+    </tr>
+    <tr>
+      <td>1:1:1, 95/105</td>
+      <td>0.2523</td>
+      <td>53.8%</td>
+      <td>38.2%</td>
+      <td>68.9%</td>
+      <td>38.8%</td>
+    </tr>
+    <tr>
+      <td>6:3:1, 90/110</td>
+      <td><strong>0.2955</strong></td>
+      <td>60.0%</td>
+      <td>15.8%</td>
+      <td>74.5%</td>
+      <td>45.4%</td>
+    </tr>
+    <tr>
+      <td>1:1:1, 90/110</td>
+      <td>0.2523</td>
+      <td><strong>62.3%</strong></td>
+      <td>8.0%</td>
+      <td>76.2%</td>
+      <td>48.3%</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="verdict-box">
+  <strong>Takeaway</strong>
+  The 6:3:1 / 95&ndash;105 configuration (current defaults) wins on the metric that matters most for a weekly streaming tool: Spearman rank correlation with actual outcomes (+0.043 vs. equal weighting). It also routes nearly half of all starts to an actionable bucket while producing a meaningful 31.7-point gap in %Good between the Start and Sit groups. The wider 90/110 thresholds produce cleaner bucket outcomes in isolation, but 84% of starts in the Flip zone means the tool has essentially declined to make a recommendation for most scheduling decisions. The 6:3:1 / 95&ndash;105 defaults optimize the combination of predictive accuracy and operational usefulness.
+</div>
+
+<hr>
+
+<p class="footer-note">CollinMyShot FBB Tools &middot; SP Streamonator &middot; Appendix A: Weight &amp; Threshold Validation &middot; Validation sample: 22,917 starts, 2021&ndash;2025</p>
+
+</body>
+</html>

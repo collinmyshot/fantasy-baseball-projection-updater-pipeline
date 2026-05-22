@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Park Factors Methodology — CollinMyShot FBB Tools</title>
+<style>
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.8;
+    color: #222;
+    background: #fff;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+
+  h1 {
+    font-family: Georgia, serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    color: #111;
+  }
+
+  .byline {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0 0 2.5rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: Georgia, serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin: 2.8rem 0 0.8rem;
+    color: #111;
+    border-bottom: 2px solid #e8e4d8;
+    padding-bottom: 0.4rem;
+  }
+
+  h3 {
+    font-family: Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 2rem 0 0.5rem;
+    color: #222;
+    font-style: italic;
+  }
+
+  p {
+    margin: 0 0 1.2rem;
+    color: #2a2a2a;
+  }
+
+  ul {
+    margin: 0 0 1.2rem;
+    padding-left: 1.5rem;
+  }
+
+  ul li {
+    margin-bottom: 0.6rem;
+    color: #2a2a2a;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+  }
+
+  thead tr {
+    background: #f2ede2;
+    border-bottom: 2px solid #d5ccb4;
+  }
+
+  th {
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid #ece8dc;
+    color: #2a2a2a;
+    vertical-align: top;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:nth-child(even) td {
+    background: #faf8f3;
+  }
+
+  .formula-block {
+    background: #f8f5ef;
+    border-left: 4px solid #c8a96e;
+    border-radius: 0 6px 6px 0;
+    padding: 0.9rem 1.4rem;
+    margin: 1.4rem 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.92rem;
+    color: #3a2a0a;
+    line-height: 1.9;
+  }
+
+  .stat-label {
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  a {
+    color: #9a7b3a;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  a:hover {
+    color: #7a5210;
+  }
+
+  details {
+    background: #f8f5ef;
+    border-left: 4px solid #c8a96e;
+    border-radius: 0 6px 6px 0;
+    padding: 0.9rem 1.4rem;
+    margin: 1.4rem 0;
+    font-size: 0.92rem;
+    color: #3a2a0a;
+  }
+
+  details summary {
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.02em;
+    color: #7a5210;
+    user-select: none;
+  }
+
+  details summary:hover {
+    color: #3a2a0a;
+  }
+
+  details[open] summary {
+    margin-bottom: 0.8rem;
+  }
+
+  details p {
+    margin: 0;
+    color: #3a2a0a;
+    line-height: 1.7;
+    font-family: Georgia, serif;
+    font-size: 0.92rem;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e8e4d8;
+    margin: 3rem 0;
+  }
+
+  .footer-note {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.82rem;
+    color: #999;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e8e4d8;
+  }
+</style>
+</head>
+<body>
+
+<h1>Park Factors: Quantifying the Ballpark Effect for Fantasy Pitching</h1>
+<p class="byline">Methodology Series &middot; Part II &mdash; Park Factor Index</p>
+
+<p>Park factors are one of the most cited tools in a fantasy player's toolbox, and yet one of the least understood. Many players treat the tools that do exist (like <a href="https://www.fangraphs.com/tools/guts?type=pf&season=2018&teamid=0">FanGraphs' runs-based park factors</a> or, more commonly, <a href="https://baseballsavant.mlb.com/leaderboard/statcast-park-factors">Baseball Savant's PF</a>) as ground truth without understanding how they were built or what they actually measure.</p>
+
+<p>I decided to build a park factor model specifically for the question a fantasy manager asks every week: is this park going to hurt my pitcher's ERA and WHIP on Tuesday? This novel Park Factor model uses a hierarchical statistical model fit on ~1.6 million batted-ball events across all parks from 2015-2025 (the Statcast Era) to isolate the effect of each ballpark on batted ball outcomes after removing the effects of the individual batters and pitchers, team defense and positioning, weather, and even the physical (drag) properties of the baseball itself.</p>
+
+<hr>
+
+<h2>Existing PFs: Great in Real Life, Not So Much for Fantasy</h2>
+
+<p><span class="stat-label">FanGraphs "Guts" park factors</span> are calculated as a simple ratio of home offense to away offense runs per game. This approach is extremely rudimentary, though broadly effective. We have a lot more data and nuance at our disposal, so let's use it! This is a great back-of-the-napkin calculation for park factor at a glance.</p>
+
+<p><span class="stat-label">Baseball Savant's Statcast Park Factors</span> use Statcast batted-ball data, but the exact methodology is not publicly documented. The outputs don't appear to adjust for team defense or ball construction &mdash; but it's impossible to know for sure. The 2025 three-year rolling park factors have 28 out of 30 parks falling between 97 and 104 in overall park factor. This compression of park factors into a fairly flat spread does not feel representative of how much park seems to influence outcomes when making streaming decisions in fantasy.</p>
+
+<p>To get a sense of what these public models are actually measuring, I ran a cross-model validation comparing all three against actual runs scored per game at each venue, and against their own year-over-year stability. The results are instructive.</p>
+
+<p><span class="stat-label">Correlation with actual runs scored per game (Pearson r, 2015-2025):</span></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>N</th>
+      <th>Pearson r</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Savant 1yr</td><td>267</td><td>0.525</td></tr>
+    <tr><td>Savant 3yr</td><td>300</td><td>0.460</td></tr>
+    <tr><td>Savant 5yr</td><td>300</td><td>0.458</td></tr>
+    <tr><td>FanGraphs 5yr</td><td>300</td><td>0.433</td></tr>
+    <tr><td>FanGraphs 3yr</td><td>300</td><td>0.405</td></tr>
+    <tr><td>FanGraphs 1yr</td><td>300</td><td>0.387</td></tr>
+    <tr><td>Baseball Reference 5yr</td><td>300</td><td>0.378</td></tr>
+    <tr><td>Baseball Reference 3yr</td><td>300</td><td>0.366</td></tr>
+    <tr><td>Baseball Reference 1yr</td><td>300</td><td>0.336</td></tr>
+  </tbody>
+</table>
+
+<p>All three public models show moderate correlation with runs scored, roughly 0.34 to 0.53 depending on the rolling window used. This makes sense: they were built to capture real-life run environment, and they do. But notice that runs scored is heavily influenced by roster quality. The Dodgers score a lot of runs wherever they play. Savant's higher correlation partly reflects that it is better at measuring parks, but partly reflects that it is better at capturing team quality baked into the park estimate.</p>
+
+<p><span class="stat-label">Year-over-year stability (adjacent-season Pearson r):</span></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>YoY Pearson r</th>
+      <th>Mean Absolute Annual Change</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Savant 5yr rolling</td><td>0.985</td><td>1.05</td></tr>
+    <tr><td>Baseball Reference 5yr rolling</td><td>0.977</td><td>0.73</td></tr>
+    <tr><td>Savant 3yr rolling</td><td>0.965</td><td>1.51</td></tr>
+    <tr><td>Baseball Reference 3yr rolling</td><td>0.947</td><td>0.97</td></tr>
+    <tr><td>FanGraphs 5yr</td><td>0.939</td><td>0.78</td></tr>
+    <tr><td>Savant 1yr</td><td>0.931</td><td>2.47</td></tr>
+    <tr><td>FanGraphs 3yr</td><td>0.899</td><td>1.76</td></tr>
+    <tr><td>Baseball Reference 1yr</td><td>0.861</td><td>1.82</td></tr>
+    <tr><td>FanGraphs 1yr</td><td>0.474</td><td>4.76</td></tr>
+  </tbody>
+</table>
+
+<p>The multi-year rolling averages are highly stable year-over-year, but that stability is partly artificial. A 5-year rolling average changes slowly by construction, regardless of whether the underlying park environment has actually changed. FanGraphs 1yr at r=0.474 reveals how volatile single-year estimates are when you strip away the rolling window smoothing.</p>
+
+<p>I built my new Park Factor model to be specifically fantasy-relevant: it systematically adjusts for confounding variables and focuses on the offensive outcomes that drive fantasy scoring. How it compares to these benchmarks is covered at the end of this article.</p>
+
+<hr>
+
+<h2>Pulling the Data Inputs</h2>
+
+<p>The model uses Baseball Savant Statcast batted-ball event (BBE) data covering every fair BBE from 2015-2025 that produced a measurable exit velocity and launch angle. The 2020 shortened season is excluded from the math entirely (just as we all wish it could be excluded from our lives in general).</p>
+
+<p>The full dataset spans 1,634,138 batted-ball events across 10 seasons (2015-2025, excl 2020). For each BBE, the model captures:</p>
+
+<ul>
+  <li><span class="stat-label">Batted ball parameters:</span> exit velocity, launch angle, and spray angle &mdash; used to compute what the outcome "should" have been based purely on the physics of the hit baseball</li>
+  <li><span class="stat-label">Actual batted ball outcome:</span> whether the ball became an out, a hit, an extra-base hit, or a home run</li>
+  <li><span class="stat-label">Weather and ball data:</span> game-time temperature, wind speed, humidity, and daily drag coefficient when data was available</li>
+  <li><span class="stat-label">Personnel data:</span> batter and pitcher identifiers, batting team, and fielding team. Some hitter-specific characteristics, like foot speed, may cause individual hitters to over- or under-perform league-wide BABIP or xwOBAcon numbers</li>
+  <li><span class="stat-label">Fielding team defense:</span> a composite of season-level defensive performance (an even blend of UZR, DRS, and OAA). Each defensive metric brings something different to the table (arm strength, positioning, etc.) so a composite seems simplest. It is important because elite defense could artificially suppress offensive outcomes at a given park, while poor defense could inflate them, leading to bias that does not come from the actual park itself</li>
+  <li><span class="stat-label">Park info:</span> venue ID and name, cross-referenced with the MLB StatsAPI schedule to ensure each game is correctly assigned to the actual stadium it was played in &mdash; important for teams that changed venues mid-season or between seasons, and to exclude one-off events like the Field of Dreams game or natural disasters like the destruction of The Trop in 2025</li>
+</ul>
+
+<hr>
+
+<h2>Building the Model</h2>
+
+<h3>Step 1: Identify "expected vs. actual" baseline.</h3>
+
+<p>The first thing the model does is quantify the gap between what the batted-ball profile predicted and what actually happened (aka a residual). This residual isolates the portion of the result that cannot be attributed to how hard or well the ball was hit. Any systematic gap between expected and actual results, after controlling for everything else, is attributed to the park.</p>
+
+<p>The primary outcome the model is built around is the <span class="stat-label">wOBAcon residual</span>: actual wOBA on contact minus the expected wOBA on contact derived from that batted ball's launch speed and angle. wOBAcon is used here because it weights each type of hit by its actual run value and (crucially) includes home runs, unlike BABIP which excludes them as HR are not considered balls in play (BIP). The wOBAcon residual is the outcome the mixed-effects model is fit on.</p>
+
+<p>Three additional component residuals are also calculated separately, using the same expected-vs-actual logic:</p>
+
+<p><span class="stat-label">BACON residual:</span> Batting Average on Contact minus expected batting average on contact. Similar to wOBAcon, BACON does not include a SLG component; hits only.</p>
+
+<p><span class="stat-label">HR residual:</span> Actual home run rate minus expected home run rate on contact. Home runs are one of the biggest targets in fantasy and are important when streaming either hitters or pitchers.</p>
+
+<p><span class="stat-label">XBH residual:</span> Extra-base hit rate minus expected extra-base hit rate. This one may seem redundant given the above, but after testing, the XBH residual strengthened the year-over-year correlations of the overall model.</p>
+
+<h3>Step 2: Controlling for the underlying sources of variance.</h3>
+
+<p>The core of the model is a hierarchical linear mixed-effects model fit on the wOBAcon residuals. The goal is to assign the portion of each residual that is systematically and persistently associated with specific parks and exclude possible sources of noise such as weather patterns, Trackman vs. Hawk-Eye tracking calibration, the drag coefficient on the ball, team defense, and player foot-speed. The same model structure is then independently fit on each of the three component residuals (BACON, HR, XBH).</p>
+
+<p><span class="stat-label">Fixed effects remove known confounders:</span></p>
+
+<p><span class="stat-label">Season half (first vs. second):</span> Weather patterns, roster health, the trade deadline, and pitcher fatigue differ noticeably between the first half (April-June) and second half (July-October). Including a half-season effect prevents within-season trends from being misattributed to park effects.</p>
+
+<p><span class="stat-label">Measurement era:</span> Statcast transitioned from the Trackman tracking system to the more accurate Hawk-Eye system around 2020-2021. These systems measure ball trajectory slightly differently, creating a calibration shift in the data. A measurement-era fixed effect absorbs this, and pre-Hawk-Eye data receives a slightly lower quality weight (0.95 vs. 1.0) to reflect its lower positional accuracy.</p>
+
+<p><span class="stat-label">Weather:</span> Temperature, wind speed, and humidity all affect how far batted balls carry, and therefore can impact the wOBAcon residual. These are modeled as fixed effects so that a warm-weather open-air stadium does not appear more homer-friendly than it actually is just because it hosts games in July heat.</p>
+
+<p><span class="stat-label">Drag coefficient:</span> This is one of the model's most distinctive features. The daily drag coefficient is included as a fixed effect. This directly adjusts for the "juiced ball" era of 2019 and the deadened ball of 2021, both of which caused dramatic league-wide HR shifts that had nothing to do with individual parks.</p>
+
+<p><span class="stat-label">Team defense:</span> The fielding team's defensive quality composite is included as a fixed effect. This prevents a team with historically elite defense from making its home park appear more pitcher-friendly than it is as that team's defensive quality oscillates.</p>
+
+<p><span class="stat-label">Random effects remove individual player and team variance:</span></p>
+
+<p>Batter-season performance, pitcher-season performance, batting team offensive quality, and fielding team defensive quality are all modeled as random intercepts. These random effects do real work, but for a specific reason: they prevent park-talent confounding. The contact-shape residualization removes variance explained by how hard and where a ball was hit, but it does not remove the fact that hitters play disproportionately more games in their home parks. Without batter-season random effects, a park that consistently hosted elite hitters (e.g. the Dodgers) would absorb their above-expected production as apparent park effect. The same logic applies to pitchers (a park with a historically dominant home rotation would appear falsely pitcher-friendly) and to teams overall.</p>
+
+<p><span class="stat-label">Park effects are estimated at two levels:</span></p>
+
+<p>A park-era random effect captures the average effect of the park across all seasons it was active. A park-era-half random effect captures how that effect shifts between the first and second halves of each season.</p>
+
+<h3>Step 3: Building the overall park factor composite.</h3>
+
+<p>Once the component models have been fit, the three component park effects (BACON, HR, and XBH) are combined into a single overall index using empirically derived weights:</p>
+
+<div class="formula-block">Overall composite = (0.45 &times; BACON residual) + (0.35 &times; HR residual) + (0.20 &times; XBH residual)</div>
+
+<p>Note that wOBAcon is not one of the three blended components. It serves as the model's primary outcome variable, but the final park factor output is assembled from BACON, HR, and XBH because those three components decompose wOBA into categories that are more relevant for most fantasy baseball leagues.</p>
+
+<details>
+  <summary>Math note: how the weights were derived</summary>
+  <p>Weights were derived by fitting a softmax-constrained optimization that identifies the blend of BACON, HR, and XBH residuals that best predicts the overall wOBAcon residual across all park-eras. The optimization is bootstrapped 400 times (resampling park-eras with replacement) to produce confidence intervals, and the median bootstrap estimates become the defaults.</p>
+</details>
+
+<h3>Step 4: Standardize to the 100-point index.</h3>
+
+<div class="formula-block">Index = 100 + 10 &times; ((park composite residual &minus; mean across all parks) / SD across all parks)</div>
+
+<p>This produces the same scale used by all "+" stats like wRC+ and OPS+, as well as SP Skillz and Team Rater, where 100 is average and &plusmn;10 is &plusmn;1 standard deviation.</p>
+
+<hr>
+
+<h2>Park Era Management</h2>
+
+<p>Teams move and stadiums change over time. The model handles this via a park era system: each team-stadium combination is mapped to an era suffix, allowing separate estimates for meaningfully different configurations of the same venue. A team that moved its fences in 2022 does not have its current park geometry obscured by years of data from a prior configuration. At display time, the pipeline selects the era most relevant to the current season for each team.</p>
+
+<p>When a park has a pending fence change or a new stadium with no observed BBE data yet, the model falls back to the most recent observed era and flags the estimate in the UI accordingly.</p>
+
+<hr>
+
+<h2>How This Model Compares</h2>
+
+<p>Here is where the validation data gets interesting. Recall from the intro that public models correlate with runs scored at r=0.34 to r=0.53 and that higher correlation was partly driven by team quality baked into the park estimate. Our model comes in at r=0.336 against runs scored, similar to Baseball Reference's single-year estimate and below Savant's headline number.</p>
+
+<p>That lower correlation is not a flaw. It is the point.</p>
+
+<p>This model explicitly removes team quality via batter-season and pitcher-season random effects, weather via fixed effects, and ball construction via the drag coefficient. When we correlate our park factor against runs scored, we are asking "how much does the venue itself, stripped of who plays there, predict run environment?" The answer is: less than the naive public models suggest, because a large portion of what those models call "park effect" is actually "the Dodgers are very good at hitting."</p>
+
+<p>For fantasy streaming, this matters. The Streamonator combines park factor, team offense quality (Team Rater), and pitcher skill (SP Skillz) as three independent inputs. If our park factor already baked in the Dodgers' lineup quality, we would be double-counting that signal when the Team Rater also penalizes pitching in high-offense environments. Clean separation of the three inputs is a feature.</p>
+
+<p>Where this model wins clearly is year-over-year stability:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>YoY Pearson r</th>
+      <th>Mean Absolute Annual Change</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Savant 5yr rolling</td><td>0.985</td><td>1.05</td></tr>
+    <tr><td>Baseball Reference 5yr rolling</td><td>0.977</td><td>0.73</td></tr>
+    <tr><td>Savant 3yr rolling</td><td>0.965</td><td>1.51</td></tr>
+    <tr><td>Baseball Reference 3yr rolling</td><td>0.947</td><td>0.97</td></tr>
+    <tr><td>FanGraphs 5yr</td><td>0.939</td><td>0.78</td></tr>
+    <tr><td>Savant 1yr</td><td>0.931</td><td>2.47</td></tr>
+    <tr><td><strong>CollinMyShot (single estimate)</strong></td><td><strong>0.911</strong></td><td><strong>0.41</strong></td></tr>
+    <tr><td>FanGraphs 3yr</td><td>0.899</td><td>1.76</td></tr>
+    <tr><td>Baseball Reference 1yr</td><td>0.861</td><td>1.82</td></tr>
+    <tr><td>FanGraphs 1yr</td><td>0.474</td><td>4.76</td></tr>
+  </tbody>
+</table>
+
+<p>This model achieves a YoY Pearson r of 0.911 without any rolling window. That is better than FanGraphs 3yr (0.899) and competitive with Savant 1yr (0.931) and Baseball Reference 3yr (0.947), which require three to five years of averaging to approach that stability. The other public models need multi-year smoothing to suppress noise; this model achieves comparable stability from a single estimate because the noise was removed structurally at model-fitting time.</p>
+
+<p>The mean absolute annual change tells the clearest story. This model's park factor for a given venue moves an average of 0.41 index points from one season to the next. Even the best public 5yr rolling averages move 0.73 to 1.05 points annually. FanGraphs single-year estimates swing an average of 4.76 points, which is nearly meaningless for week-to-week streaming decisions.</p>
+
+<p>Stability matters for fantasy because streaming decisions are made based on the park factor estimate in hand right now. A model that swings 4-5 points year to year is telling you something different every season. A model that moves 0.4 points on average is telling you something durable about the venue itself.</p>
+
+<p>As a cross-sectional sanity check, this model aligns well with Savant at the component level: BACON correlation r=0.857, HR correlation r=0.813, and overall vs. Savant wOBA r=0.729. The models agree on which parks are extreme in each dimension. They differ in how much they spread the middle of the distribution, which is where the structural adjustments show the most impact.</p>
+
+<hr>
+
+<h2>Known Limitations</h2>
+
+<p><span class="stat-label">Park renovations with no observed data.</span> When a stadium changes dimensions and no games have been played in the new configuration, the model has nothing to estimate from. It falls back to the most recent observed era, which may not reflect the current geometry. This is disclosed in the UI. Updates are run monthly in-season, but new parks (or parks with new dimensions) will be noisier due to smaller sample sizes.</p>
+
+<p><span class="stat-label">Defense is a linear, removable nuisance.</span> The model assumes defensive quality contributes additively to the residual and can be removed via a fixed effect. In reality, defense interacts with park dimensions in complex ways and can change over the course of a season.</p>
+
+<p><span class="stat-label">The drag coefficient adjustment has one known tradeoff.</span> It is designed to absorb year-to-year ball construction changes, which is a genuine model strength. However, it also partially absorbs persistent atmospheric conditions at specific venues. Coors Field sits at roughly 5,200 feet of elevation, and thin air produces lower aerodynamic drag on batted balls regardless of ball construction. Some of that altitude-driven carry advantage gets absorbed by the drag fixed effect rather than credited entirely to the park. For sea-level stadiums this is a non-issue, but for high-altitude venues it is a known modeling tradeoff.</p>
+
+<hr>
+
+<p class="footer-note">CollinMyShot FBB Tools &middot; Park Factors Methodology &middot; Part II of IV</p>
+
+</body>
+</html>

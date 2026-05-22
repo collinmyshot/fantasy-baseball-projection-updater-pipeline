@@ -15,7 +15,7 @@ normalize_team_abbrev_pf <- function(x) {
   out <- gsub("[^A-Z0-9]", "", out)
 
   mapped <- c(
-    ARI = "ARI", ARZ = "ARI",
+    ARI = "AZ", ARZ = "AZ",
     ATL = "ATL",
     BAL = "BAL",
     BOS = "BOS",

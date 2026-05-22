@@ -1,301 +1,331 @@
 "season","home_team","venue_id","venue_name","park_era_id","n_bbe","prior_park_era_id","changed_from_prior"
-2015,"ATH",-1,"unknown_venue","home_ath__base",5381,,FALSE
-2016,"ATH",-1,"unknown_venue","home_ath__base",5755,"home_ath__base",FALSE
-2017,"ATH",-1,"unknown_venue","home_ath__base",5850,"home_ath__base",FALSE
-2018,"ATH",-1,"unknown_venue","home_ath__base",5365,"home_ath__base",FALSE
-2019,"ATH",-1,"unknown_venue","home_ath__base",6067,"home_ath__base",FALSE
-2021,"ATH",-1,"unknown_venue","home_ath__base",5341,"home_ath__base",FALSE
-2022,"ATH",-1,"unknown_venue","home_ath__base",5458,"home_ath__base",FALSE
-2023,"ATH",-1,"unknown_venue","home_ath__base",5662,"home_ath__base",FALSE
-2024,"ATH",-1,"unknown_venue","home_ath__base",5039,"home_ath__base",FALSE
-2025,"ATH",-1,"unknown_venue","home_ath__sutter_health",5527,"home_ath__base",TRUE
-2015,"ATL",-1,"unknown_venue","home_atl__base",4828,,FALSE
-2016,"ATL",-1,"unknown_venue","home_atl__base",5829,"home_atl__base",FALSE
-2017,"ATL",-1,"unknown_venue","home_atl__suntrust",6044,"home_atl__base",TRUE
-2018,"ATL",-1,"unknown_venue","home_atl__suntrust",5518,"home_atl__suntrust",FALSE
-2019,"ATL",-1,"unknown_venue","home_atl__suntrust",5450,"home_atl__suntrust",FALSE
-2021,"ATL",-1,"unknown_venue","home_atl__suntrust",4592,"home_atl__suntrust",FALSE
-2022,"ATL",-1,"unknown_venue","home_atl__suntrust",5239,"home_atl__suntrust",FALSE
-2023,"ATL",-1,"unknown_venue","home_atl__suntrust",5437,"home_atl__suntrust",FALSE
-2024,"ATL",-1,"unknown_venue","home_atl__suntrust",4806,"home_atl__suntrust",FALSE
-2025,"ATL",-1,"unknown_venue","home_atl__suntrust",5520,"home_atl__suntrust",FALSE
-2015,"AZ",-1,"unknown_venue","home_az__base",4985,,FALSE
-2016,"AZ",-1,"unknown_venue","home_az__base",6173,"home_az__base",FALSE
-2017,"AZ",-1,"unknown_venue","home_az__base",5838,"home_az__base",FALSE
-2018,"AZ",-1,"unknown_venue","home_az__base",5481,"home_az__base",FALSE
-2019,"AZ",-1,"unknown_venue","home_az__base",5828,"home_az__base",FALSE
-2021,"AZ",-1,"unknown_venue","home_az__base",5287,"home_az__base",FALSE
-2022,"AZ",-1,"unknown_venue","home_az__base",5564,"home_az__base",FALSE
-2023,"AZ",-1,"unknown_venue","home_az__base",5798,"home_az__base",FALSE
-2024,"AZ",-1,"unknown_venue","home_az__base",5544,"home_az__base",FALSE
-2025,"AZ",-1,"unknown_venue","home_az__base",5697,"home_az__base",FALSE
-2015,"BAL",-1,"unknown_venue","home_bal__base",5305,,FALSE
-2016,"BAL",-1,"unknown_venue","home_bal__base",5627,"home_bal__base",FALSE
-2017,"BAL",-1,"unknown_venue","home_bal__base",6162,"home_bal__base",FALSE
-2018,"BAL",-1,"unknown_venue","home_bal__base",5633,"home_bal__base",FALSE
-2019,"BAL",-1,"unknown_venue","home_bal__base",6170,"home_bal__base",FALSE
-2021,"BAL",-1,"unknown_venue","home_bal__base",5673,"home_bal__base",FALSE
-2022,"BAL",-1,"unknown_venue","home_bal__wall_deep",5456,"home_bal__base",TRUE
-2023,"BAL",-1,"unknown_venue","home_bal__wall_deep",5540,"home_bal__wall_deep",FALSE
-2024,"BAL",-1,"unknown_venue","home_bal__wall_deep",4895,"home_bal__wall_deep",FALSE
-2025,"BAL",-1,"unknown_venue","home_bal__wall_medium",5305,"home_bal__wall_deep",TRUE
-2015,"BOS",-1,"unknown_venue","home_bos__base",5754,,FALSE
-2016,"BOS",-1,"unknown_venue","home_bos__base",5744,"home_bos__base",FALSE
-2017,"BOS",-1,"unknown_venue","home_bos__base",6380,"home_bos__base",FALSE
-2018,"BOS",-1,"unknown_venue","home_bos__base",5742,"home_bos__base",FALSE
-2019,"BOS",-1,"unknown_venue","home_bos__base",5868,"home_bos__base",FALSE
-2021,"BOS",-1,"unknown_venue","home_bos__base",5366,"home_bos__base",FALSE
-2022,"BOS",-1,"unknown_venue","home_bos__base",5507,"home_bos__base",FALSE
-2023,"BOS",-1,"unknown_venue","home_bos__base",5961,"home_bos__base",FALSE
-2024,"BOS",-1,"unknown_venue","home_bos__base",4877,"home_bos__base",FALSE
-2025,"BOS",-1,"unknown_venue","home_bos__base",5368,"home_bos__base",FALSE
-2015,"CHC",-1,"unknown_venue","home_chc__base",4765,,FALSE
-2016,"CHC",-1,"unknown_venue","home_chc__base",5410,"home_chc__base",FALSE
-2017,"CHC",-1,"unknown_venue","home_chc__base",5285,"home_chc__base",FALSE
-2018,"CHC",-1,"unknown_venue","home_chc__base",5280,"home_chc__base",FALSE
-2019,"CHC",-1,"unknown_venue","home_chc__base",5898,"home_chc__base",FALSE
-2021,"CHC",-1,"unknown_venue","home_chc__base",5304,"home_chc__base",FALSE
-2022,"CHC",-1,"unknown_venue","home_chc__base",5207,"home_chc__base",FALSE
-2023,"CHC",-1,"unknown_venue","home_chc__base",5166,"home_chc__base",FALSE
-2024,"CHC",-1,"unknown_venue","home_chc__base",4879,"home_chc__base",FALSE
-2025,"CHC",-1,"unknown_venue","home_chc__base",5070,"home_chc__base",FALSE
-2015,"CHW",-1,"unknown_venue","home_chw__base",5034,,FALSE
-2016,"CHW",-1,"unknown_venue","home_chw__base",5534,"home_chw__base",FALSE
-2017,"CHW",-1,"unknown_venue","home_chw__base",6462,"home_chw__base",FALSE
-2018,"CHW",-1,"unknown_venue","home_chw__base",5702,"home_chw__base",FALSE
-2019,"CHW",-1,"unknown_venue","home_chw__base",5352,"home_chw__base",FALSE
-2021,"CHW",-1,"unknown_venue","home_chw__base",4445,"home_chw__base",FALSE
-2022,"CHW",-1,"unknown_venue","home_chw__base",5690,"home_chw__base",FALSE
-2023,"CHW",-1,"unknown_venue","home_chw__base",5944,"home_chw__base",FALSE
-2024,"CHW",-1,"unknown_venue","home_chw__base",5337,"home_chw__base",FALSE
-2025,"CHW",-1,"unknown_venue","home_chw__base",5718,"home_chw__base",FALSE
-2015,"CIN",-1,"unknown_venue","home_cin__base",5146,,FALSE
-2016,"CIN",-1,"unknown_venue","home_cin__base",5685,"home_cin__base",FALSE
-2017,"CIN",-1,"unknown_venue","home_cin__base",5794,"home_cin__base",FALSE
-2018,"CIN",-1,"unknown_venue","home_cin__base",5514,"home_cin__base",FALSE
-2019,"CIN",-1,"unknown_venue","home_cin__base",4853,"home_cin__base",FALSE
-2021,"CIN",-1,"unknown_venue","home_cin__base",5046,"home_cin__base",FALSE
-2022,"CIN",-1,"unknown_venue","home_cin__base",5235,"home_cin__base",FALSE
-2023,"CIN",-1,"unknown_venue","home_cin__base",5603,"home_cin__base",FALSE
-2024,"CIN",-1,"unknown_venue","home_cin__base",5413,"home_cin__base",FALSE
-2025,"CIN",-1,"unknown_venue","home_cin__base",5265,"home_cin__base",FALSE
-2015,"CLE",-1,"unknown_venue","home_cle__base",4831,,FALSE
-2016,"CLE",-1,"unknown_venue","home_cle__base",5874,"home_cle__base",FALSE
-2017,"CLE",-1,"unknown_venue","home_cle__base",6010,"home_cle__base",FALSE
-2018,"CLE",-1,"unknown_venue","home_cle__base",5780,"home_cle__base",FALSE
-2019,"CLE",-1,"unknown_venue","home_cle__base",5497,"home_cle__base",FALSE
-2021,"CLE",-1,"unknown_venue","home_cle__base",4985,"home_cle__base",FALSE
-2022,"CLE",-1,"unknown_venue","home_cle__base",5508,"home_cle__base",FALSE
-2023,"CLE",-1,"unknown_venue","home_cle__base",5662,"home_cle__base",FALSE
-2024,"CLE",-1,"unknown_venue","home_cle__base",5204,"home_cle__base",FALSE
-2025,"CLE",-1,"unknown_venue","home_cle__base",5294,"home_cle__base",FALSE
-2015,"COL",-1,"unknown_venue","home_col__base",5341,,FALSE
-2016,"COL",-1,"unknown_venue","home_col__base",6323,"home_col__base",FALSE
-2017,"COL",-1,"unknown_venue","home_col__base",6389,"home_col__base",FALSE
-2018,"COL",-1,"unknown_venue","home_col__base",5653,"home_col__base",FALSE
-2019,"COL",-1,"unknown_venue","home_col__base",6668,"home_col__base",FALSE
-2021,"COL",-1,"unknown_venue","home_col__base",5532,"home_col__base",FALSE
-2022,"COL",-1,"unknown_venue","home_col__base",6031,"home_col__base",FALSE
-2023,"COL",-1,"unknown_venue","home_col__base",6097,"home_col__base",FALSE
-2024,"COL",-1,"unknown_venue","home_col__base",5718,"home_col__base",FALSE
-2025,"COL",-1,"unknown_venue","home_col__base",6148,"home_col__base",FALSE
-2015,"DET",-1,"unknown_venue","home_det__base",5470,,FALSE
-2016,"DET",-1,"unknown_venue","home_det__base",5426,"home_det__base",FALSE
-2017,"DET",-1,"unknown_venue","home_det__base",6349,"home_det__base",FALSE
-2018,"DET",-1,"unknown_venue","home_det__base",5607,"home_det__base",FALSE
-2019,"DET",-1,"unknown_venue","home_det__base",5834,"home_det__base",FALSE
-2021,"DET",-1,"unknown_venue","home_det__base",5194,"home_det__base",FALSE
-2022,"DET",-1,"unknown_venue","home_det__base",5591,"home_det__base",FALSE
-2023,"DET",-1,"unknown_venue","home_det__base",5574,"home_det__base",FALSE
-2024,"DET",-1,"unknown_venue","home_det__base",5108,"home_det__base",FALSE
-2025,"DET",-1,"unknown_venue","home_det__base",5577,"home_det__base",FALSE
-2015,"HOU",-1,"unknown_venue","home_hou__base",5163,,FALSE
-2016,"HOU",-1,"unknown_venue","home_hou__base",5582,"home_hou__base",FALSE
-2017,"HOU",-1,"unknown_venue","home_hou__base",6166,"home_hou__base",FALSE
-2018,"HOU",-1,"unknown_venue","home_hou__base",5470,"home_hou__base",FALSE
-2019,"HOU",-1,"unknown_venue","home_hou__base",5611,"home_hou__base",FALSE
-2021,"HOU",-1,"unknown_venue","home_hou__base",5073,"home_hou__base",FALSE
-2022,"HOU",-1,"unknown_venue","home_hou__base",4889,"home_hou__base",FALSE
-2023,"HOU",-1,"unknown_venue","home_hou__base",5868,"home_hou__base",FALSE
-2024,"HOU",-1,"unknown_venue","home_hou__base",5033,"home_hou__base",FALSE
-2025,"HOU",-1,"unknown_venue","home_hou__base",5203,"home_hou__base",FALSE
-2015,"KCR",-1,"unknown_venue","home_kcr__base",5039,,FALSE
-2016,"KCR",-1,"unknown_venue","home_kcr__base",5767,"home_kcr__base",FALSE
-2017,"KCR",-1,"unknown_venue","home_kcr__base",6182,"home_kcr__base",FALSE
-2018,"KCR",-1,"unknown_venue","home_kcr__base",6087,"home_kcr__base",FALSE
-2019,"KCR",-1,"unknown_venue","home_kcr__base",6166,"home_kcr__base",FALSE
-2021,"KCR",-1,"unknown_venue","home_kcr__base",5161,"home_kcr__base",FALSE
-2022,"KCR",-1,"unknown_venue","home_kcr__base",5995,"home_kcr__base",FALSE
-2023,"KCR",-1,"unknown_venue","home_kcr__base",6167,"home_kcr__base",FALSE
-2024,"KCR",-1,"unknown_venue","home_kcr__base",5383,"home_kcr__base",FALSE
-2025,"KCR",-1,"unknown_venue","home_kcr__base",5454,"home_kcr__base",FALSE
-2015,"LAA",-1,"unknown_venue","home_laa__base",5001,,FALSE
-2016,"LAA",-1,"unknown_venue","home_laa__base",5541,"home_laa__base",FALSE
-2017,"LAA",-1,"unknown_venue","home_laa__base",6072,"home_laa__base",FALSE
-2018,"LAA",-1,"unknown_venue","home_laa__base",5496,"home_laa__base",FALSE
-2019,"LAA",-1,"unknown_venue","home_laa__base",5960,"home_laa__base",FALSE
-2021,"LAA",-1,"unknown_venue","home_laa__base",5463,"home_laa__base",FALSE
-2022,"LAA",-1,"unknown_venue","home_laa__base",5039,"home_laa__base",FALSE
-2023,"LAA",-1,"unknown_venue","home_laa__base",5237,"home_laa__base",FALSE
-2024,"LAA",-1,"unknown_venue","home_laa__base",5180,"home_laa__base",FALSE
-2025,"LAA",-1,"unknown_venue","home_laa__base",5204,"home_laa__base",FALSE
-2015,"LAD",-1,"unknown_venue","home_lad__base",4848,,FALSE
-2016,"LAD",-1,"unknown_venue","home_lad__base",5206,"home_lad__base",FALSE
-2017,"LAD",-1,"unknown_venue","home_lad__base",5783,"home_lad__base",FALSE
-2018,"LAD",-1,"unknown_venue","home_lad__base",5017,"home_lad__base",FALSE
-2019,"LAD",-1,"unknown_venue","home_lad__base",5338,"home_lad__base",FALSE
-2021,"LAD",-1,"unknown_venue","home_lad__base",4552,"home_lad__base",FALSE
-2022,"LAD",-1,"unknown_venue","home_lad__base",5136,"home_lad__base",FALSE
-2023,"LAD",-1,"unknown_venue","home_lad__base",5650,"home_lad__base",FALSE
-2024,"LAD",-1,"unknown_venue","home_lad__base",5025,"home_lad__base",FALSE
-2025,"LAD",-1,"unknown_venue","home_lad__base",5385,"home_lad__base",FALSE
-2015,"MIA",-1,"unknown_venue","home_mia__base",5389,,FALSE
-2016,"MIA",-1,"unknown_venue","home_mia__base",5234,"home_mia__base",FALSE
-2017,"MIA",-1,"unknown_venue","home_mia__base",6357,"home_mia__base",FALSE
-2018,"MIA",-1,"unknown_venue","home_mia__base",5614,"home_mia__base",FALSE
-2019,"MIA",-1,"unknown_venue","home_mia__base",5387,"home_mia__base",FALSE
-2021,"MIA",-1,"unknown_venue","home_mia__base",4646,"home_mia__base",FALSE
-2022,"MIA",-1,"unknown_venue","home_mia__base",5287,"home_mia__base",FALSE
-2023,"MIA",-1,"unknown_venue","home_mia__base",5464,"home_mia__base",FALSE
-2024,"MIA",-1,"unknown_venue","home_mia__base",4973,"home_mia__base",FALSE
-2025,"MIA",-1,"unknown_venue","home_mia__base",5425,"home_mia__base",FALSE
-2015,"MIL",-1,"unknown_venue","home_mil__base",4980,,FALSE
-2016,"MIL",-1,"unknown_venue","home_mil__base",5476,"home_mil__base",FALSE
-2017,"MIL",-1,"unknown_venue","home_mil__base",6000,"home_mil__base",FALSE
-2018,"MIL",-1,"unknown_venue","home_mil__base",4925,"home_mil__base",FALSE
-2019,"MIL",-1,"unknown_venue","home_mil__base",5378,"home_mil__base",FALSE
-2021,"MIL",-1,"unknown_venue","home_mil__base",4905,"home_mil__base",FALSE
-2022,"MIL",-1,"unknown_venue","home_mil__base",5002,"home_mil__base",FALSE
-2023,"MIL",-1,"unknown_venue","home_mil__base",5575,"home_mil__base",FALSE
-2024,"MIL",-1,"unknown_venue","home_mil__base",4560,"home_mil__base",FALSE
-2025,"MIL",-1,"unknown_venue","home_mil__base",5278,"home_mil__base",FALSE
-2015,"MIN",-1,"unknown_venue","home_min__base",5324,,FALSE
-2016,"MIN",-1,"unknown_venue","home_min__base",5791,"home_min__base",FALSE
-2017,"MIN",-1,"unknown_venue","home_min__base",6240,"home_min__base",FALSE
-2018,"MIN",-1,"unknown_venue","home_min__base",5500,"home_min__base",FALSE
-2019,"MIN",-1,"unknown_venue","home_min__base",5948,"home_min__base",FALSE
-2021,"MIN",-1,"unknown_venue","home_min__base",5581,"home_min__base",FALSE
-2022,"MIN",-1,"unknown_venue","home_min__base",5224,"home_min__base",FALSE
-2023,"MIN",-1,"unknown_venue","home_min__base",5244,"home_min__base",FALSE
-2024,"MIN",-1,"unknown_venue","home_min__base",5486,"home_min__base",FALSE
-2025,"MIN",-1,"unknown_venue","home_min__base",5340,"home_min__base",FALSE
-2015,"NYM",-1,"unknown_venue","home_nym__base",4959,,FALSE
-2016,"NYM",-1,"unknown_venue","home_nym__base",5541,"home_nym__base",FALSE
-2017,"NYM",-1,"unknown_venue","home_nym__base",5916,"home_nym__base",FALSE
-2018,"NYM",-1,"unknown_venue","home_nym__base",5304,"home_nym__base",FALSE
-2019,"NYM",-1,"unknown_venue","home_nym__base",5470,"home_nym__base",FALSE
-2021,"NYM",-1,"unknown_venue","home_nym__base",4315,"home_nym__base",FALSE
-2022,"NYM",-1,"unknown_venue","home_nym__base",5339,"home_nym__base",FALSE
-2023,"NYM",-1,"unknown_venue","home_nym__base",5560,"home_nym__base",FALSE
-2024,"NYM",-1,"unknown_venue","home_nym__base",4801,"home_nym__base",FALSE
-2025,"NYM",-1,"unknown_venue","home_nym__base",5750,"home_nym__base",FALSE
-2015,"NYY",-1,"unknown_venue","home_nyy__base",5284,,FALSE
-2016,"NYY",-1,"unknown_venue","home_nyy__base",5529,"home_nyy__base",FALSE
-2017,"NYY",-1,"unknown_venue","home_nyy__base",5742,"home_nyy__base",FALSE
-2018,"NYY",-1,"unknown_venue","home_nyy__base",5278,"home_nyy__base",FALSE
-2019,"NYY",-1,"unknown_venue","home_nyy__base",5741,"home_nyy__base",FALSE
-2021,"NYY",-1,"unknown_venue","home_nyy__base",4566,"home_nyy__base",FALSE
-2022,"NYY",-1,"unknown_venue","home_nyy__base",4913,"home_nyy__base",FALSE
-2023,"NYY",-1,"unknown_venue","home_nyy__base",5139,"home_nyy__base",FALSE
-2024,"NYY",-1,"unknown_venue","home_nyy__base",5215,"home_nyy__base",FALSE
-2025,"NYY",-1,"unknown_venue","home_nyy__base",5140,"home_nyy__base",FALSE
-2015,"PHI",-1,"unknown_venue","home_phi__base",5279,,FALSE
-2016,"PHI",-1,"unknown_venue","home_phi__base",5587,"home_phi__base",FALSE
-2017,"PHI",-1,"unknown_venue","home_phi__base",6009,"home_phi__base",FALSE
-2018,"PHI",-1,"unknown_venue","home_phi__base",5042,"home_phi__base",FALSE
-2019,"PHI",-1,"unknown_venue","home_phi__base",5761,"home_phi__base",FALSE
-2021,"PHI",-1,"unknown_venue","home_phi__base",5091,"home_phi__base",FALSE
-2022,"PHI",-1,"unknown_venue","home_phi__base",5354,"home_phi__base",FALSE
-2023,"PHI",-1,"unknown_venue","home_phi__base",5261,"home_phi__base",FALSE
-2024,"PHI",-1,"unknown_venue","home_phi__base",5219,"home_phi__base",FALSE
-2025,"PHI",-1,"unknown_venue","home_phi__base",5249,"home_phi__base",FALSE
-2015,"PIT",-1,"unknown_venue","home_pit__base",5140,,FALSE
-2016,"PIT",-1,"unknown_venue","home_pit__base",4792,"home_pit__base",FALSE
-2017,"PIT",-1,"unknown_venue","home_pit__base",6480,"home_pit__base",FALSE
-2018,"PIT",-1,"unknown_venue","home_pit__base",5718,"home_pit__base",FALSE
-2019,"PIT",-1,"unknown_venue","home_pit__base",6204,"home_pit__base",FALSE
-2021,"PIT",-1,"unknown_venue","home_pit__base",4879,"home_pit__base",FALSE
-2022,"PIT",-1,"unknown_venue","home_pit__base",5239,"home_pit__base",FALSE
-2023,"PIT",-1,"unknown_venue","home_pit__base",5662,"home_pit__base",FALSE
-2024,"PIT",-1,"unknown_venue","home_pit__base",5332,"home_pit__base",FALSE
-2025,"PIT",-1,"unknown_venue","home_pit__base",5772,"home_pit__base",FALSE
-2015,"SDP",-1,"unknown_venue","home_sdp__base",4765,,FALSE
-2016,"SDP",-1,"unknown_venue","home_sdp__base",5824,"home_sdp__base",FALSE
-2017,"SDP",-1,"unknown_venue","home_sdp__base",5339,"home_sdp__base",FALSE
-2018,"SDP",-1,"unknown_venue","home_sdp__base",5341,"home_sdp__base",FALSE
-2019,"SDP",-1,"unknown_venue","home_sdp__base",5215,"home_sdp__base",FALSE
-2021,"SDP",-1,"unknown_venue","home_sdp__base",5145,"home_sdp__base",FALSE
-2022,"SDP",-1,"unknown_venue","home_sdp__base",4866,"home_sdp__base",FALSE
-2023,"SDP",-1,"unknown_venue","home_sdp__base",5629,"home_sdp__base",FALSE
-2024,"SDP",-1,"unknown_venue","home_sdp__base",5125,"home_sdp__base",FALSE
-2025,"SDP",-1,"unknown_venue","home_sdp__base",4810,"home_sdp__base",FALSE
-2015,"SEA",-1,"unknown_venue","home_sea__base",4902,,FALSE
-2016,"SEA",-1,"unknown_venue","home_sea__base",5582,"home_sea__base",FALSE
-2017,"SEA",-1,"unknown_venue","home_sea__base",5891,"home_sea__base",FALSE
-2018,"SEA",-1,"unknown_venue","home_sea__base",5617,"home_sea__base",FALSE
-2019,"SEA",-1,"unknown_venue","home_sea__base",5529,"home_sea__base",FALSE
-2021,"SEA",-1,"unknown_venue","home_sea__base",4725,"home_sea__base",FALSE
-2022,"SEA",-1,"unknown_venue","home_sea__base",4731,"home_sea__base",FALSE
-2023,"SEA",-1,"unknown_venue","home_sea__base",5566,"home_sea__base",FALSE
-2024,"SEA",-1,"unknown_venue","home_sea__base",4264,"home_sea__base",FALSE
-2025,"SEA",-1,"unknown_venue","home_sea__base",5524,"home_sea__base",FALSE
-2015,"SFG",-1,"unknown_venue","home_sfg__base",4821,,FALSE
-2016,"SFG",-1,"unknown_venue","home_sfg__base",5486,"home_sfg__base",FALSE
-2017,"SFG",-1,"unknown_venue","home_sfg__base",6623,"home_sfg__base",FALSE
-2018,"SFG",-1,"unknown_venue","home_sfg__base",6008,"home_sfg__base",FALSE
-2019,"SFG",-1,"unknown_venue","home_sfg__base",5543,"home_sfg__base",FALSE
-2021,"SFG",-1,"unknown_venue","home_sfg__base",4500,"home_sfg__base",FALSE
-2022,"SFG",-1,"unknown_venue","home_sfg__base",5159,"home_sfg__base",FALSE
-2023,"SFG",-1,"unknown_venue","home_sfg__base",5283,"home_sfg__base",FALSE
-2024,"SFG",-1,"unknown_venue","home_sfg__base",5092,"home_sfg__base",FALSE
-2025,"SFG",-1,"unknown_venue","home_sfg__base",5417,"home_sfg__base",FALSE
-2015,"STL",-1,"unknown_venue","home_stl__base",5013,,FALSE
-2016,"STL",-1,"unknown_venue","home_stl__base",5501,"home_stl__base",FALSE
-2017,"STL",-1,"unknown_venue","home_stl__base",5940,"home_stl__base",FALSE
-2018,"STL",-1,"unknown_venue","home_stl__base",5551,"home_stl__base",FALSE
-2019,"STL",-1,"unknown_venue","home_stl__base",5612,"home_stl__base",FALSE
-2021,"STL",-1,"unknown_venue","home_stl__base",4915,"home_stl__base",FALSE
-2022,"STL",-1,"unknown_venue","home_stl__base",5821,"home_stl__base",FALSE
-2023,"STL",-1,"unknown_venue","home_stl__base",5903,"home_stl__base",FALSE
-2024,"STL",-1,"unknown_venue","home_stl__base",5599,"home_stl__base",FALSE
-2025,"STL",-1,"unknown_venue","home_stl__base",5762,"home_stl__base",FALSE
-2015,"TBR",-1,"unknown_venue","home_tbr__base",4783,,FALSE
-2016,"TBR",-1,"unknown_venue","home_tbr__base",5487,"home_tbr__base",FALSE
-2017,"TBR",-1,"unknown_venue","home_tbr__base",5673,"home_tbr__base",FALSE
-2018,"TBR",-1,"unknown_venue","home_tbr__base",5078,"home_tbr__base",FALSE
-2019,"TBR",-1,"unknown_venue","home_tbr__base",5444,"home_tbr__base",FALSE
-2021,"TBR",-1,"unknown_venue","home_tbr__base",4818,"home_tbr__base",FALSE
-2022,"TBR",-1,"unknown_venue","home_tbr__base",5231,"home_tbr__base",FALSE
-2023,"TBR",-1,"unknown_venue","home_tbr__base",5116,"home_tbr__base",FALSE
-2024,"TBR",-1,"unknown_venue","home_tbr__base",4916,"home_tbr__base",FALSE
-2025,"TBR",-1,"unknown_venue","home_tbr__steinbrenner",5793,"home_tbr__base",TRUE
-2015,"TEX",-1,"unknown_venue","home_tex__base",5506,,FALSE
-2016,"TEX",-1,"unknown_venue","home_tex__base",5810,"home_tex__base",FALSE
-2017,"TEX",-1,"unknown_venue","home_tex__base",5997,"home_tex__base",FALSE
-2018,"TEX",-1,"unknown_venue","home_tex__base",5453,"home_tex__base",FALSE
-2019,"TEX",-1,"unknown_venue","home_tex__base",5907,"home_tex__base",FALSE
-2021,"TEX",-1,"unknown_venue","home_tex__globe_life",4912,"home_tex__base",TRUE
-2022,"TEX",-1,"unknown_venue","home_tex__globe_life",5533,"home_tex__globe_life",FALSE
-2023,"TEX",-1,"unknown_venue","home_tex__globe_life",5468,"home_tex__globe_life",FALSE
-2024,"TEX",-1,"unknown_venue","home_tex__globe_life",5128,"home_tex__globe_life",FALSE
-2025,"TEX",-1,"unknown_venue","home_tex__globe_life",5385,"home_tex__globe_life",FALSE
-2015,"TOR",-1,"unknown_venue","home_tor__base",5374,,FALSE
-2016,"TOR",-1,"unknown_venue","home_tor__base",5640,"home_tor__base",FALSE
-2017,"TOR",-1,"unknown_venue","home_tor__base",5933,"home_tor__base",FALSE
-2018,"TOR",-1,"unknown_venue","home_tor__base",5753,"home_tor__base",FALSE
-2019,"TOR",-1,"unknown_venue","home_tor__base",5578,"home_tor__base",FALSE
-2021,"TOR",-1,"unknown_venue","home_tor__base",1966,"home_tor__base",FALSE
-2022,"TOR",-1,"unknown_venue","home_tor__base",5356,"home_tor__base",FALSE
-2023,"TOR",-1,"unknown_venue","home_tor__base",5525,"home_tor__base",FALSE
-2024,"TOR",-1,"unknown_venue","home_tor__base",4883,"home_tor__base",FALSE
-2025,"TOR",-1,"unknown_venue","home_tor__base",5653,"home_tor__base",FALSE
-2015,"WSH",-1,"unknown_venue","home_wsh__base",4826,,FALSE
-2016,"WSH",-1,"unknown_venue","home_wsh__base",5556,"home_wsh__base",FALSE
-2017,"WSH",-1,"unknown_venue","home_wsh__base",6030,"home_wsh__base",FALSE
-2018,"WSH",-1,"unknown_venue","home_wsh__base",5908,"home_wsh__base",FALSE
-2019,"WSH",-1,"unknown_venue","home_wsh__base",5812,"home_wsh__base",FALSE
-2021,"WSH",-1,"unknown_venue","home_wsh__base",4630,"home_wsh__base",FALSE
-2022,"WSH",-1,"unknown_venue","home_wsh__base",5576,"home_wsh__base",FALSE
-2023,"WSH",-1,"unknown_venue","home_wsh__base",6269,"home_wsh__base",FALSE
-2024,"WSH",-1,"unknown_venue","home_wsh__base",5537,"home_wsh__base",FALSE
-2025,"WSH",-1,"unknown_venue","home_wsh__base",5892,"home_wsh__base",FALSE
+2015,"ATH",10,"O.co Coliseum","venue_10__base",4398,,FALSE
+2016,"ATH",10,"Oakland Coliseum","venue_10__base",4264,"venue_10__base",FALSE
+2017,"ATH",10,"Oakland Coliseum","venue_10__base",4203,"venue_10__base",FALSE
+2018,"ATH",10,"Oakland Coliseum","venue_10__base",4222,"venue_10__base",FALSE
+2019,"ATH",10,"Oakland Coliseum","venue_10__base",4112,"venue_10__base",FALSE
+2021,"ATH",10,"Oakland Coliseum","venue_10__base",4092,"venue_10__base",FALSE
+2022,"ATH",10,"Oakland Coliseum","venue_10__base",3991,"venue_10__base",FALSE
+2023,"ATH",10,"Oakland Coliseum","venue_10__base",4039,"venue_10__base",FALSE
+2024,"ATH",10,"Oakland Coliseum","venue_10__base",4141,"venue_10__base",FALSE
+2025,"ATH",2529,"Sutter Health Park","venue_2529__sutter_health",4279,"venue_10__base",TRUE
+2026,"ATH",2529,"Sutter Health Park","venue_2529__sutter_health",972,"venue_2529__sutter_health",FALSE
+2015,"ATL",16,"Turner Field","venue_16__base",4004,,FALSE
+2016,"ATL",16,"Turner Field","venue_16__base",4138,"venue_16__base",FALSE
+2017,"ATL",4705,"SunTrust Park","venue_4705__suntrust",4297,"venue_16__base",TRUE
+2018,"ATL",4705,"SunTrust Park","venue_4705__suntrust",4180,"venue_4705__suntrust",FALSE
+2019,"ATL",4705,"SunTrust Park","venue_4705__suntrust",4091,"venue_4705__suntrust",FALSE
+2021,"ATL",4705,"Truist Park","venue_4705__suntrust",3747,"venue_4705__suntrust",FALSE
+2022,"ATL",4705,"Truist Park","venue_4705__suntrust",3773,"venue_4705__suntrust",FALSE
+2023,"ATL",4705,"Truist Park","venue_4705__suntrust",4026,"venue_4705__suntrust",FALSE
+2024,"ATL",4705,"Truist Park","venue_4705__suntrust",3959,"venue_4705__suntrust",FALSE
+2025,"ATL",4705,"Truist Park","venue_4705__suntrust",4101,"venue_4705__suntrust",FALSE
+2026,"ATL",4705,"Truist Park","venue_4705__suntrust",1025,"venue_4705__suntrust",FALSE
+2015,"AZ",15,"Chase Field","venue_15__base",4050,,FALSE
+2016,"AZ",15,"Chase Field","venue_15__base",4299,"venue_15__base",FALSE
+2017,"AZ",15,"Chase Field","venue_15__base",4048,"venue_15__base",FALSE
+2018,"AZ",15,"Chase Field","venue_15__humidor",4072,"venue_15__base",TRUE
+2019,"AZ",15,"Chase Field","venue_15__humidor",4225,"venue_15__humidor",FALSE
+2021,"AZ",15,"Chase Field","venue_15__humidor",4131,"venue_15__humidor",FALSE
+2022,"AZ",15,"Chase Field","venue_15__humidor",4168,"venue_15__humidor",FALSE
+2023,"AZ",15,"Chase Field","venue_15__humidor",4150,"venue_15__humidor",FALSE
+2024,"AZ",15,"Chase Field","venue_15__humidor",4376,"venue_15__humidor",FALSE
+2025,"AZ",15,"Chase Field","venue_15__humidor",4329,"venue_15__humidor",FALSE
+2026,"AZ",15,"Chase Field","venue_15__humidor",994,"venue_15__humidor",FALSE
+2015,"BAL",2,"Oriole Park at Camden Yards","venue_2__base",3948,,FALSE
+2016,"BAL",2,"Oriole Park at Camden Yards","venue_2__base",4173,"venue_2__base",FALSE
+2017,"BAL",2,"Oriole Park at Camden Yards","venue_2__base",4420,"venue_2__base",FALSE
+2018,"BAL",2,"Oriole Park at Camden Yards","venue_2__base",4319,"venue_2__base",FALSE
+2019,"BAL",2,"Oriole Park at Camden Yards","venue_2__base",4412,"venue_2__base",FALSE
+2021,"BAL",2,"Oriole Park at Camden Yards","venue_2__base",4244,"venue_2__base",FALSE
+2022,"BAL",2,"Oriole Park at Camden Yards","venue_2__wall_deep",4063,"venue_2__base",TRUE
+2023,"BAL",2,"Oriole Park at Camden Yards","venue_2__wall_deep",4077,"venue_2__wall_deep",FALSE
+2024,"BAL",2,"Oriole Park at Camden Yards","venue_2__wall_deep",4228,"venue_2__wall_deep",FALSE
+2025,"BAL",2,"Oriole Park at Camden Yards","venue_2__wall_medium",4098,"venue_2__wall_deep",TRUE
+2026,"BAL",2,"Oriole Park at Camden Yards","venue_2__wall_medium",1224,"venue_2__wall_medium",FALSE
+2015,"BOS",3,"Fenway Park","venue_3__base",4454,,FALSE
+2016,"BOS",3,"Fenway Park","venue_3__base",4299,"venue_3__base",FALSE
+2017,"BOS",3,"Fenway Park","venue_3__base",4279,"venue_3__base",FALSE
+2018,"BOS",3,"Fenway Park","venue_3__base",4233,"venue_3__base",FALSE
+2019,"BOS",3,"Fenway Park","venue_3__base",4069,"venue_3__base",FALSE
+2021,"BOS",3,"Fenway Park","venue_3__base",4187,"venue_3__base",FALSE
+2022,"BOS",3,"Fenway Park","venue_3__base",4154,"venue_3__base",FALSE
+2023,"BOS",3,"Fenway Park","venue_3__base",4289,"venue_3__base",FALSE
+2024,"BOS",3,"Fenway Park","venue_3__base",4160,"venue_3__base",FALSE
+2025,"BOS",3,"Fenway Park","venue_3__base",4250,"venue_3__base",FALSE
+2026,"BOS",3,"Fenway Park","venue_3__base",1044,"venue_3__base",FALSE
+2015,"CHC",17,"Wrigley Field","venue_17__base",3890,,FALSE
+2016,"CHC",17,"Wrigley Field","venue_17__base",3930,"venue_17__base",FALSE
+2017,"CHC",17,"Wrigley Field","venue_17__base",3999,"venue_17__base",FALSE
+2018,"CHC",17,"Wrigley Field","venue_17__base",4118,"venue_17__base",FALSE
+2019,"CHC",17,"Wrigley Field","venue_17__base",4024,"venue_17__base",FALSE
+2021,"CHC",17,"Wrigley Field","venue_17__base",3934,"venue_17__base",FALSE
+2022,"CHC",17,"Wrigley Field","venue_17__base",3936,"venue_17__base",FALSE
+2023,"CHC",17,"Wrigley Field","venue_17__base",4141,"venue_17__base",FALSE
+2024,"CHC",17,"Wrigley Field","venue_17__base",3968,"venue_17__base",FALSE
+2025,"CHC",17,"Wrigley Field","venue_17__base",4018,"venue_17__base",FALSE
+2026,"CHC",17,"Wrigley Field","venue_17__base",1188,"venue_17__base",FALSE
+2015,"CHW",4,"U.S. Cellular Field","venue_4__base",3938,,FALSE
+2016,"CHW",4,"U.S. Cellular Field","venue_4__base",4099,"venue_4__base",FALSE
+2017,"CHW",4,"Guaranteed Rate Field","venue_4__base",4111,"venue_4__base",FALSE
+2018,"CHW",4,"Guaranteed Rate Field","venue_4__base",4077,"venue_4__base",FALSE
+2019,"CHW",4,"Guaranteed Rate Field","venue_4__base",4007,"venue_4__base",FALSE
+2021,"CHW",4,"Guaranteed Rate Field","venue_4__base",3599,"venue_4__base",FALSE
+2022,"CHW",4,"Guaranteed Rate Field","venue_4__base",4130,"venue_4__base",FALSE
+2023,"CHW",4,"Guaranteed Rate Field","venue_4__base",4047,"venue_4__base",FALSE
+2024,"CHW",4,"Guaranteed Rate Field","venue_4__base",4153,"venue_4__base",FALSE
+2025,"CHW",4,"Rate Field","venue_4__base",4093,"venue_4__base",FALSE
+2026,"CHW",4,"Rate Field","venue_4__base",985,"venue_4__base",FALSE
+2015,"CIN",2602,"Great American Ball Park","venue_2602__base",4188,,FALSE
+2016,"CIN",2602,"Great American Ball Park","venue_2602__base",4073,"venue_2602__base",FALSE
+2017,"CIN",2602,"Great American Ball Park","venue_2602__base",4084,"venue_2602__base",FALSE
+2018,"CIN",2602,"Great American Ball Park","venue_2602__base",4201,"venue_2602__base",FALSE
+2019,"CIN",2602,"Great American Ball Park","venue_2602__base",3649,"venue_2602__base",FALSE
+2021,"CIN",2602,"Great American Ball Park","venue_2602__base",3996,"venue_2602__base",FALSE
+2022,"CIN",2602,"Great American Ball Park","venue_2602__base",3872,"venue_2602__base",FALSE
+2023,"CIN",2602,"Great American Ball Park","venue_2602__base",4091,"venue_2602__base",FALSE
+2024,"CIN",2602,"Great American Ball Park","venue_2602__base",4033,"venue_2602__base",FALSE
+2025,"CIN",2602,"Great American Ball Park","venue_2602__base",3986,"venue_2602__base",FALSE
+2026,"CIN",2602,"Great American Ball Park","venue_2602__base",1059,"venue_2602__base",FALSE
+2015,"CLE",5,"Progressive Field","venue_5__base",3919,,FALSE
+2016,"CLE",5,"Progressive Field","venue_5__base",4187,"venue_5__base",FALSE
+2017,"CLE",5,"Progressive Field","venue_5__base",3978,"venue_5__base",FALSE
+2018,"CLE",5,"Progressive Field","venue_5__base",4227,"venue_5__base",FALSE
+2019,"CLE",5,"Progressive Field","venue_5__base",3918,"venue_5__base",FALSE
+2021,"CLE",5,"Progressive Field","venue_5__base",3898,"venue_5__base",FALSE
+2022,"CLE",5,"Progressive Field","venue_5__base",3968,"venue_5__base",FALSE
+2023,"CLE",5,"Progressive Field","venue_5__base",4237,"venue_5__base",FALSE
+2024,"CLE",5,"Progressive Field","venue_5__wind_tunnel",4014,"venue_5__base",TRUE
+2025,"CLE",5,"Progressive Field","venue_5__wind_tunnel",3974,"venue_5__wind_tunnel",FALSE
+2026,"CLE",5,"Progressive Field","venue_5__wind_tunnel",1032,"venue_5__wind_tunnel",FALSE
+2015,"COL",19,"Coors Field","venue_19__base",4525,,FALSE
+2016,"COL",19,"Coors Field","venue_19__base",4374,"venue_19__base",FALSE
+2017,"COL",19,"Coors Field","venue_19__base",4244,"venue_19__base",FALSE
+2018,"COL",19,"Coors Field","venue_19__base",4217,"venue_19__base",FALSE
+2019,"COL",19,"Coors Field","venue_19__base",4551,"venue_19__base",FALSE
+2021,"COL",19,"Coors Field","venue_19__base",4317,"venue_19__base",FALSE
+2022,"COL",19,"Coors Field","venue_19__base",4566,"venue_19__base",FALSE
+2023,"COL",19,"Coors Field","venue_19__base",4392,"venue_19__base",FALSE
+2024,"COL",19,"Coors Field","venue_19__base",4242,"venue_19__base",FALSE
+2025,"COL",19,"Coors Field","venue_19__base",4498,"venue_19__base",FALSE
+2026,"COL",19,"Coors Field","venue_19__base",1000,"venue_19__base",FALSE
+2015,"DET",2394,"Comerica Park","venue_2394__base",4408,,FALSE
+2016,"DET",2394,"Comerica Park","venue_2394__base",4191,"venue_2394__base",FALSE
+2017,"DET",2394,"Comerica Park","venue_2394__base",4551,"venue_2394__base",FALSE
+2018,"DET",2394,"Comerica Park","venue_2394__base",4311,"venue_2394__base",FALSE
+2019,"DET",2394,"Comerica Park","venue_2394__base",4330,"venue_2394__base",FALSE
+2021,"DET",2394,"Comerica Park","venue_2394__base",4064,"venue_2394__base",FALSE
+2022,"DET",2394,"Comerica Park","venue_2394__base",4099,"venue_2394__base",FALSE
+2023,"DET",2394,"Comerica Park","venue_2394__cf_in_412",4046,"venue_2394__base",TRUE
+2024,"DET",2394,"Comerica Park","venue_2394__cf_in_412",4032,"venue_2394__cf_in_412",FALSE
+2025,"DET",2394,"Comerica Park","venue_2394__cf_in_412",4092,"venue_2394__cf_in_412",FALSE
+2026,"DET",2394,"Comerica Park","venue_2394__cf_in_412",897,"venue_2394__cf_in_412",FALSE
+2015,"HOU",2392,"Minute Maid Park","venue_2392__base",3949,,FALSE
+2016,"HOU",2392,"Minute Maid Park","venue_2392__base",4000,"venue_2392__base",FALSE
+2017,"HOU",2392,"Minute Maid Park","venue_2392__base",3962,"venue_2392__base",FALSE
+2018,"HOU",2392,"Minute Maid Park","venue_2392__base",3923,"venue_2392__base",FALSE
+2019,"HOU",2392,"Minute Maid Park","venue_2392__base",4087,"venue_2392__base",FALSE
+2021,"HOU",2392,"Minute Maid Park","venue_2392__base",4010,"venue_2392__base",FALSE
+2022,"HOU",2392,"Minute Maid Park","venue_2392__base",3688,"venue_2392__base",FALSE
+2023,"HOU",2392,"Minute Maid Park","venue_2392__base",4166,"venue_2392__base",FALSE
+2024,"HOU",2392,"Minute Maid Park","venue_2392__base",4144,"venue_2392__base",FALSE
+2025,"HOU",2392,"Daikin Park","venue_2392__base",3954,"venue_2392__base",FALSE
+2026,"HOU",2392,"Daikin Park","venue_2392__base",1080,"venue_2392__base",FALSE
+2015,"KCR",7,"Kauffman Stadium","venue_7__base",4290,,FALSE
+2016,"KCR",7,"Kauffman Stadium","venue_7__base",4323,"venue_7__base",FALSE
+2017,"KCR",7,"Kauffman Stadium","venue_7__base",4282,"venue_7__base",FALSE
+2018,"KCR",7,"Kauffman Stadium","venue_7__base",4415,"venue_7__base",FALSE
+2019,"KCR",7,"Kauffman Stadium","venue_7__base",4354,"venue_7__base",FALSE
+2021,"KCR",7,"Kauffman Stadium","venue_7__base",4150,"venue_7__base",FALSE
+2022,"KCR",7,"Kauffman Stadium","venue_7__base",4384,"venue_7__base",FALSE
+2023,"KCR",7,"Kauffman Stadium","venue_7__base",4296,"venue_7__base",FALSE
+2024,"KCR",7,"Kauffman Stadium","venue_7__base",4249,"venue_7__base",FALSE
+2025,"KCR",7,"Kauffman Stadium","venue_7__base",4234,"venue_7__base",FALSE
+2026,"KCR",7,"Kauffman Stadium","venue_7__walls_in",1155,"venue_7__base",TRUE
+2015,"LAA",1,"Angel Stadium of Anaheim","venue_1__base",4123,,FALSE
+2016,"LAA",1,"Angel Stadium of Anaheim","venue_1__base",4128,"venue_1__base",FALSE
+2017,"LAA",1,"Angel Stadium of Anaheim","venue_1__base",4174,"venue_1__base",FALSE
+2018,"LAA",1,"Angel Stadium","venue_1__base",4104,"venue_1__base",FALSE
+2019,"LAA",1,"Angel Stadium","venue_1__base",4135,"venue_1__base",FALSE
+2021,"LAA",1,"Angel Stadium","venue_1__base",4046,"venue_1__base",FALSE
+2022,"LAA",1,"Angel Stadium","venue_1__base",3871,"venue_1__base",FALSE
+2023,"LAA",1,"Angel Stadium","venue_1__base",3949,"venue_1__base",FALSE
+2024,"LAA",1,"Angel Stadium","venue_1__base",4041,"venue_1__base",FALSE
+2025,"LAA",1,"Angel Stadium","venue_1__base",4038,"venue_1__base",FALSE
+2026,"LAA",1,"Angel Stadium","venue_1__base",834,"venue_1__base",FALSE
+2015,"LAD",22,"Dodger Stadium","venue_22__base",3853,,FALSE
+2016,"LAD",22,"Dodger Stadium","venue_22__base",3882,"venue_22__base",FALSE
+2017,"LAD",22,"Dodger Stadium","venue_22__base",3893,"venue_22__base",FALSE
+2018,"LAD",22,"Dodger Stadium","venue_22__base",3943,"venue_22__base",FALSE
+2019,"LAD",22,"Dodger Stadium","venue_22__base",3938,"venue_22__base",FALSE
+2021,"LAD",22,"Dodger Stadium","venue_22__base",3654,"venue_22__base",FALSE
+2022,"LAD",22,"Dodger Stadium","venue_22__base",3724,"venue_22__base",FALSE
+2023,"LAD",22,"Dodger Stadium","venue_22__base",4077,"venue_22__base",FALSE
+2024,"LAD",22,"Dodger Stadium","venue_22__base",4027,"venue_22__base",FALSE
+2025,"LAD",22,"Dodger Stadium","venue_22__base",4047,"venue_22__base",FALSE
+2026,"LAD",22,"UNIQLO Field at Dodger Stadium","venue_22__base",1143,"venue_22__base",FALSE
+2015,"MIA",4169,"Marlins Park","venue_4169__base",4273,,FALSE
+2016,"MIA",4169,"Marlins Park","venue_4169__cf_in_407",3985,"venue_4169__base",TRUE
+2017,"MIA",4169,"Marlins Park","venue_4169__cf_in_407",4020,"venue_4169__cf_in_407",FALSE
+2018,"MIA",4169,"Marlins Park","venue_4169__cf_in_407",4264,"venue_4169__cf_in_407",FALSE
+2019,"MIA",4169,"Marlins Park","venue_4169__cf_in_407",4103,"venue_4169__cf_in_407",FALSE
+2021,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",3796,"venue_4169__cf_in_407",TRUE
+2022,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",3925,"venue_4169__fence_reduced",FALSE
+2023,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",4140,"venue_4169__fence_reduced",FALSE
+2024,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",4335,"venue_4169__fence_reduced",FALSE
+2025,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",4239,"venue_4169__fence_reduced",FALSE
+2026,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",1307,"venue_4169__fence_reduced",FALSE
+2015,"MIL",32,"Miller Park","venue_32__base",4075,,FALSE
+2016,"MIL",32,"Miller Park","venue_32__base",3968,"venue_32__base",FALSE
+2017,"MIL",32,"Miller Park","venue_32__base",4023,"venue_32__base",FALSE
+2018,"MIL",32,"Miller Park","venue_32__base",3930,"venue_32__base",FALSE
+2019,"MIL",32,"Miller Park","venue_32__base",3863,"venue_32__base",FALSE
+2021,"MIL",32,"American Family Field","venue_32__base",3824,"venue_32__base",FALSE
+2022,"MIL",32,"American Family Field","venue_32__base",3617,"venue_32__base",FALSE
+2023,"MIL",32,"American Family Field","venue_32__base",3854,"venue_32__base",FALSE
+2024,"MIL",32,"American Family Field","venue_32__base",3898,"venue_32__base",FALSE
+2025,"MIL",32,"American Family Field","venue_32__base",4015,"venue_32__base",FALSE
+2026,"MIL",32,"American Family Field","venue_32__base",1095,"venue_32__base",FALSE
+2015,"MIN",3312,"Target Field","venue_3312__base",4248,,FALSE
+2016,"MIN",3312,"Target Field","venue_3312__base",4481,"venue_3312__base",FALSE
+2017,"MIN",3312,"Target Field","venue_3312__base",4338,"venue_3312__base",FALSE
+2018,"MIN",3312,"Target Field","venue_3312__base",4050,"venue_3312__base",FALSE
+2019,"MIN",3312,"Target Field","venue_3312__base",4300,"venue_3312__base",FALSE
+2021,"MIN",3312,"Target Field","venue_3312__base",4176,"venue_3312__base",FALSE
+2022,"MIN",3312,"Target Field","venue_3312__base",4127,"venue_3312__base",FALSE
+2023,"MIN",3312,"Target Field","venue_3312__base",3876,"venue_3312__base",FALSE
+2024,"MIN",3312,"Target Field","venue_3312__base",4166,"venue_3312__base",FALSE
+2025,"MIN",3312,"Target Field","venue_3312__base",4241,"venue_3312__base",FALSE
+2026,"MIN",3312,"Target Field","venue_3312__base",1147,"venue_3312__base",FALSE
+2015,"NYM",3289,"Citi Field","venue_3289__base",3996,,FALSE
+2016,"NYM",3289,"Citi Field","venue_3289__base",3972,"venue_3289__base",FALSE
+2017,"NYM",3289,"Citi Field","venue_3289__base",4166,"venue_3289__base",FALSE
+2018,"NYM",3289,"Citi Field","venue_3289__base",3941,"venue_3289__base",FALSE
+2019,"NYM",3289,"Citi Field","venue_3289__base",3996,"venue_3289__base",FALSE
+2021,"NYM",3289,"Citi Field","venue_3289__base",3641,"venue_3289__base",FALSE
+2022,"NYM",3289,"Citi Field","venue_3289__base",3828,"venue_3289__base",FALSE
+2023,"NYM",3289,"Citi Field","venue_3289__rf_in_362",3910,"venue_3289__base",TRUE
+2024,"NYM",3289,"Citi Field","venue_3289__rf_in_362",3912,"venue_3289__rf_in_362",FALSE
+2025,"NYM",3289,"Citi Field","venue_3289__rf_in_362",4078,"venue_3289__rf_in_362",FALSE
+2026,"NYM",3289,"Citi Field","venue_3289__rf_in_362",1018,"venue_3289__rf_in_362",FALSE
+2015,"NYY",3313,"Yankee Stadium","venue_3313__base",4178,,FALSE
+2016,"NYY",3313,"Yankee Stadium","venue_3313__base",4044,"venue_3313__base",FALSE
+2017,"NYY",3313,"Yankee Stadium","venue_3313__base",3921,"venue_3313__base",FALSE
+2018,"NYY",3313,"Yankee Stadium","venue_3313__base",4069,"venue_3313__base",FALSE
+2019,"NYY",3313,"Yankee Stadium","venue_3313__base",3938,"venue_3313__base",FALSE
+2021,"NYY",3313,"Yankee Stadium","venue_3313__base",3622,"venue_3313__base",FALSE
+2022,"NYY",3313,"Yankee Stadium","venue_3313__base",3815,"venue_3313__base",FALSE
+2023,"NYY",3313,"Yankee Stadium","venue_3313__base",3985,"venue_3313__base",FALSE
+2024,"NYY",3313,"Yankee Stadium","venue_3313__base",4043,"venue_3313__base",FALSE
+2025,"NYY",3313,"Yankee Stadium","venue_3313__base",3964,"venue_3313__base",FALSE
+2026,"NYY",3313,"Yankee Stadium","venue_3313__base",977,"venue_3313__base",FALSE
+2015,"PHI",2681,"Citizens Bank Park","venue_2681__base",4096,,FALSE
+2016,"PHI",2681,"Citizens Bank Park","venue_2681__base",3954,"venue_2681__base",FALSE
+2017,"PHI",2681,"Citizens Bank Park","venue_2681__base",4107,"venue_2681__base",FALSE
+2018,"PHI",2681,"Citizens Bank Park","venue_2681__base",3823,"venue_2681__base",FALSE
+2019,"PHI",2681,"Citizens Bank Park","venue_2681__base",4198,"venue_2681__base",FALSE
+2021,"PHI",2681,"Citizens Bank Park","venue_2681__base",3920,"venue_2681__base",FALSE
+2022,"PHI",2681,"Citizens Bank Park","venue_2681__base",4107,"venue_2681__base",FALSE
+2023,"PHI",2681,"Citizens Bank Park","venue_2681__base",4032,"venue_2681__base",FALSE
+2024,"PHI",2681,"Citizens Bank Park","venue_2681__base",4113,"venue_2681__base",FALSE
+2025,"PHI",2681,"Citizens Bank Park","venue_2681__base",4095,"venue_2681__base",FALSE
+2026,"PHI",2681,"Citizens Bank Park","venue_2681__base",1254,"venue_2681__base",FALSE
+2015,"PIT",31,"PNC Park","venue_31__base",4107,,FALSE
+2016,"PIT",31,"PNC Park","venue_31__base",3952,"venue_31__base",FALSE
+2017,"PIT",31,"PNC Park","venue_31__base",4319,"venue_31__base",FALSE
+2018,"PIT",31,"PNC Park","venue_31__base",4160,"venue_31__base",FALSE
+2019,"PIT",31,"PNC Park","venue_31__base",4362,"venue_31__base",FALSE
+2021,"PIT",31,"PNC Park","venue_31__base",3986,"venue_31__base",FALSE
+2022,"PIT",31,"PNC Park","venue_31__base",4031,"venue_31__base",FALSE
+2023,"PIT",31,"PNC Park","venue_31__base",4095,"venue_31__base",FALSE
+2024,"PIT",31,"PNC Park","venue_31__base",4170,"venue_31__base",FALSE
+2025,"PIT",31,"PNC Park","venue_31__base",4083,"venue_31__base",FALSE
+2026,"PIT",31,"PNC Park","venue_31__base",1146,"venue_31__base",FALSE
+2015,"SDP",2680,"Petco Park","venue_2680__base",3871,,FALSE
+2016,"SDP",2680,"Petco Park","venue_2680__base",4198,"venue_2680__base",FALSE
+2017,"SDP",2680,"Petco Park","venue_2680__base",3827,"venue_2680__base",FALSE
+2018,"SDP",2680,"Petco Park","venue_2680__base",4010,"venue_2680__base",FALSE
+2019,"SDP",2680,"Petco Park","venue_2680__base",3938,"venue_2680__base",FALSE
+2021,"SDP",2680,"Petco Park","venue_2680__base",3938,"venue_2680__base",FALSE
+2022,"SDP",2680,"Petco Park","venue_2680__base",3749,"venue_2680__base",FALSE
+2023,"SDP",2680,"Petco Park","venue_2680__base",3891,"venue_2680__base",FALSE
+2024,"SDP",2680,"Petco Park","venue_2680__base",4093,"venue_2680__base",FALSE
+2025,"SDP",2680,"Petco Park","venue_2680__base",4008,"venue_2680__base",FALSE
+2026,"SDP",2680,"Petco Park","venue_2680__base",1114,"venue_2680__base",FALSE
+2015,"SEA",680,"Safeco Field","venue_680__base",3924,,FALSE
+2016,"SEA",680,"Safeco Field","venue_680__base",4049,"venue_680__base",FALSE
+2017,"SEA",680,"Safeco Field","venue_680__base",4203,"venue_680__base",FALSE
+2018,"SEA",680,"Safeco Field","venue_680__base",4129,"venue_680__base",FALSE
+2019,"SEA",680,"T-Mobile Park","venue_680__base",4065,"venue_680__base",FALSE
+2021,"SEA",680,"T-Mobile Park","venue_680__base",3793,"venue_680__base",FALSE
+2022,"SEA",680,"T-Mobile Park","venue_680__base",3664,"venue_680__base",FALSE
+2023,"SEA",680,"T-Mobile Park","venue_680__base",3831,"venue_680__base",FALSE
+2024,"SEA",680,"T-Mobile Park","venue_680__base",3655,"venue_680__base",FALSE
+2025,"SEA",680,"T-Mobile Park","venue_680__base",3926,"venue_680__base",FALSE
+2026,"SEA",680,"T-Mobile Park","venue_680__base",1117,"venue_680__base",FALSE
+2015,"SFG",2395,"AT&T Park","venue_2395__base",3796,,FALSE
+2016,"SFG",2395,"AT&T Park","venue_2395__base",4081,"venue_2395__base",FALSE
+2017,"SFG",2395,"AT&T Park","venue_2395__base",4357,"venue_2395__base",FALSE
+2018,"SFG",2395,"AT&T Park","venue_2395__base",4231,"venue_2395__base",FALSE
+2019,"SFG",2395,"Oracle Park","venue_2395__base",4159,"venue_2395__base",FALSE
+2021,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",3848,"venue_2395__base",TRUE
+2022,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",3955,"venue_2395__bullpen_center",FALSE
+2023,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",4036,"venue_2395__bullpen_center",FALSE
+2024,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",4161,"venue_2395__bullpen_center",FALSE
+2025,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",4201,"venue_2395__bullpen_center",FALSE
+2026,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",1140,"venue_2395__bullpen_center",FALSE
+2015,"STL",2889,"Busch Stadium","venue_2889__base",4041,,FALSE
+2016,"STL",2889,"Busch Stadium","venue_2889__base",4141,"venue_2889__base",FALSE
+2017,"STL",2889,"Busch Stadium","venue_2889__base",4060,"venue_2889__base",FALSE
+2018,"STL",2889,"Busch Stadium","venue_2889__base",4216,"venue_2889__base",FALSE
+2019,"STL",2889,"Busch Stadium","venue_2889__base",4038,"venue_2889__base",FALSE
+2021,"STL",2889,"Busch Stadium","venue_2889__base",3923,"venue_2889__base",FALSE
+2022,"STL",2889,"Busch Stadium","venue_2889__base",4134,"venue_2889__base",FALSE
+2023,"STL",2889,"Busch Stadium","venue_2889__base",4275,"venue_2889__base",FALSE
+2024,"STL",2889,"Busch Stadium","venue_2889__base",4191,"venue_2889__base",FALSE
+2025,"STL",2889,"Busch Stadium","venue_2889__base",4277,"venue_2889__base",FALSE
+2026,"STL",2889,"Busch Stadium","venue_2889__base",1109,"venue_2889__base",FALSE
+2015,"TBR",12,"Tropicana Field","venue_12__base",3818,,FALSE
+2016,"TBR",12,"Tropicana Field","venue_12__base",3959,"venue_12__base",FALSE
+2017,"TBR",12,"Tropicana Field","venue_12__base",3752,"venue_12__base",FALSE
+2018,"TBR",12,"Tropicana Field","venue_12__base",3953,"venue_12__base",FALSE
+2019,"TBR",12,"Tropicana Field","venue_12__base",3959,"venue_12__base",FALSE
+2021,"TBR",12,"Tropicana Field","venue_12__base",3797,"venue_12__base",FALSE
+2022,"TBR",12,"Tropicana Field","venue_12__base",3964,"venue_12__base",FALSE
+2023,"TBR",12,"Tropicana Field","venue_12__base",3911,"venue_12__base",FALSE
+2024,"TBR",12,"Tropicana Field","venue_12__base",3983,"venue_12__base",FALSE
+2025,"TBR",2523,"George M. Steinbrenner Field","venue_2523__steinbrenner",4071,"venue_12__base",TRUE
+2026,"TBR",12,"Tropicana Field","venue_12__trop_return",931,"venue_2523__steinbrenner",TRUE
+2015,"TEX",13,"Globe Life Park in Arlington","venue_13__base",4237,,FALSE
+2016,"TEX",13,"Globe Life Park in Arlington","venue_13__base",4272,"venue_13__base",FALSE
+2017,"TEX",13,"Globe Life Park in Arlington","venue_13__base",4251,"venue_13__base",FALSE
+2018,"TEX",13,"Globe Life Park in Arlington","venue_13__base",4384,"venue_13__base",FALSE
+2019,"TEX",13,"Globe Life Park in Arlington","venue_13__base",4320,"venue_13__base",FALSE
+2021,"TEX",5325,"Globe Life Field","venue_5325__globe_life",4045,"venue_13__base",TRUE
+2022,"TEX",5325,"Globe Life Field","venue_5325__globe_life",3940,"venue_5325__globe_life",FALSE
+2023,"TEX",5325,"Globe Life Field","venue_5325__globe_life",4161,"venue_5325__globe_life",FALSE
+2024,"TEX",5325,"Globe Life Field","venue_5325__globe_life",4035,"venue_5325__globe_life",FALSE
+2025,"TEX",5325,"Globe Life Field","venue_5325__globe_life",4039,"venue_5325__globe_life",FALSE
+2026,"TEX",5325,"Globe Life Field","venue_5325__globe_life",1015,"venue_5325__globe_life",FALSE
+2015,"TOR",14,"Rogers Centre","venue_14__base",4273,,FALSE
+2016,"TOR",14,"Rogers Centre","venue_14__base",4202,"venue_14__base",FALSE
+2017,"TOR",14,"Rogers Centre","venue_14__base",4167,"venue_14__base",FALSE
+2018,"TOR",14,"Rogers Centre","venue_14__base",4213,"venue_14__base",FALSE
+2019,"TOR",14,"Rogers Centre","venue_14__base",4192,"venue_14__base",FALSE
+2021,"TOR",14,"Rogers Centre","venue_14__base",1631,"venue_14__base",FALSE
+2022,"TOR",14,"Rogers Centre","venue_14__base",4088,"venue_14__base",FALSE
+2023,"TOR",14,"Rogers Centre","venue_14__base",3997,"venue_14__base",FALSE
+2024,"TOR",14,"Rogers Centre","venue_14__base",4190,"venue_14__base",FALSE
+2025,"TOR",14,"Rogers Centre","venue_14__base",4210,"venue_14__base",FALSE
+2026,"TOR",14,"Rogers Centre","venue_14__base",1233,"venue_14__base",FALSE
+2015,"WSH",3309,"Nationals Park","venue_3309__base",4030,,FALSE
+2016,"WSH",3309,"Nationals Park","venue_3309__base",3993,"venue_3309__base",FALSE
+2017,"WSH",3309,"Nationals Park","venue_3309__base",4085,"venue_3309__base",FALSE
+2018,"WSH",3309,"Nationals Park","venue_3309__base",4173,"venue_3309__base",FALSE
+2019,"WSH",3309,"Nationals Park","venue_3309__base",4168,"venue_3309__base",FALSE
+2021,"WSH",3309,"Nationals Park","venue_3309__base",3927,"venue_3309__base",FALSE
+2022,"WSH",3309,"Nationals Park","venue_3309__base",4123,"venue_3309__base",FALSE
+2023,"WSH",3309,"Nationals Park","venue_3309__base",4441,"venue_3309__base",FALSE
+2024,"WSH",3309,"Nationals Park","venue_3309__base",4258,"venue_3309__base",FALSE
+2025,"WSH",3309,"Nationals Park","venue_3309__base",4264,"venue_3309__base",FALSE
+2026,"WSH",3309,"Nationals Park","venue_3309__base",1048,"venue_3309__base",FALSE

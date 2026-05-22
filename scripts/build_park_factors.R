@@ -53,6 +53,12 @@ if (nrow(bbe_raw) == 0) {
   stop("BBE input is empty.")
 }
 
+# Deduplicate: player_type=pitcher fetch creates exact duplicate rows (~25%)
+n_before <- nrow(bbe_raw)
+bbe_raw <- unique(bbe_raw)
+message(sprintf("  Deduplication: %d -> %d rows (removed %d duplicates)",
+                n_before, nrow(bbe_raw), n_before - nrow(bbe_raw)))
+
 if (is.finite(max_rows) && max_rows > 0 && nrow(bbe_raw) > max_rows) {
   set.seed(seed)
   keep <- sort(sample.int(nrow(bbe_raw), max_rows))

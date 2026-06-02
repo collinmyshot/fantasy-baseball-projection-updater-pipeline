@@ -861,7 +861,8 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
       aug         = NULL,
       sep_oct     = NULL,
       status      = "Select year and click \u2018Generate Data\u2019.",
-      diag        = NULL
+      diag        = NULL,
+      fetch_state = "none"   # "none" | "ok" | "error"
     )
     output$gen_status <- renderText({ rv_spz$status })
     output$spz_diag   <- renderText({ rv_spz$diag %||% "" })
@@ -924,6 +925,7 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
       periods <- if (yr == 2025L) c("std") else names(SPZ_MONTH_CODES)
       withProgress(message = "Fetching SP Skillz\u2026", value = 0, {
         rv_spz$status      <- "Fetching\u2026"
+        rv_spz$fetch_state <- "none"
         rv_spz$gsheets_stf <- NULL
         rv_spz$savant_whiff <- NULL
         rv_spz$diag        <- NULL
@@ -951,12 +953,11 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
                       detail = if (length(lbl) > 0) lbl[1] else k)
           rv_spz[[paste0("raw_", k)]] <- fetch_raw(SPZ_MONTH_CODES[[k]])
         }
-        n <- if (!is.null(rv_spz$std)) nrow(rv_spz$std) else 0L
-        rv_spz$status <- sprintf(
-          "%d pitchers \u2014 %s", n, format(Sys.time(), "%I:%M %p")
-        )
         raw_std <- rv_spz$raw_std
         if (!is.null(raw_std) && nrow(raw_std) > 0) {
+          n <- nrow(raw_std)
+          rv_spz$status      <- sprintf("%d pitchers \u2014 %s", n, format(Sys.time(), "%I:%M %p"))
+          rv_spz$fetch_state <- "ok"
           rv_spz$diag <- paste0(
             "Shape: ", nrow(raw_std), " rows \u00d7 ", ncol(raw_std), " cols\n",
             "Columns: ", paste(names(raw_std), collapse = ", "), "\n",
@@ -965,6 +966,9 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
                      names(raw_std), as.list(raw_std[1, ])),
               collapse = " | ")
           )
+        } else {
+          rv_spz$status      <- paste0("Fetch failed \u2014 ", format(Sys.time(), "%I:%M %p"))
+          rv_spz$fetch_state <- "error"
         }
       })
     })
@@ -1009,7 +1013,8 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
     search_d <- debounce(reactive(input$search), 300)
 
     spz_filtered <- reactive({
-      dat <- req(spz_data_adp())
+      dat <- spz_data_adp()
+      if (is.null(dat) || nrow(dat) == 0) return(NULL)
       q   <- trimws(search_d() %||% "")
       if (nchar(q) == 0) return(dat)
       mask <- grepl(q, dat[["Player"]], ignore.case = TRUE) |
@@ -1018,29 +1023,45 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
     })
 
     output$body_ui <- renderUI({
-      dat <- spz_data_adp()
-      if (is.null(dat) || nrow(dat) == 0) {
+      dat   <- spz_data_adp()
+      state <- rv_spz$fetch_state
+      yr    <- input$year %||% "2026"
+      if (!is.null(dat) && nrow(dat) > 0) {
+        div(class = "pf-table-wrap", DTOutput(ns("table"), width = "100%"))
+      } else if (state == "error") {
         div(
           class = "spz-empty",
           div(
             class = "spz-empty-inner",
-            h3(class = "spz-empty-title", "No data loaded"),
-            p(
-              class = "spz-empty-desc",
-              "Select a season and click \u2018Generate Data\u2019 to scrape FanGraphs and compute SP Skillz scores."
+            h3(class = "spz-empty-title", "\u26a0\ufe0f Fetch failed"),
+            p(class = "spz-empty-desc",
+              "Could not retrieve data from FanGraphs. This may be a temporary issue.",
+              tags$br(),
+              "Please wait a moment and click \u2018Generate Data\u2019 again."
             )
           )
         )
       } else {
         div(
-          class = "pf-table-wrap",
-          DTOutput(ns("table"), width = "100%")
+          class = "spz-empty",
+          div(
+            class = "spz-empty-inner",
+            h3(class = "spz-empty-title", "No data loaded"),
+            p(class = "spz-empty-desc",
+              if (yr == "2025")
+                "No 2025 data file found."
+              else
+                "Select a season and click \u2018Generate Data\u2019 to fetch live data from FanGraphs."
+            )
+          )
         )
       }
     })
 
     output$table <- renderDT({
-      render_spz_dt(req(spz_filtered()))
+      dat <- spz_filtered()
+      if (is.null(dat) || nrow(dat) == 0) return(NULL)
+      render_spz_dt(dat)
     })
 
     # ── SP Skillz Compare tab ─────────────────────────────────────────────────

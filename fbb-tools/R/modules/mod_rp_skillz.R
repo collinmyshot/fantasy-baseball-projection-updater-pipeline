@@ -136,6 +136,9 @@ rpz_gen_resolve_cookie_path <- function() {
     Sys.setenv(FG_COOKIE_PATH = tmp)
     return(tmp)
   }
+  # Bundled fallback: fg_cookies.txt shipped with the app (gitignored).
+  bundled <- file.path("fg_cookies.txt")
+  if (file.exists(bundled)) return(bundled)
   ""
 }
 

@@ -3,6 +3,7 @@
 .Rproj.user/
 .Renviron
 .DS_Store
+fbb-tools/fg_cookies.txt
 # Deprecated Shiny app — local-only (not tracked in git).
 fantasy-baseball-tools/
 scripts/deploy_shinyapps.R

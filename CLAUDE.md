@@ -119,6 +119,30 @@ The `base` variable (used to source shared R files) is resolved automatically vi
 
 ---
 
+## FanGraphs Cookie Authentication
+
+FanGraphs added Cloudflare bot protection in 2026, breaking all direct API fetches.
+All FG-scraping modules now use the R `curl` package with a Netscape-format session
+cookie file to authenticate.
+
+**Cookie file:** `fbb-tools/fg_cookies.txt` — gitignored, never committed.
+**Deployed app:** cookie file is bundled into the shinyapps.io deploy (works for all users).
+**Local dev on a fresh machine:** copy the cookie file manually before running locally.
+  - Source file (Windows): `C:\Users\Collin\Downloads\www.fangraphs.com_cookies.txt`
+  - Destination: `fbb-tools/fg_cookies.txt`
+  - Export fresh cookies via the "Get cookies.txt LOCALLY" Chrome extension while logged into fangraphs.com
+
+**If FG fetches fail with "JSON parse failed — response may be a Cloudflare challenge":**
+1. The session cookie has expired (expected ~2027 based on current cookie timestamps)
+2. Log into fangraphs.com in Chrome, re-export cookies with the extension
+3. Replace `fbb-tools/fg_cookies.txt` with the new file
+4. Redeploy to shinyapps.io (`rsconnect::deployApp` from `fbb-tools/`)
+
+**Cookie resolution order in code** (`rpz_gen_resolve_cookie_path` and equivalents):
+1. `FG_COOKIE_PATH` env var (set in `.Renviron` for local dev)
+2. `FG_COOKIE_CONTENT` env var (shinyapps.io secret, if plan supports it)
+3. `fbb-tools/fg_cookies.txt` bundled fallback
+
 ## Packages
 ### Core: shiny, DT, bslib, rsconnect, dplyr, readr, ggplot2
 ### Also used: googlesheets4, jsonlite, yaml, lme4, rvest, markdown, renv, openxlsx, curl, httr

@@ -740,7 +740,6 @@ traterServer <- function(id, fetch_trigger = NULL) {
     if (!is.null(fetch_trigger)) {
       observeEvent(fetch_trigger(), {
         req(fetch_trigger() > 0)
-        if (!is.null(rv$raw_full)) return()   # already cached — skip
         do_fetch(as.integer(input$season %||% "2026"))
       }, ignoreInit = TRUE)
     }

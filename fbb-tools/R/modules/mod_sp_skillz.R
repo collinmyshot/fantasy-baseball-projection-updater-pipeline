@@ -1157,13 +1157,14 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
       render_spz_dt(sub, scroll_y = "auto", full_scores = dat_full[["Score"]])
     })
 
-    # ── External trigger (e.g. from Streamonator Fetch Probables) ──────────────────────────────────────
+    # ── External trigger (e.g. from Streamonator Fetch Probables) ────────────
     # Always re-fetches std + l30 when triggered (no cache guard).
     if (!is.null(fetch_trigger)) {
       observeEvent(fetch_trigger(), {
         req(fetch_trigger() > 0)
         yr <- as.integer(input$year %||% "2026")
         withProgress(message = "Fetching SP Skillz…", value = 0, {
+          rv_spz$fetch_state <- "none"
           if (yr == 2025L) rv_spz$gsheets_stf <- spz_fetch_gsheets_stf()
           fetch_raw_ext <- function(month) {
             tryCatch({
@@ -1177,8 +1178,14 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
           incProgress(0.5, detail = "Last 30 Days…")
           rv_spz$raw_l30 <- fetch_raw_ext(3L)
           incProgress(0.1)
-          n <- if (!is.null(rv_spz$std)) nrow(rv_spz$std) else 0L
-          rv_spz$status <- sprintf("%d pitchers — %s", n, format(Sys.time(), "%I:%M %p"))
+          raw_std <- rv_spz$raw_std
+          if (!is.null(raw_std) && nrow(raw_std) > 0) {
+            rv_spz$status      <- sprintf("%d pitchers — %s", nrow(raw_std), format(Sys.time(), "%I:%M %p"))
+            rv_spz$fetch_state <- "ok"
+          } else {
+            rv_spz$status      <- paste0("Fetch failed — ", format(Sys.time(), "%I:%M %p"))
+            rv_spz$fetch_state <- "error"
+          }
         })
       }, ignoreInit = TRUE)
     }

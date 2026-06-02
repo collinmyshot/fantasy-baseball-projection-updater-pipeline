@@ -429,12 +429,13 @@ rpSkillzServer <- function(id) {
     })
 
     rv_rpz <- reactiveValues(
-      raw_std = NULL,
-      raw_l30 = NULL,
-      std     = NULL,
-      l30     = NULL,
-      status  = "Select season and click \u2018Fetch Data\u2019.",
-      diag    = NULL
+      raw_std       = NULL,
+      raw_l30       = NULL,
+      std           = NULL,
+      l30           = NULL,
+      status        = "Select season and click \u2018Fetch Data\u2019.",
+      diag          = NULL,
+      fetch_state   = "none"   # "none" | "ok" | "error"
     )
 
     output$gen_status <- renderText({ rv_rpz$status })
@@ -469,8 +470,9 @@ rpSkillzServer <- function(id) {
       yr      <- as.integer(input$year %||% "2026")
       periods <- if (yr == 2025L) c("std") else c("std", "l30")
       withProgress(message = "Fetching RP Skillz…", value = 0, {
-        rv_rpz$status <- "Fetching…"
-        rv_rpz$diag   <- NULL
+        rv_rpz$status      <- "Fetching…"
+        rv_rpz$diag        <- NULL
+        rv_rpz$fetch_state <- "none"
         for (k in c("std", "l30")) rv_rpz[[paste0("raw_", k)]] <- NULL
 
         fetch_raw <- function(month) {
@@ -490,11 +492,11 @@ rpSkillzServer <- function(id) {
           rv_rpz[[paste0("raw_", k)]] <- fetch_raw(RPZ_MONTH_CODES[[k]])
         }
 
-        n <- if (!is.null(rv_rpz$std)) nrow(rv_rpz$std) else 0L
-        rv_rpz$status <- sprintf("%d relievers — %s", n, format(Sys.time(), "%I:%M %p"))
-
         raw_std <- rv_rpz$raw_std
         if (!is.null(raw_std) && nrow(raw_std) > 0) {
+          n <- nrow(raw_std)
+          rv_rpz$status      <- sprintf("%d relievers — %s", n, format(Sys.time(), "%I:%M %p"))
+          rv_rpz$fetch_state <- "ok"
           rv_rpz$diag <- paste0(
             "Shape: ", nrow(raw_std), " rows × ", ncol(raw_std), " cols\n",
             "Columns: ", paste(names(raw_std), collapse = ", "), "\n",
@@ -503,6 +505,9 @@ rpSkillzServer <- function(id) {
                      names(raw_std), as.list(raw_std[1, ])),
               collapse = " | ")
           )
+        } else {
+          rv_rpz$status      <- paste0("Fetch failed — ", format(Sys.time(), "%I:%M %p"))
+          rv_rpz$fetch_state <- "error"
         }
       })
     })
@@ -514,21 +519,19 @@ rpSkillzServer <- function(id) {
     observeEvent(input$preset_even,      { apply_weights(RPZ_EVEN_WEIGHTS) })
     observeEvent(input$preset_skill,     { apply_weights(RPZ_SKILL_HEAVY_WEIGHTS) })
 
-    # Reactive data: live-fetched (rv_rpz) takes priority; fall back to pre-built
-    # CSV for any period that hasn't been fetched yet.
+    # Reactive data: 2025 always loads from CSV (season over); 2026 live-fetch only.
     rpz_data <- reactive({
       period <- input$period %||% "std"
       yr     <- input$year   %||% "2026"
       if (yr == "2025") return(load_rpz_data("2025", "std"))
-      live <- rpz_gen_format(rv_rpz[[period]])
-      if (!is.null(live) && nrow(live) > 0) return(live)
-      load_rpz_data("2026", period)
+      rpz_gen_format(rv_rpz[[period]])
     })
 
     search_d <- debounce(reactive(input$search), 300)
 
     rpz_filtered <- reactive({
-      dat <- req(rpz_data())
+      dat <- rpz_data()
+      if (is.null(dat) || nrow(dat) == 0) return(NULL)
       q   <- trimws(search_d() %||% "")
       if (nchar(q) == 0) return(dat)
       mask <- grepl(q, dat[["Player"]],  ignore.case = TRUE) |
@@ -538,26 +541,44 @@ rpSkillzServer <- function(id) {
     })
 
     output$body_ui <- renderUI({
-      dat <- rpz_data()
-      if (is.null(dat) || nrow(dat) == 0) {
+      dat   <- rpz_data()
+      state <- rv_rpz$fetch_state
+      yr    <- input$year %||% "2026"
+      if (!is.null(dat) && nrow(dat) > 0) {
+        div(class = "pf-table-wrap", DTOutput(ns("table"), width = "100%"))
+      } else if (state == "error") {
+        div(
+          class = "spz-empty",
+          div(
+            class = "spz-empty-inner",
+            h3(class = "spz-empty-title", "\u26a0\ufe0f Fetch failed"),
+            p(class = "spz-empty-desc",
+              "Could not retrieve data from FanGraphs. This may be a temporary issue.",
+              tags$br(),
+              "Please wait a moment and click \u2018Fetch Data\u2019 again."
+            )
+          )
+        )
+      } else {
         div(
           class = "spz-empty",
           div(
             class = "spz-empty-inner",
             h3(class = "spz-empty-title", "No data loaded"),
             p(class = "spz-empty-desc",
-              "Select a season and click \u2018Fetch Data\u2019 to scrape FanGraphs ",
-              "and compute RP Skillz scores in real time."
+              if (yr == "2025")
+                "No 2025 data file found."
+              else
+                "Select a season and click \u2018Fetch Data\u2019 to fetch live data from FanGraphs."
             )
           )
         )
-      } else {
-        div(class = "pf-table-wrap", DTOutput(ns("table"), width = "100%"))
       }
     })
 
     output$table <- renderDT({
-      dat <- req(rpz_filtered())
+      dat <- rpz_filtered()
+      if (is.null(dat) || nrow(dat) == 0) return(NULL)
 
       # Column layout (0-based):
       # 0:RK  1:Player  2:Team  3:Throws  4:Score  5:Velo  6:Stuff+  7:Pitching+

@@ -374,7 +374,8 @@ traterServer <- function(id, fetch_trigger = NULL) {
       raw_vrhp = NULL,
       ytd_h    = NULL,   # individual hitter YTD stats (for Compare tab)
       ytd_p    = NULL,   # individual pitcher YTD stats (for Compare tab)
-      status   = "Click \u2018Fetch Team Stats\u2019 to load."
+      status      = "Click \u2018Fetch Team Stats\u2019 to load.",
+      fetch_state = "none"   # "none" | "ok" | "error"
     )
 
     output$status <- renderText({ rv$status })
@@ -416,8 +417,9 @@ traterServer <- function(id, fetch_trigger = NULL) {
 
     do_fetch <- function(season) {
       withProgress(message = "Fetching team stats…", value = 0, {
-        rv$status    <- "Fetching…"
-        rv$raw_full  <- rv$raw_l30 <- rv$raw_vlhp <- rv$raw_vrhp <- NULL
+        rv$status      <- "Fetching…"
+        rv$fetch_state <- "none"
+        rv$raw_full    <- rv$raw_l30 <- rv$raw_vlhp <- rv$raw_vrhp <- NULL
         rv$ytd_h     <- rv$ytd_p <- NULL
         incProgress(0.25, detail = "Season to Date…")
         rv$raw_full  <- fetch_split(season, month = 0)
@@ -436,8 +438,13 @@ traterServer <- function(id, fetch_trigger = NULL) {
           rv$ytd_h <- h
           rv$ytd_p <- p
         }, error = function(e) NULL)
-        n <- if (!is.null(rv$raw_full)) nrow(rv$raw_full) else 0L
-        rv$status <- sprintf("%d teams — fetched %s", n, format(Sys.time(), "%I:%M %p"))
+        if (!is.null(rv$raw_full) && nrow(rv$raw_full) > 0) {
+          rv$status      <- sprintf("%d teams — fetched %s", nrow(rv$raw_full), format(Sys.time(), "%I:%M %p"))
+          rv$fetch_state <- "ok"
+        } else {
+          rv$status      <- paste0("Fetch failed — ", format(Sys.time(), "%I:%M %p"))
+          rv$fetch_state <- "error"
+        }
       })
     }
     observeEvent(input$fetch, {
@@ -446,9 +453,12 @@ traterServer <- function(id, fetch_trigger = NULL) {
 
     # ── Full Season tab ──────────────────────────────────────────────────────
     output$full_ui <- renderUI({
-      if (is.null(rv$raw_full))
-        return(div(class = "sps-empty", p("Click \u2018Fetch Team Stats\u2019 to populate.")))
-      DTOutput(ns("full_dt"))
+      if (!is.null(rv$raw_full) && nrow(rv$raw_full) > 0)
+        return(DTOutput(ns("full_dt")))
+      if (rv$fetch_state == "error")
+        return(div(class = "sps-empty",
+          p("\u26a0\ufe0f Fetch failed. This may be a temporary issue \u2014 please try again.")))
+      div(class = "sps-empty", p("Click \u2018Fetch Team Stats\u2019 to populate."))
     })
     output$full_dt <- renderDT({ trater_render_dt(trater_format(scored_full())) })
 

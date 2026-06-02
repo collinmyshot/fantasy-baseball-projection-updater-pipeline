@@ -147,42 +147,9 @@ build_fg_url <- function(api_type, stats_type) {
   paste0(FG_API_BASE, "?", query)
 }
 
-fg_fetch_json <- function(url) {
-  # Try jsonlite first
-  payload <- tryCatch(
-    jsonlite::fromJSON(url, simplifyVector = TRUE),
-    error = function(e) NULL
-  )
-  if (!is.null(payload)) return(payload)
-
-  # Fallback: system curl with browser headers and timeouts
-  curl_bin <- Sys.which("curl")
-  if (!nzchar(curl_bin)) return(NULL)
-
-  tmp <- tempfile(fileext = ".json")
-  on.exit(unlink(tmp), add = TRUE)
-
-  args <- c(
-    "-sS", "-L", "--fail", "--compressed",
-    "--max-time", "30", "--connect-timeout", "10",
-    "--retry", "2", "--retry-delay", "1",
-    "-A", FG_USER_AGENT,
-    "-H", "Accept: application/json, text/plain, */*",
-    "-H", "Referer: https://www.fangraphs.com/projections",
-    "-H", "Origin: https://www.fangraphs.com",
-    url, "-o", tmp
-  )
-
-  result <- tryCatch(
-    system2(curl_bin, args = args, stdout = TRUE, stderr = TRUE),
-    error = function(e) NULL
-  )
-  if (is.null(result)) return(NULL)
-
-  status <- attr(result, "status")
-  if (!is.null(status) && as.integer(status) != 0L) return(NULL)
-
-  tryCatch(jsonlite::fromJSON(tmp, simplifyVector = TRUE), error = function(e) NULL)
+proj_fg_fetch <- function(url) {
+  result <- fg_fetch_json(url, referer = "https://www.fangraphs.com/projections")
+  if (isTRUE(result$ok)) result$payload else NULL
 }
 
 as_df <- function(raw) {
@@ -200,7 +167,7 @@ fetch_fg_projections <- function(key, stats_type) {
 
   for (api_type in api_types) {
     url     <- build_fg_url(api_type, stats_type)
-    payload <- fg_fetch_json(url)
+    payload <- proj_fg_fetch(url)
     raw     <- as_df(payload)
     if (is.null(raw) || nrow(raw) == 0) next
 

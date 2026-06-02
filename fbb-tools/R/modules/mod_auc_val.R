@@ -118,7 +118,7 @@ AUC_P_COL_CANDIDATES <- list(
 )
 
 # ── Shared helpers (reuse aggregator's global functions) ──────────────────────
-# normalize_col(), fg_select_col(), fg_fetch_json(), build_fg_url(),
+# normalize_col(), fg_select_col(), proj_fg_fetch(), build_fg_url(),
 # as_df(), compute_aggregate(), PROJ_SYSTEMS, PROJ_KEYS, PROJ_LABELS,
 # PROJ_COLLIN_WT_H, PROJ_COLLIN_WT_P, PROJ_EVEN_WT, FG_API_TYPES
 # are all available globally from mod_proj_agg.R being sourced first.
@@ -132,7 +132,7 @@ auc_fetch_fg_projections <- function(key, stats_type, api_types_map = FG_API_TYP
 
   for (api_type in api_types) {
     url     <- build_fg_url(api_type, stats_type)
-    payload <- fg_fetch_json(url)
+    payload <- proj_fg_fetch(url)
     raw     <- as_df(payload)
     if (is.null(raw) || nrow(raw) == 0) next
 
@@ -185,41 +185,8 @@ auc_fetch_ytd <- function(stats_type) {
   )
   col_map <- if (stats_type == "bat") AUC_H_COL_CANDIDATES else AUC_P_COL_CANDIDATES
 
-  # Use dedicated fetch — fg_fetch_json() uses Referer for /projections, but
-  # the leaders endpoint requires Referer: https://www.fangraphs.com/leaders/major-league
-  payload <- tryCatch(
-    jsonlite::fromJSON(url, simplifyVector = TRUE),
-    error = function(e) NULL
-  )
-  if (is.null(payload)) {
-    curl_bin <- Sys.which("curl")
-    if (nzchar(curl_bin)) {
-      tmp <- tempfile(fileext = ".json")
-      on.exit(unlink(tmp), add = TRUE)
-      args <- c(
-        "-sS", "-L", "--fail", "--compressed",
-        "--max-time", "30", "--connect-timeout", "10",
-        "--retry", "2", "--retry-delay", "1",
-        "-A", FG_USER_AGENT,
-        "-H", "Accept: application/json, text/plain, */*",
-        "-H", "Referer: https://www.fangraphs.com/leaders/major-league",
-        "-H", "Origin: https://www.fangraphs.com",
-        url, "-o", tmp
-      )
-      result <- tryCatch(
-        system2(curl_bin, args = args, stdout = TRUE, stderr = TRUE),
-        error = function(e) NULL
-      )
-      if (!is.null(result)) {
-        status <- attr(result, "status")
-        if (is.null(status) || as.integer(status) == 0L)
-          payload <- tryCatch(
-            jsonlite::fromJSON(tmp, simplifyVector = TRUE),
-            error = function(e) NULL
-          )
-      }
-    }
-  }
+  result  <- fg_fetch_json(url, referer = "https://www.fangraphs.com/leaders/major-league")
+  payload <- if (isTRUE(result$ok)) result$payload else NULL
 
   raw <- as_df(payload)
   if (is.null(raw) || nrow(raw) == 0) return(NULL)

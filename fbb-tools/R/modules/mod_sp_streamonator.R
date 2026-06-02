@@ -1118,16 +1118,12 @@ spStreamServer <- function(id, spz_data_ext = NULL, team_rater_data = NULL,
     output$week_label <- renderText({ week()$label })
 
     # ── SP Skillz ─────────────────────────────────────────────────────────────
-    # Uses live data from the SP Skillz module when available, falls back to
-    # static CSVs (pre-season / before a fetch has occurred).
+    # Uses live data from the SP Skillz module when available.
+    # No CSV fallback — SP Skillz columns show N/A until a live fetch occurs.
     spz_data <- reactive({
       live <- if (is.function(spz_data_ext)) spz_data_ext() else NULL
       if (!is.null(live$std)) return(live)
-      yr <- input$spz_year %||% "2026"
-      list(
-        std = stream_load_spz(year = yr, period = "std"),
-        l30 = stream_load_spz(year = yr, period = "l30")
-      )
+      list(std = NULL, l30 = NULL)
     })
 
     # Combined autocomplete pool: probables pitcher names + SP Skillz names

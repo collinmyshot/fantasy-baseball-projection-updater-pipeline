@@ -214,30 +214,7 @@ stream_index_spz <- function(spz, col = "sp_skillz_score_stabilized") {
 # ── FanGraphs JSON fetch (generic, used by other FG endpoints) ─────────────────
 
 stream_fg_fetch <- function(url) {
-  payload <- tryCatch(jsonlite::fromJSON(url, simplifyVector = TRUE), error = function(e) NULL)
-  if (!is.null(payload)) return(list(ok = TRUE, payload = payload))
-
-  curl_bin <- Sys.which("curl")
-  if (!nzchar(curl_bin)) return(list(ok = FALSE, error = "jsonlite failed and curl not found"))
-
-  tmp <- tempfile(fileext = ".json")
-  on.exit(unlink(tmp), add = TRUE)
-  args <- c("-sS","-L","--fail","--compressed",
-            "--max-time","30","--connect-timeout","10",
-            "--retry","2","--retry-delay","1",
-            "-A", STREAM_FG_USER_AGENT,
-            "-H","Accept: application/json, text/plain, */*",
-            "-H","Referer: https://www.fangraphs.com/roster-resource/probables-grid",
-            url, "-o", tmp)
-  result <- tryCatch(system2(curl_bin, args = args, stdout = TRUE, stderr = TRUE),
-                     error = function(e) NULL)
-  if (is.null(result)) return(list(ok = FALSE, error = "curl execution failed"))
-  status <- attr(result, "status")
-  if (!is.null(status) && as.integer(status) != 0L)
-    return(list(ok = FALSE, error = paste("curl exit status:", status)))
-  payload <- tryCatch(jsonlite::fromJSON(tmp, simplifyVector = TRUE), error = function(e) NULL)
-  if (!is.null(payload)) return(list(ok = TRUE, payload = payload))
-  list(ok = FALSE, error = "JSON parse failed after curl")
+  fg_fetch_json(url, referer = "https://www.fangraphs.com/roster-resource/probables-grid")
 }
 
 # ── MLB Stats API probable starters fetch ─────────────────────────────────────

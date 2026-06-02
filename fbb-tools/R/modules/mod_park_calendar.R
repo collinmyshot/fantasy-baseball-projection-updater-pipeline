@@ -352,15 +352,21 @@ parkCalendarUI <- function(id) {
 
 # ── Module Server ────────────────────────────────────────────────────────────
 
-parkCalendarServer <- function(id) {
+parkCalendarServer <- function(id, main_nav = reactive(NULL)) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    # ── Load schedule on init ──────────────────────────────────────────────
+    # ── Load schedule on first tab visit ──────────────────────────────────
+    # Fetch is deferred until the user navigates to this tab AND the
+    # FullCalendar widget has signalled it is ready (cal_ready).
+    # Skips silently if data is already loaded (no re-fetch on tab revisit).
     schedule_data <- reactiveVal(NULL)
     series_data   <- reactiveVal(NULL)
 
     observe({
+      req(main_nav() == "park_calendar")
+      req(input$cal_ready)
+      if (!is.null(schedule_data())) return()   # already fetched
       withProgress(message = "Fetching MLB schedule...", value = 0.3, {
         sched <- tryCatch(
           fetch_park_calendar_schedule(2026),
@@ -382,7 +388,7 @@ parkCalendarServer <- function(id) {
         }
         setProgress(1, detail = "Done")
       })
-    }) %>% bindEvent(input$cal_ready)
+    })
 
     # ── Update calendar when inputs change ─────────────────────────────────
     observe({

@@ -2659,7 +2659,7 @@ server <- function(input, output, session) {
   inseasonLabServer("inseason_lab")
   playerRaterServer("player_rater")
   parkFactorsServer("park_factors")
-  parkCalendarServer("park_calendar")
+  parkCalendarServer("park_calendar", main_nav = reactive(input$main_nav))
   gsmServer("gsm")
   hrEvServer("hr_ev")
   batSpeedServer("bat_speed")

@@ -180,41 +180,7 @@ spz_gen_build_url <- function(season = 2026, month = 0) {
 }
 
 spz_gen_fetch <- function(url) {
-  payload <- tryCatch(
-    jsonlite::fromJSON(url, simplifyVector = TRUE),
-    error = function(e) NULL
-  )
-  if (!is.null(payload)) return(list(ok = TRUE, payload = payload))
-
-  curl_bin <- Sys.which("curl")
-  if (!nzchar(curl_bin))
-    return(list(ok = FALSE, error = "jsonlite failed and curl not found"))
-
-  tmp <- tempfile(fileext = ".json")
-  on.exit(unlink(tmp), add = TRUE)
-  args <- c(
-    "-sS", "-L", "--fail", "--compressed",
-    "--max-time", "30", "--connect-timeout", "10",
-    "--retry", "2", "--retry-delay", "1",
-    "-A", SPZ_GEN_FG_AGENT,
-    "-H", "Accept: application/json, text/plain, */*",
-    "-H", "Referer: https://www.fangraphs.com/leaders/major-league",
-    url, "-o", tmp
-  )
-  result <- tryCatch(
-    system2(curl_bin, args = args, stdout = TRUE, stderr = TRUE),
-    error = function(e) NULL
-  )
-  if (is.null(result)) return(list(ok = FALSE, error = "curl execution failed"))
-  status <- attr(result, "status")
-  if (!is.null(status) && as.integer(status) != 0L)
-    return(list(ok = FALSE, error = paste("curl exit status:", status)))
-  payload <- tryCatch(
-    jsonlite::fromJSON(tmp, simplifyVector = TRUE),
-    error = function(e) NULL
-  )
-  if (!is.null(payload)) return(list(ok = TRUE, payload = payload))
-  list(ok = FALSE, error = "JSON parse failed after curl")
+  fg_fetch_json(url, referer = "https://www.fangraphs.com/leaders/major-league")
 }
 
 spz_gen_parse <- function(result) {

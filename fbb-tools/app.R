@@ -7,6 +7,7 @@ suppressPackageStartupMessages({
 })
 
 source("R/utils_names.R")          # shared player_nk() + override aliases
+source("R/utils_fg.R")             # shared FanGraphs cookie-auth fetch
 source("R/position_eligibility.R") # MLB position eligibility (GP-based)
 source("R/sp_skillz.R")            # SP Skillz model (weights, reliability, scoring)
 source("R/rp_skillz.R")            # RP Skillz model (velo, Stuff+, K%, CSW%, SD-MD, gmLI)

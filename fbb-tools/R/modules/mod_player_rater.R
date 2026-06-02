@@ -726,6 +726,11 @@ playerRaterServer <- function(id, adp_data = NULL) {
 
     # ── Results UI ────────────────────────────────────────────────────────────
     output$results_ui <- renderUI({
+      if (!is.null(last_error()) && nzchar(last_error())) {
+        return(div(class = "pf-empty",
+          tags$p("⚠️ Fetch failed:", last_error()),
+          tags$p("Please wait a moment and click Calculate again.")))
+      }
       if (!calculated()) {
         return(div(class = "pf-empty",
                    tags$p("Click Calculate to fetch season-to-date stats and generate rankings.")))

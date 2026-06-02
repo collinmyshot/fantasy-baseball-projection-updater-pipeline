@@ -1,6 +1,7 @@
 .Rhistory
 .RData
 .Rproj.user/
+.Renviron
 .DS_Store
 # Deprecated Shiny app — local-only (not tracked in git).
 fantasy-baseball-tools/

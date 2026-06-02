@@ -124,42 +124,53 @@ rpz_gen_build_url <- function(season = 2026, month = 0) {
   )
 }
 
+rpz_gen_resolve_cookie_path <- function() {
+  path <- Sys.getenv("FG_COOKIE_PATH", unset = "")
+  if (nzchar(path) && file.exists(path)) return(path)
+  # FG_COOKIE_CONTENT: raw cookie file text stored as a secret (shinyapps.io).
+  # Write to a temp file once and cache the path back into the env var.
+  content <- Sys.getenv("FG_COOKIE_CONTENT", unset = "")
+  if (nzchar(content)) {
+    tmp <- tempfile(fileext = ".txt")
+    writeLines(content, tmp)
+    Sys.setenv(FG_COOKIE_PATH = tmp)
+    return(tmp)
+  }
+  ""
+}
+
 rpz_gen_fetch <- function(url) {
+  if (!requireNamespace("curl", quietly = TRUE))
+    return(list(ok = FALSE, error = "R package 'curl' is required"))
+
+  cookie_path <- rpz_gen_resolve_cookie_path()
+
+  h <- curl::new_handle()
+  curl::handle_setheaders(h,
+    "Accept"     = "application/json, text/plain, */*",
+    "Referer"    = "https://www.fangraphs.com/leaders/major-league",
+    "User-Agent" = RPZ_GEN_FG_AGENT
+  )
+  if (nzchar(cookie_path))
+    curl::handle_setopt(h, cookiefile = cookie_path)
+
+  resp <- tryCatch(
+    curl::curl_fetch_memory(url, handle = h),
+    error = function(e) list(status_code = 0L, content = NULL,
+                             error = conditionMessage(e))
+  )
+
+  if (is.null(resp$content) || isTRUE(nzchar(resp[["error"]])))
+    return(list(ok = FALSE, error = resp[["error"]] %||% "curl_fetch_memory failed"))
+  if (resp$status_code != 200L)
+    return(list(ok = FALSE, error = sprintf("HTTP %d from FanGraphs", resp$status_code)))
+
   payload <- tryCatch(
-    jsonlite::fromJSON(url, simplifyVector = TRUE),
+    jsonlite::fromJSON(rawToChar(resp$content), simplifyVector = TRUE),
     error = function(e) NULL
   )
   if (!is.null(payload)) return(list(ok = TRUE, payload = payload))
-
-  curl_bin <- Sys.which("curl")
-  if (!nzchar(curl_bin))
-    return(list(ok = FALSE, error = "jsonlite failed and curl not found"))
-
-  tmp <- tempfile(fileext = ".json")
-  on.exit(unlink(tmp), add = TRUE)
-  args <- c(
-    "-sS", "-L", "--fail", "--compressed",
-    "--max-time", "30", "--connect-timeout", "10",
-    "--retry", "2", "--retry-delay", "1",
-    "-A", RPZ_GEN_FG_AGENT,
-    "-H", "Accept: application/json, text/plain, */*",
-    "-H", "Referer: https://www.fangraphs.com/leaders/major-league",
-    url, "-o", tmp
-  )
-  result <- tryCatch(
-    system2(curl_bin, args = args, stdout = TRUE, stderr = TRUE),
-    error = function(e) NULL
-  )
-  if (is.null(result)) return(list(ok = FALSE, error = "curl execution failed"))
-  status <- attr(result, "status")
-  if (!is.null(status) && as.integer(status) != 0L)
-    return(list(ok = FALSE, error = paste("curl exit status:", status)))
-  payload <- tryCatch(
-    jsonlite::fromJSON(tmp, simplifyVector = TRUE),
-    error = function(e) NULL
-  )
-  if (!is.null(payload)) return(list(ok = TRUE, payload = payload))
-  list(ok = FALSE, error = "JSON parse failed after curl")
+  list(ok = FALSE, error = "JSON parse failed — response may be a Cloudflare challenge (check FG_COOKIE_PATH)")
 }
 
 rpz_gen_parse <- function(result) {

@@ -1164,8 +1164,11 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
         req(fetch_trigger() > 0)
         yr <- as.integer(input$year %||% "2026")
         withProgress(message = "Fetching SP Skillz…", value = 0, {
-          rv_spz$fetch_state <- "none"
+          rv_spz$fetch_state   <- "none"
+          rv_spz$savant_whiff  <- NULL
           if (yr == 2025L) rv_spz$gsheets_stf <- spz_fetch_gsheets_stf()
+          incProgress(0.1, detail = "Savant whiff data…")
+          rv_spz$savant_whiff <- spz_fetch_savant_whiff(yr)
           fetch_raw_ext <- function(month) {
             tryCatch({
               url <- spz_gen_build_url(season = yr, month = month)

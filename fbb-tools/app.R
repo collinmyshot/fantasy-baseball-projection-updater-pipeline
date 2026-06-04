@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
 
 source("R/utils_names.R")          # shared player_nk() + override aliases
 source("R/utils_fg.R")             # shared FanGraphs cookie-auth fetch
+source("R/utils_dt.R")             # shared SP Skillz-style DT table template
 source("R/position_eligibility.R") # MLB position eligibility (GP-based)
 source("R/sp_skillz.R")            # SP Skillz model (weights, reliability, scoring)
 source("R/rp_skillz.R")            # RP Skillz model (velo, Stuff+, K%, CSW%, SD-MD, gmLI)
@@ -634,14 +635,32 @@ input[type=number]:focus, input[type=text]:focus {
   box-shadow: var(--shadow-sm);
   background: var(--card);
 }
-/* DT table overrides */
+/* DT table overrides — pf-dt (legacy scrollX tables) */
 .pf-dt.dataTable {
   width: 100% !important;
   border-collapse: collapse !important;
   font-family: 'Manrope', sans-serif;
   font-size: 0.875rem;
 }
-.pf-dt thead th {
+/* spz-dt: SP Skillz-style single-table layout (no scrollX split).
+   width:max-content lets the table size to its columns; the page scrolls
+   horizontally on narrow screens instead of a table-internal scrollbar.
+   FixedHeader clones the header to <body> — the clone also gets spz-dt
+   but NOT max-content, so we scope that only to inside .spz-table-wrap. */
+.spz-dt.dataTable {
+  border-collapse: collapse !important;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.875rem;
+}
+.spz-table-wrap .spz-dt.dataTable {
+  width: max-content !important;
+  min-width: 100%;
+}
+/* FixedHeader floating clone: auto width so per-cell measurements drive it */
+table.fixedHeader-floating.spz-dt { width: auto !important; }
+
+/* Shared styles for both pf-dt and spz-dt */
+.pf-dt thead th, .spz-dt thead th {
   background: var(--bg-1) !important;
   color: var(--ink) !important;
   font-family: 'Sora', sans-serif !important;
@@ -653,21 +672,141 @@ input[type=number]:focus, input[type=text]:focus {
   padding: 10px 12px !important;
   white-space: nowrap;
 }
-.pf-dt tbody td {
+.pf-dt tbody td, .spz-dt tbody td {
   border-bottom: 1px solid var(--line) !important;
   padding: 9px 12px !important;
   vertical-align: middle !important;
 }
-.pf-dt tbody tr:last-child td { border-bottom: none !important; }
-/* Use inset box-shadow for hover — preserves DT inline background-color on colored cells */
-.pf-dt tbody tr:hover td { box-shadow: inset 0 0 0 9999px rgba(47,125,58,0.05); }
+.pf-dt tbody tr:last-child td,
+.spz-dt tbody tr:last-child td { border-bottom: none !important; }
+.pf-dt tbody tr:hover td,
+.spz-dt tbody tr:hover td { box-shadow: inset 0 0 0 9999px rgba(47,125,58,0.05); }
 .pf-dt tbody tr:hover td:nth-child(5),
 .pf-dt tbody tr:hover td:nth-child(6),
-.pf-dt tbody tr:hover td:nth-child(7) { box-shadow: inset 0 0 0 9999px rgba(0,0,0,0.06); }
-/* Sort indicator color */
+.pf-dt tbody tr:hover td:nth-child(7),
+.spz-dt tbody tr:hover td:nth-child(5),
+.spz-dt tbody tr:hover td:nth-child(6),
+.spz-dt tbody tr:hover td:nth-child(7) { box-shadow: inset 0 0 0 9999px rgba(0,0,0,0.06); }
 .pf-dt thead .sorting:after,
 .pf-dt thead .sorting_asc:after,
-.pf-dt thead .sorting_desc:after { color: var(--primary) !important; }
+.pf-dt thead .sorting_desc:after,
+.spz-dt thead .sorting:after,
+.spz-dt thead .sorting_asc:after,
+.spz-dt thead .sorting_desc:after { color: var(--primary) !important; }
+
+/* ── SP Skillz table: single-table layout (no scrollX split) ─────────────────
+   ONE <table> element — header + body share a single column grid, alignment
+   is structurally guaranteed. overflow:clip clips the rounded corners without
+   creating a scroll context, so position:sticky on thead th still works. */
+/* Card wraps the table: fit-content so the backsplash grows to the table's
+   actual width (page scrolls horizontally when the table exceeds the viewport);
+   min-width:100% so it still fills the row when the table is narrower. */
+.spz-table-wrap {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: visible;
+  background: var(--card);
+  padding: 8px 10px;          /* aesthetic frame around the table */
+  width: fit-content;         /* card hugs the table */
+  margin: 8px auto 4px;       /* center under the full-width cards above */
+  box-sizing: border-box;
+}
+.spz-table-wrap .dataTables_wrapper { overflow: visible; }
+/* Table sizes to its content; min-width:100% fills the card when narrow */
+.spz-table-wrap .pf-dt.dataTable {
+  width: max-content !important;
+  min-width: 100%;
+}
+/* Sticky header handled by the FixedHeader extension (position:fixed clone,
+   immune to ancestor overflow / border-collapse). The clone is appended to
+   <body>, OUTSIDE .spz-table-wrap — so the GLOBAL .pf-dt.dataTable
+   width:100%!important hits it and stretches it wider than the real table.
+   Force auto so FixedHeader's measured per-cell widths drive it and the
+   floating header lines up with the body columns. */
+table.fixedHeader-floating.dataTable {
+  width: auto !important;
+}
+.fixedHeader-floating {
+  box-shadow: 0 2px 6px rgba(14,35,56,0.12);
+  z-index: 1020;
+}
+/* ── Pagination chrome (top + bottom bars) ── */
+.spz-ctrl-top, .spz-ctrl-bot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  background: var(--bg-1);
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.spz-ctrl-top { border-bottom: 1px solid var(--line); }
+.spz-ctrl-bot { border-top:    1px solid var(--line); }
+/* Left side: pager buttons + size dropdown in one flex row */
+.spz-ctrl-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+/* Right side: info text */
+.spz-ctrl-info { white-space: nowrap; }
+.spz-ctrl-info .dataTables_info { font-size: 0.82rem; color: var(--muted); }
+/* Zero DataTables' default float/padding on these wrappers (defeats the
+   0.25em padding-top that pushes the pager down and misaligns the select) */
+.spz-ctrl-nav .dataTables_paginate,
+.spz-ctrl-nav .dataTables_length {
+  float: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+}
+.spz-ctrl-sizer .dataTables_length label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.spz-ctrl-sizer .dataTables_length select {
+  font-size: 0.82rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px 8px;
+  background: var(--card);
+  color: var(--ink);
+  margin: 0;
+}
+/* Page buttons — override DataTables 0,3,0 defaults; tight spacing */
+.spz-ctrl-nav .paginate_button {
+  display: inline-flex !important;
+  align-items: center;
+  min-width: auto !important;
+  padding: 1px 4px !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 5px;
+  cursor: pointer;
+  color: var(--ink) !important;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.spz-ctrl-nav .paginate_button:hover {
+  background: var(--primary-soft) !important;
+  color: var(--primary) !important;
+}
+.spz-ctrl-nav .paginate_button.current {
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+.spz-ctrl-nav .paginate_button.disabled {
+  opacity: 0.35;
+  cursor: default;
+  background: transparent !important;
+}
 
 
 /* Footer */
@@ -2437,7 +2576,20 @@ ui <- page_navbar(
           return false;
         }
         if (!tryNav()) setTimeout(tryNav, 500);
-      });"
+      });
+      // ── FixedHeader tab-visibility guard ─────────────────────────────────────
+      // FixedHeader clones every table's header to <body> globally. Without this
+      // guard all frozen headers appear simultaneously on every page scroll.
+      // On each tab change (and on initial connect): disable ALL FixedHeaders,
+      // then re-enable only those belonging to currently visible tables.
+      function syncFixedHeaders() {
+        try {
+          $.fn.dataTable.tables({ api: true }).fixedHeader.disable();
+          $.fn.dataTable.tables({ visible: true, api: true }).fixedHeader.enable();
+        } catch(e) {}
+      }
+      $(document).on('shown.bs.tab', function() { setTimeout(syncFixedHeaders, 80); });
+      $(document).on('shiny:idle',    function() { setTimeout(syncFixedHeaders, 150); });"
     ))
   ),
 

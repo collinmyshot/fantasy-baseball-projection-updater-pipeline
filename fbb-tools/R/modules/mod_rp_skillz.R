@@ -545,7 +545,7 @@ rpSkillzServer <- function(id) {
       state <- rv_rpz$fetch_state
       yr    <- input$year %||% "2026"
       if (!is.null(dat) && nrow(dat) > 0) {
-        div(class = "pf-table-wrap", DTOutput(ns("table"), width = "100%"))
+        spz_table_wrap(DTOutput(ns("table"), width = "100%"))
       } else if (state == "error") {
         div(
           class = "spz-empty",
@@ -610,44 +610,40 @@ rpSkillzServer <- function(id) {
 
       datatable(
         dat,
-        rownames  = FALSE,
-        filter    = "none",
-        selection = "none",
-        options   = list(
-          dom           = "t",
-          ordering      = TRUE,
-          pageLength    = nrow(dat),
-          scrollX       = TRUE,
-          scrollY       = "calc(100vh - 380px)",
-          scrollCollapse = FALSE,
-          order         = list(list(0L, "asc")),
-          createdRow = JS(sprintf(
-            "function(row, data, index) {
-               var score = data[%d];
-               if (score === null || score === undefined || score === '') return;
-               var sMin = %s, sMed = %s, sMax = %s;
-               var pct;
-               if (sMed > sMin && score <= sMed) {
-                 pct = 0.5 * (score - sMin) / (sMed - sMin);
-               } else if (sMax > sMed) {
-                 pct = 0.5 + 0.5 * (score - sMed) / (sMax - sMed);
-               } else { pct = 0.5; }
-               pct = Math.max(0, Math.min(1, pct));
-               var c1=[31,53,86], c2=[238,245,236], c3=[183,115,67], ca, cb, t;
-               if (pct <= 0.5) { t = pct*2;       ca = c1; cb = c2; }
-               else            { t = (pct-0.5)*2; ca = c2; cb = c3; }
-               var r=Math.round(ca[0]+(cb[0]-ca[0])*t);
-               var g=Math.round(ca[1]+(cb[1]-ca[1])*t);
-               var b=Math.round(ca[2]+(cb[2]-ca[2])*t);
-               var lum=0.2126*(r/255)+0.7152*(g/255)+0.0722*(b/255);
-               var txt = lum < 0.45 ? '#ffffff' : '#172733';
-               $('td:eq(%d)', row).css({'background-color':'rgb('+r+','+g+','+b+')','color':txt});
-             }",
-            score_col, s_min, s_med, s_max, score_col
-          )),
-          columnDefs = col_defs
+        rownames   = FALSE,
+        filter     = "none",
+        selection  = "none",
+        extensions = "FixedHeader",
+        options    = spz_dt_options(
+          col_defs,
+          extra = list(
+            createdRow = JS(sprintf(
+              "function(row, data, index) {
+                 var score = data[%d];
+                 if (score === null || score === undefined || score === '') return;
+                 var sMin = %s, sMed = %s, sMax = %s;
+                 var pct;
+                 if (sMed > sMin && score <= sMed) {
+                   pct = 0.5 * (score - sMin) / (sMed - sMin);
+                 } else if (sMax > sMed) {
+                   pct = 0.5 + 0.5 * (score - sMed) / (sMax - sMed);
+                 } else { pct = 0.5; }
+                 pct = Math.max(0, Math.min(1, pct));
+                 var c1=[31,53,86], c2=[238,245,236], c3=[183,115,67], ca, cb, t;
+                 if (pct <= 0.5) { t = pct*2;       ca = c1; cb = c2; }
+                 else            { t = (pct-0.5)*2; ca = c2; cb = c3; }
+                 var r=Math.round(ca[0]+(cb[0]-ca[0])*t);
+                 var g=Math.round(ca[1]+(cb[1]-ca[1])*t);
+                 var b=Math.round(ca[2]+(cb[2]-ca[2])*t);
+                 var lum=0.2126*(r/255)+0.7152*(g/255)+0.0722*(b/255);
+                 var txt = lum < 0.45 ? '#ffffff' : '#172733';
+                 $('td:eq(%d)', row).css({'background-color':'rgb('+r+','+g+','+b+')','color':txt});
+               }",
+              score_col, s_min, s_med, s_max, score_col
+            ))
+          )
         ),
-        class = "pf-dt display nowrap"
+        class = "spz-dt display nowrap"
       ) |>
         apply_rpz_style()
     })

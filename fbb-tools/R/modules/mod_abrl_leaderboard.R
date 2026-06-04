@@ -155,8 +155,7 @@ abrlLeaderboardUI <- function(id) {
             ),
 
             # ── Table (PF table-wrap style) ──
-            shiny::div(class = "pf-table-wrap",
-                       DT::DTOutput(ns("lb_table"), width = "100%"))
+            spz_table_wrap(DT::DTOutput(ns("lb_table"), width = "100%"))
           )
         ),
 
@@ -555,24 +554,22 @@ abrlLeaderboardServer <- function(id) {
 
       DT::datatable(
         d, rownames = FALSE, escape = FALSE,
-        selection = "none",
-        options = list(
-          dom        = "tip",
-          pageLength = nrow(d),
-          ordering   = TRUE,
-          order      = list(list(7, "desc")),
-          `_abrlBounds` = bounds,
-          createdRow = DT::JS(ABRL_CREATED_ROW_JS),
-          columnDefs = list(
+        selection  = "none",
+        extensions = "FixedHeader",
+        options    = spz_dt_options(
+          col_defs = list(
             list(className = "dt-center", targets = c(0, 2, 3, 4, 5, 6, 7, 8, 9, 10)),
             list(className = "dt-left",   targets = 1),
             list(width = "36px",  targets = 0),
             list(width = "150px", targets = 1),
             list(width = "55px",  targets = c(2, 3, 4, 5)),
             list(width = "80px",  targets = c(6, 7, 8, 9, 10))
-          )
+          ),
+          order = list(list(7, "desc")),
+          extra = list(`_abrlBounds` = bounds,
+                       createdRow    = DT::JS(ABRL_CREATED_ROW_JS))
         ),
-        class = "pf-dt display nowrap"
+        class = "spz-dt display nowrap"
       ) |>
         DT::formatStyle(
           "#",

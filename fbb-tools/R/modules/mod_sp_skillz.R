@@ -455,8 +455,8 @@ apply_spz_style <- function(dt) {
     )
 }
 
-render_spz_dt <- function(dat, scroll_y = "calc(100vh - 380px)",
-                          full_scores = NULL) {
+render_spz_dt <- function(dat, full_scores = NULL,
+                          dom_str = "lrtip") {
   if (is.null(dat) || nrow(dat) == 0) {
     return(datatable(
       data.frame(` ` = "No data available.", check.names = FALSE),
@@ -508,18 +508,23 @@ render_spz_dt <- function(dat, scroll_y = "calc(100vh - 380px)",
   )
   if (has_adp) col_defs <- c(col_defs, list(list(width = "56px", targets = 3L)))
 
+  is_paged <- dom_str != "t"
   dt <- datatable(
     dat,
-    rownames  = FALSE,
-    filter    = "none",
-    selection = "none",
-    options   = list(
-      dom           = "t",
+    rownames   = FALSE,
+    filter     = "none",
+    selection  = "none",
+    extensions = if (is_paged) "FixedHeader" else character(0),
+    options    = list(
+      dom           = if (!is_paged) "t" else
+                        "<'spz-ctrl-top'<'spz-ctrl-nav'<'spz-ctrl-pager'p><'spz-ctrl-sizer'l>><'spz-ctrl-info'i>>t<'spz-ctrl-bot'<'spz-ctrl-nav'<'spz-ctrl-pager'p><'spz-ctrl-sizer'l>><'spz-ctrl-info'i>>",
+      pagingType    = "full_numbers",
       ordering      = TRUE,
-      pageLength    = nrow(dat),
-      scrollX       = TRUE,
-      scrollY       = scroll_y,
-      scrollCollapse= FALSE,
+      pageLength    = 30L,
+      lengthMenu    = list(c(30, 50, 100, -1), c("30", "50", "100", "All")),
+      language      = list(lengthMenu = "Page Size: _MENU_"),
+      autoWidth     = FALSE,
+      fixedHeader   = is_paged,
       order         = list(list(0L, "asc")),
       createdRow = JS(sprintf(
         "function(row, data, index) {
@@ -552,7 +557,7 @@ render_spz_dt <- function(dat, scroll_y = "calc(100vh - 380px)",
       )),
       columnDefs = col_defs
     ),
-    class = "pf-dt display nowrap"
+    class = "spz-dt display nowrap"
   ) |>
     apply_spz_style()
 
@@ -1027,7 +1032,7 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
       state <- rv_spz$fetch_state
       yr    <- input$year %||% "2026"
       if (!is.null(dat) && nrow(dat) > 0) {
-        div(class = "pf-table-wrap", DTOutput(ns("table"), width = "100%"))
+        div(class = "spz-table-wrap", DTOutput(ns("table"), width = "100%"))
       } else if (state == "error") {
         div(
           class = "spz-empty",
@@ -1154,7 +1159,7 @@ spSkillzServer <- function(id, adp_data = NULL, draft_mode = FALSE, fetch_trigge
       if (nrow(sub) == 0)
         return(msg_dt("None of the selected pitchers were found in the SP Skillz data."))
       sub <- sub[order(sub[["RK"]]), , drop = FALSE]
-      render_spz_dt(sub, scroll_y = "auto", full_scores = dat_full[["Score"]])
+      render_spz_dt(sub, full_scores = dat_full[["Score"]], dom_str = "t")
     })
 
     # ── External trigger (e.g. from Streamonator Fetch Probables) ────────────

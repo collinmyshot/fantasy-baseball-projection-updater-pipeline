@@ -218,23 +218,23 @@ trater_render_dt <- function(df, caption = NULL) {
 
   datatable(
     df,
-    caption   = if (!is.null(caption))
+    caption    = if (!is.null(caption))
       tags$caption(style = "color:#8a9a8f;font-size:0.78rem;text-align:left;padding:4px 0 8px;", caption),
-    filter    = "none",
-    rownames  = FALSE,
-    selection = "none",
-    class     = "pf-dt display compact nowrap",
-    options   = list(
-      pageLength = 32,
-      dom        = "frtip",
-      order      = list(list(score_col, "desc")),
-      createdRow = created_row_js,
-      columnDefs = list(
-        list(className = "dt-center", targets = 0),          # #
-        list(className = "dt-left",   targets = 1:2),        # Team, Abbr
+    filter     = "none",
+    rownames   = FALSE,
+    selection  = "none",
+    extensions = "FixedHeader",
+    class      = "spz-dt display compact nowrap",
+    options    = spz_dt_options(
+      col_defs = list(
+        list(className = "dt-center", targets = 0),
+        list(className = "dt-left",   targets = 1:2),
         list(className = "dt-center", targets = 3:(score_col - 1)),
         list(className = "dt-center", targets = score_col)
-      )
+      ),
+      order    = list(list(score_col, "desc")),
+      paginate = FALSE,
+      extra    = list(createdRow = created_row_js)
     )
   ) |>
     formatStyle("#",     color = "#8a9a8f", fontSize = "0.82rem") |>
@@ -454,7 +454,7 @@ traterServer <- function(id, fetch_trigger = NULL) {
     # ── Full Season tab ──────────────────────────────────────────────────────
     output$full_ui <- renderUI({
       if (!is.null(rv$raw_full) && nrow(rv$raw_full) > 0)
-        return(DTOutput(ns("full_dt")))
+        return(spz_table_wrap(DTOutput(ns("full_dt"))))
       if (rv$fetch_state == "error")
         return(div(class = "sps-empty",
           p("\u26a0\ufe0f Fetch failed. This may be a temporary issue \u2014 please try again.")))
@@ -468,7 +468,7 @@ traterServer <- function(id, fetch_trigger = NULL) {
         return(div(class = "sps-empty",
           p("Last 30 days data unavailable."),
           p(class = "tr-note", "L30 splits require active regular-season games.")))
-      DTOutput(ns("l30_dt"))
+      spz_table_wrap(DTOutput(ns("l30_dt")))
     })
     output$l30_dt <- renderDT({
       trater_render_dt(trater_format(scored_l30()),
@@ -482,7 +482,7 @@ traterServer <- function(id, fetch_trigger = NULL) {
         return(div(class = "sps-empty",
           p("vs LHP data unavailable."),
           p(class = "tr-note", "Handedness splits require active regular-season games.")))
-      DTOutput(ns("lhp_dt"))
+      spz_table_wrap(DTOutput(ns("lhp_dt")))
     })
     output$lhp_dt <- renderDT({
       trater_render_dt(trater_format(scored_vlhp()),
@@ -495,7 +495,7 @@ traterServer <- function(id, fetch_trigger = NULL) {
         return(div(class = "sps-empty",
           p("vs RHP data unavailable."),
           p(class = "tr-note", "Handedness splits require active regular-season games.")))
-      DTOutput(ns("rhp_dt"))
+      spz_table_wrap(DTOutput(ns("rhp_dt")))
     })
     output$rhp_dt <- renderDT({
       trater_render_dt(trater_format(scored_vrhp()),

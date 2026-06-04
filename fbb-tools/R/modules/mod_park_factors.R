@@ -192,10 +192,7 @@ parkFactorsUI <- function(id) {
     ),
 
     # ── Table ─────────────────────────────────────────────────────────────────
-    div(
-      class = "pf-table-wrap",
-      DTOutput(ns("table"), width = "100%")
-    ),
+    spz_table_wrap(DTOutput(ns("table"), width = "100%")),
 
     # ── Footer note ───────────────────────────────────────────────────────────
     div(
@@ -228,31 +225,29 @@ parkFactorsServer <- function(id) {
 
       datatable(
         dat,
-        rownames  = FALSE,
-        filter    = "none",
-        selection = "none",
-        options   = list(
-          dom        = "t",
-          ordering   = TRUE,
-          pageLength = nrow(dat),
-          scrollX    = FALSE,
-          order      = list(list(4, "desc")),  # default sort: Overall desc (col index 4)
-          createdRow = JS(PF_CREATED_ROW_JS),
-          columnDefs = list(
+        rownames   = FALSE,
+        filter     = "none",
+        selection  = "none",
+        extensions = "FixedHeader",
+        options    = spz_dt_options(
+          col_defs = list(
             list(className = "dt-right",  targets = 0),        # RK
             list(className = "dt-left",   targets = c(1, 2)),  # Team, Park
             list(className = "dt-center", targets = 3),        # Years
             list(className = "dt-center", targets = c(4,5,6)), # PF cols
             list(className = "dt-right",  targets = 7),        # BBE
-            list(width = "36px",  targets = 0),   # RK narrow
-            list(width = "130px", targets = 1),   # Team
-            list(width = "220px", targets = 2),   # Park
-            list(width = "75px",  targets = 3),   # Years
-            list(width = "90px",  targets = c(4,5,6)),  # PF cols
-            list(width = "85px",  targets = 7)    # BBE
-          )
+            list(width = "36px",  targets = 0),
+            list(width = "130px", targets = 1),
+            list(width = "220px", targets = 2),
+            list(width = "75px",  targets = 3),
+            list(width = "90px",  targets = c(4,5,6)),
+            list(width = "85px",  targets = 7)
+          ),
+          order    = list(list(4, "desc")),
+          paginate = FALSE,
+          extra    = list(createdRow = JS(PF_CREATED_ROW_JS))
         ),
-        class = "pf-dt display nowrap"
+        class = "spz-dt display nowrap"
       ) |>
         apply_pf_style()
     })

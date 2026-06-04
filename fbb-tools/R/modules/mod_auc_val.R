@@ -1329,7 +1329,7 @@ aucValAggUI <- function(id, label_suffix = NULL, allow_upload = TRUE) {
             )
           )
         ),
-        DTOutput(ns("tbl_agg_h"), width = "100%")
+        spz_table_wrap(DTOutput(ns("tbl_agg_h"), width = "100%"))
       ),
       nav_panel(
         "Pitchers",
@@ -1350,7 +1350,7 @@ aucValAggUI <- function(id, label_suffix = NULL, allow_upload = TRUE) {
                                choices = c("SP", "SP/RP", "RP"), selected = c("SP", "SP/RP", "RP"))
           )
         ),
-        DTOutput(ns("tbl_agg_p"), width = "100%")
+        spz_table_wrap(DTOutput(ns("tbl_agg_p"), width = "100%"))
       )
     )
   )
@@ -2320,11 +2320,11 @@ aucValServer <- function(id, adp_data = NULL, context = "standalone",
           if (mode == "points") {
             navset_pill(
               id = ns("h_pts_tabs"),
-              nav_panel("Expanded",   value = "h_exp",  DTOutput(ns("tbl_h_exp"),  width = "100%")),
-              nav_panel("Simplified", value = "h_simp", DTOutput(ns("tbl_h_simp"), width = "100%"))
+              nav_panel("Expanded",   value = "h_exp",  spz_table_wrap(DTOutput(ns("tbl_h_exp"),  width = "100%"))),
+              nav_panel("Simplified", value = "h_simp", spz_table_wrap(DTOutput(ns("tbl_h_simp"), width = "100%")))
             )
           } else {
-            DTOutput(ns("tbl_h"), width = "100%")
+            spz_table_wrap(DTOutput(ns("tbl_h"), width = "100%"))
           }
         ),
 
@@ -2352,11 +2352,11 @@ aucValServer <- function(id, adp_data = NULL, context = "standalone",
           if (mode == "points") {
             navset_pill(
               id = ns("p_pts_tabs"),
-              nav_panel("Expanded",   value = "p_exp",  DTOutput(ns("tbl_p_exp"),  width = "100%")),
-              nav_panel("Simplified", value = "p_simp", DTOutput(ns("tbl_p_simp"), width = "100%"))
+              nav_panel("Expanded",   value = "p_exp",  spz_table_wrap(DTOutput(ns("tbl_p_exp"),  width = "100%"))),
+              nav_panel("Simplified", value = "p_simp", spz_table_wrap(DTOutput(ns("tbl_p_simp"), width = "100%")))
             )
           } else {
-            DTOutput(ns("tbl_p"), width = "100%")
+            spz_table_wrap(DTOutput(ns("tbl_p"), width = "100%"))
           }
         ),
 
@@ -2385,7 +2385,7 @@ aucValServer <- function(id, adp_data = NULL, context = "standalone",
               )
             )
           ),
-          DTOutput(ns("tbl_combined"), width = "100%")
+          spz_table_wrap(DTOutput(ns("tbl_combined"), width = "100%"))
         )
       )
     })
@@ -2483,15 +2483,7 @@ aucValServer <- function(id, adp_data = NULL, context = "standalone",
     }, ignoreInit = TRUE)
 
     # ── DT helpers ────────────────────────────────────────────────────────────
-    make_dt_opts <- list(
-      dom         = "<'pag-dt-controls'lf>rtip",
-      ordering    = TRUE,
-      pageLength  = 30,
-      lengthMenu  = list(c(30, 50, 100, -1), c("30", "50", "100", "All")),
-      searchDelay = 200,
-      scrollX     = TRUE,
-      autoWidth   = FALSE
-    )
+    make_dt_opts <- spz_dt_options(col_defs = list(), extra = list(searchDelay = 200))
 
     # Label maps used by renderDT functions
     AUC_H_LABEL_MAP <- c(
@@ -2700,8 +2692,9 @@ aucValServer <- function(id, adp_data = NULL, context = "standalone",
       ))
       datatable(df, rownames = FALSE, filter = "none", selection = "none",
                 colnames = if (!is.null(col_labels)) col_labels else names(df),
-                options = c(make_dt_opts, list(columnDefs = col_defs)),
-                class = "pf-dt display nowrap")
+                extensions = "FixedHeader",
+                options = modifyList(make_dt_opts, list(columnDefs = col_defs)),
+                class = "spz-dt display nowrap")
     }
 
     # Prepend a fixed rank column (1:N sorted by val_col desc).

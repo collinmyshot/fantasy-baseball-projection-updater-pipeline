@@ -600,15 +600,7 @@ playerRaterServer <- function(id, adp_data = NULL) {
     }
 
     # ── DT helpers ────────────────────────────────────────────────────────────
-    pr_make_dt_opts <- list(
-      dom         = "<'pag-dt-controls'lf>rtip",
-      ordering    = TRUE,
-      pageLength  = 30,
-      lengthMenu  = list(c(30, 50, 100, -1), c("30", "50", "100", "All")),
-      searchDelay = 200,
-      scrollX     = TRUE,
-      autoWidth   = FALSE
-    )
+    pr_make_dt_opts <- spz_dt_options(col_defs = list(), extra = list(searchDelay = 200))
 
     PR_H_LABEL_MAP <- c(
       rank = "#",
@@ -647,9 +639,10 @@ playerRaterServer <- function(id, adp_data = NULL) {
         list(targets = n_cols - 1L, visible = FALSE, searchable = TRUE)
       ))
       datatable(df, rownames = FALSE, filter = "none", selection = "none",
+                extensions = "FixedHeader",
                 colnames = if (!is.null(col_labels)) col_labels else names(df),
-                options = c(pr_make_dt_opts, list(columnDefs = col_defs)),
-                class = "pf-dt display nowrap")
+                options = modifyList(pr_make_dt_opts, list(columnDefs = col_defs)),
+                class = "spz-dt display nowrap")
     }
 
     add_rank_col_pr <- function(df, val_col) {
@@ -745,11 +738,11 @@ playerRaterServer <- function(id, adp_data = NULL) {
           if (mode == "points") {
             navset_pill(
               id = ns("h_pts_tabs"),
-              nav_panel("Expanded",   value = "h_exp",  DTOutput(ns("tbl_h_exp"),  width = "100%")),
-              nav_panel("Simplified", value = "h_simp", DTOutput(ns("tbl_h_simp"), width = "100%"))
+              nav_panel("Expanded",   value = "h_exp",  spz_table_wrap(DTOutput(ns("tbl_h_exp"),  width = "100%"))),
+              nav_panel("Simplified", value = "h_simp", spz_table_wrap(DTOutput(ns("tbl_h_simp"), width = "100%")))
             )
           } else {
-            DTOutput(ns("tbl_h"), width = "100%")
+            spz_table_wrap(DTOutput(ns("tbl_h"), width = "100%"))
           }
         ),
 
@@ -777,18 +770,18 @@ playerRaterServer <- function(id, adp_data = NULL) {
           if (mode == "points") {
             navset_pill(
               id = ns("p_pts_tabs"),
-              nav_panel("Expanded",   value = "p_exp",  DTOutput(ns("tbl_p_exp"),  width = "100%")),
-              nav_panel("Simplified", value = "p_simp", DTOutput(ns("tbl_p_simp"), width = "100%"))
+              nav_panel("Expanded",   value = "p_exp",  spz_table_wrap(DTOutput(ns("tbl_p_exp"),  width = "100%"))),
+              nav_panel("Simplified", value = "p_simp", spz_table_wrap(DTOutput(ns("tbl_p_simp"), width = "100%")))
             )
           } else {
-            DTOutput(ns("tbl_p"), width = "100%")
+            spz_table_wrap(DTOutput(ns("tbl_p"), width = "100%"))
           }
         ),
 
         # ── Combined ──────────────────────────────────────────────────────────
         nav_panel(
           title = "Combined", value = "res_comb",
-          DTOutput(ns("tbl_combined"), width = "100%")
+          spz_table_wrap(DTOutput(ns("tbl_combined"), width = "100%"))
         )
       )
     })

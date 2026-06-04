@@ -232,14 +232,22 @@ gsm_render_dt <- function(dat) {
     rownames  = FALSE,
     filter    = "none",
     selection = "none",
-    options   = list(
-      dom            = "t",
-      ordering       = TRUE,
-      pageLength     = nrow(display),
-      scrollX        = TRUE,
-      scrollY        = "calc(100vh - 360px)",
-      scrollCollapse = FALSE,
-      order          = list(list(0L, "asc")),
+    extensions = "FixedHeader",
+    options   = spz_dt_options(
+      col_defs = list(
+        list(className = "dt-center", targets = "_all"),
+        list(width = "42px",  targets = 0L),
+        list(width = "160px", targets = 1L),
+        list(width = "50px",  targets = 2L),
+        list(width = "42px",  targets = 3L),
+        list(width = "68px",  targets = 4L),
+        list(width = "60px",  targets = 5L),
+        list(width = "62px",  targets = 6L),
+        list(width = "62px",  targets = 7L),
+        list(width = "62px",  targets = 8L),
+        list(width = "62px",  targets = 9L)
+      ),
+      extra = list(
       createdRow = JS(sprintf(
         "function(row, data, index) {
            var score = data[%d];
@@ -263,22 +271,9 @@ gsm_render_dt <- function(dat) {
            $('td:eq(%d)', row).css({'background-color':'rgb('+r+','+g+','+b+')','color':txt});
          }",
         score_col, s_min, s_med, s_max, score_col
+      ))
       )),
-      columnDefs = list(
-        list(className = "dt-center", targets = "_all"),
-        list(width = "42px",  targets = 0L),
-        list(width = "160px", targets = 1L),
-        list(width = "50px",  targets = 2L),
-        list(width = "42px",  targets = 3L),
-        list(width = "68px",  targets = 4L),
-        list(width = "60px",  targets = 5L),
-        list(width = "62px",  targets = 6L),
-        list(width = "62px",  targets = 7L),
-        list(width = "62px",  targets = 8L),
-        list(width = "62px",  targets = 9L)
-      )
-    ),
-    class = "pf-dt display nowrap"
+    class = "spz-dt display nowrap"
   ) |>
     formatStyle("Avg GSM", fontWeight = "700", textAlign = "center") |>
     formatStyle("RK",
@@ -360,7 +355,7 @@ gsmUI <- function(id) {
     # Leaderboard table
     div(
       class = "sps-tab-body",
-      DTOutput(ns("table"), width = "100%")
+      spz_table_wrap(DTOutput(ns("table"), width = "100%"))
     ),
 
     # Glossary

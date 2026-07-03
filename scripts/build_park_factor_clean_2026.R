@@ -512,4 +512,8 @@ utils::write.csv(
 )
 
 message("Wrote clean 2026 park factor table: ", file.path(output_dir, "park_factors_savant_style_clean_2026.csv"))
-message("Publish path: copy the three clean CSVs to fbb-tools-repo/data/park_factors/ and deploy the Shiny app.")
+message("Publish path (single source of truth): copy the THREE _with_id CSVs to fbb-tools-repo/data/park_factors/ , then deploy the Shiny app:")
+message("  - park_factors_savant_style_clean_2026_with_id.csv")
+message("  - park_factors_savant_style_clean_2026_1H_with_id.csv")
+message("  - park_factors_savant_style_clean_2026_2H_with_id.csv")
+message("  Both the PF leaderboard and the SP Streamonator/Outlook read these _with_id files. The non _with_id display CSVs are monorepo-only (article/comparison inputs); fbb-tools no longer uses them.")

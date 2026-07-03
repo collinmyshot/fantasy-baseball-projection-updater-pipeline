@@ -18,7 +18,7 @@ paths:
 
 **iPF (isolated Park Factor)**: hierarchical random-effects model on Statcast BBE data, built to isolate the park's own effect from players, defense, ball drag, and seasonal patterns. As of July 2026 the Overall factor is the main model's wOBAcon park effect taken DIRECTLY (no component blend; the old 45/35/20 BACON/HR/XBH composite is retired). BACON, HR, and Carry are displayed as component lenses.
 
-**Publish path (only one):** copy the three clean CSVs to `/Users/ckaufman/Documents/fbb-tools-repo/data/park_factors/` and deploy the fbb-tools Shiny app via local rsconnect. The Google Sheets export is retired and its code removed — do not resurrect it.
+**Publish path (only one):** copy the three **`_with_id`** clean CSVs (`park_factors_savant_style_clean_2026_with_id.csv` + `_1H_with_id` + `_2H_with_id`) to `/Users/ckaufman/Documents/fbb-tools-repo/data/park_factors/` and deploy the fbb-tools Shiny app via local rsconnect. As of 2026-07 the `_with_id` file is the SINGLE canonical source read by BOTH the PF leaderboard (`mod_park_factors.R`) AND the SP Streamonator/Outlook (`stream_load_pf`) — do NOT copy the non-`_with_id` display CSVs to fbb-tools (they are monorepo-only article/comparison inputs; copying them instead of the `_with_id` set was the old drift bug). `stuff_plus_by_park.csv` also lives in fbb-tools `data/park_factors/` (copy only when the Stuff+ pipeline regenerates it). The Google Sheets export is retired and its code removed — do not resurrect it.
 
 ## Scripts & Modules
 - `R/park_factors.R` — model module: BBE standardization (incl. spray angle from hc_x/hc_y), contact-shape expected rates, residuals (wOBAcon, BACON, HR, XBH, 2B, 3B, Ottoneu points, air-ball Carry distance), lmer fits with drag/defense fixed effects (centered + missing indicator), rolling validation with composition-adjusted baseline comparison
@@ -39,7 +39,7 @@ paths:
 - `team_defense_2015_2025.csv` — OAA/DRS/UZR composites by team-year (2026 not yet present — handled by defense_missing indicator)
 
 ## Key outputs (data/processed/park_factors/)
-- `park_factors_savant_style_clean_2026.csv` (+ `_1H`/`_2H`) — main clean outputs consumed by fbb-tools app
+- `park_factors_savant_style_clean_2026_with_id.csv` (+ `_1H_with_id`/`_2H_with_id`) — the canonical outputs consumed by the fbb-tools app (both PF leaderboard and SP Streamonator/Outlook). The non-`_with_id` `park_factors_savant_style_clean_2026.csv` (+ `_1H`/`_2H`) are monorepo-only (article/comparison inputs) — NOT copied to fbb-tools
 - `park_factors_{bacon,hr,xbh,double,triple,distance,points}_overall.csv` (+ `_by_half`) — component factors (distance = Carry in feet; points = Ottoneu FGpts per BBE)
 - `park_factor_fixed_effects.csv` — fixed-effect estimates per model (drag/defense verification)
 - `validation_summary.csv` / `validation_detail.csv` — rolling folds; `*_adj` columns are composition-adjusted comparisons

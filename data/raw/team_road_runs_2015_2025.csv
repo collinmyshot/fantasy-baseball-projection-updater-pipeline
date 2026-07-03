@@ -1,0 +1,301 @@
+season,team_name,road_runs,road_games,road_rpg
+2015,St. Louis Cardinals,334,82,4.0732
+2015,Toronto Blue Jays,441,81,5.4444
+2015,Minnesota Twins,323,81,3.9877
+2015,Colorado Rockies,288,81,3.5556
+2015,Boston Red Sox,315,81,3.8889
+2015,Baltimore Orioles,305,81,3.7654
+2015,New York Mets,370,81,4.5679
+2015,Pittsburgh Pirates,354,81,4.3704
+2015,San Diego Padres,329,81,4.0617
+2015,Los Angeles Angels,341,81,4.2099
+2015,Chicago White Sox,332,81,4.0988
+2015,Atlanta Braves,287,81,3.5432
+2015,Cleveland Indians,302,81,3.7284
+2015,Texas Rangers,347,81,4.284
+2015,San Francisco Giants,366,81,4.5185
+2015,Houston Astros,362,81,4.4691
+2015,Chicago Cubs,363,81,4.4815
+2015,Detroit Tigers,352,80,4.4
+2015,Washington Nationals,343,81,4.2346
+2015,Tampa Bay Rays,333,81,4.1111
+2015,Los Angeles Dodgers,330,82,4.0244
+2015,Kansas City Royals,350,82,4.2683
+2015,Seattle Mariners,346,81,4.2716
+2015,Philadelphia Phillies,288,81,3.5556
+2015,Milwaukee Brewers,314,81,3.8765
+2015,New York Yankees,383,81,4.7284
+2015,Miami Marlins,307,81,3.7901
+2015,Cincinnati Reds,297,82,3.622
+2015,Oakland Athletics,343,81,4.2346
+2015,Arizona Diamondbacks,354,81,4.3704
+2016,St. Louis Cardinals,424,81,5.2346
+2016,Toronto Blue Jays,358,81,4.4198
+2016,New York Mets,332,81,4.0988
+2016,San Francisco Giants,344,81,4.2469
+2016,Minnesota Twins,374,81,4.6173
+2016,Seattle Mariners,398,81,4.9136
+2016,Philadelphia Phillies,331,81,4.0864
+2016,Washington Nationals,398,81,4.9136
+2016,Los Angeles Dodgers,375,81,4.6296
+2016,Colorado Rockies,337,81,4.1605
+2016,Chicago Cubs,419,81,5.1728
+2016,Chicago White Sox,341,81,4.2099
+2016,Houston Astros,390,81,4.8148
+2016,Boston Red Sox,401,81,4.9506
+2016,Detroit Tigers,372,82,4.5366
+2016,Miami Marlins,353,81,4.358
+2016,Texas Rangers,340,81,4.1975
+2016,New York Yankees,317,81,3.9136
+2016,San Diego Padres,336,81,4.1481
+2016,Cleveland Indians,325,80,4.0625
+2016,Tampa Bay Rays,358,81,4.4198
+2016,Pittsburgh Pirates,370,81,4.5679
+2016,Oakland Athletics,365,81,4.5062
+2016,Baltimore Orioles,368,81,4.5432
+2016,Milwaukee Brewers,330,81,4.0741
+2016,Atlanta Braves,314,80,3.925
+2016,Cincinnati Reds,351,81,4.3333
+2016,Kansas City Royals,298,81,3.679
+2016,Los Angeles Angels,380,81,4.6914
+2016,Arizona Diamondbacks,341,81,4.2099
+2017,New York Yankees,407,81,5.0247
+2017,San Francisco Giants,323,81,3.9877
+2017,Chicago Cubs,386,81,4.7654
+2017,Miami Marlins,406,81,5.0123
+2017,Atlanta Braves,386,81,4.7654
+2017,Pittsburgh Pirates,339,81,4.1852
+2017,Colorado Rockies,336,81,4.1481
+2017,Toronto Blue Jays,361,81,4.4568
+2017,San Diego Padres,302,81,3.7284
+2017,Kansas City Royals,363,81,4.4815
+2017,Philadelphia Phillies,320,81,3.9506
+2017,Cleveland Indians,412,81,5.0864
+2017,Seattle Mariners,380,81,4.6914
+2017,Los Angeles Angels,354,81,4.3704
+2017,Detroit Tigers,319,81,3.9383
+2017,Boston Red Sox,398,81,4.9136
+2017,Washington Nationals,398,81,4.9136
+2017,Los Angeles Dodgers,372,81,4.5926
+2017,Oakland Athletics,322,81,3.9753
+2017,Minnesota Twins,395,81,4.8765
+2017,Cincinnati Reds,351,81,4.3333
+2017,Tampa Bay Rays,350,81,4.321
+2017,Arizona Diamondbacks,355,81,4.3827
+2017,Houston Astros,501,81,6.1852
+2017,St. Louis Cardinals,402,81,4.963
+2017,New York Mets,391,81,4.8272
+2017,Chicago White Sox,340,81,4.1975
+2017,Milwaukee Brewers,363,81,4.4815
+2017,Baltimore Orioles,348,81,4.2963
+2017,Texas Rangers,350,81,4.321
+2018,Chicago Cubs,376,81,4.642
+2018,St. Louis Cardinals,408,81,5.037
+2018,Minnesota Twins,341,81,4.2099
+2018,Houston Astros,424,81,5.2346
+2018,New York Yankees,401,82,4.8902
+2018,Boston Red Sox,408,81,5.037
+2018,Los Angeles Angels,366,81,4.5185
+2018,Philadelphia Phillies,307,81,3.7901
+2018,Milwaukee Brewers,370,82,4.5122
+2018,Chicago White Sox,335,81,4.1358
+2018,San Francisco Giants,282,81,3.4815
+2018,Colorado Rockies,335,82,4.0854
+2018,Cleveland Indians,375,81,4.6296
+2018,Pittsburgh Pirates,366,81,4.5185
+2018,Washington Nationals,362,81,4.4691
+2018,Kansas City Royals,305,81,3.7654
+2018,Baltimore Orioles,283,81,3.4938
+2018,Los Angeles Dodgers,438,81,5.4074
+2018,Texas Rangers,305,81,3.7654
+2018,Tampa Bay Rays,345,81,4.2593
+2018,Seattle Mariners,378,81,4.6667
+2018,New York Mets,403,82,4.9146
+2018,Miami Marlins,310,80,3.875
+2018,Detroit Tigers,300,81,3.7037
+2018,Cincinnati Reds,311,81,3.8395
+2018,Arizona Diamondbacks,334,81,4.1235
+2018,Atlanta Braves,368,81,4.5432
+2018,Toronto Blue Jays,348,81,4.2963
+2018,San Diego Padres,304,81,3.7531
+2018,Oakland Athletics,444,81,5.4815
+2019,Seattle Mariners,391,81,4.8272
+2019,New York Mets,411,81,5.0741
+2019,Baltimore Orioles,370,81,4.5679
+2019,St. Louis Cardinals,381,82,4.6463
+2019,Atlanta Braves,422,81,5.2099
+2019,Detroit Tigers,297,80,3.7125
+2019,Houston Astros,431,81,5.321
+2019,Chicago Cubs,392,81,4.8395
+2019,Los Angeles Angels,378,81,4.6667
+2019,Arizona Diamondbacks,414,81,5.1111
+2019,Pittsburgh Pirates,380,81,4.6914
+2019,San Francisco Giants,407,81,5.0247
+2019,Cleveland Indians,387,81,4.7778
+2019,Colorado Rockies,335,81,4.1358
+2019,Chicago White Sox,373,81,4.6049
+2019,Boston Red Sox,449,81,5.5432
+2019,Milwaukee Brewers,381,81,4.7037
+2019,Philadelphia Phillies,364,81,4.4938
+2019,Minnesota Twins,497,81,6.1358
+2019,Kansas City Royals,352,83,4.241
+2019,Washington Nationals,420,81,5.1852
+2019,New York Yankees,503,81,6.2099
+2019,Toronto Blue Jays,367,81,4.5309
+2019,Cincinnati Reds,350,81,4.321
+2019,Texas Rangers,356,81,4.3951
+2019,Los Angeles Dodgers,445,81,5.4938
+2019,San Diego Padres,370,81,4.5679
+2019,Tampa Bay Rays,403,81,4.9753
+2019,Miami Marlins,289,81,3.5679
+2019,Oakland Athletics,450,82,5.4878
+2021,Toronto Blue Jays,399,81,4.9259
+2021,Cleveland Indians,375,81,4.6296
+2021,Minnesota Twins,364,81,4.4938
+2021,Pittsburgh Pirates,279,81,3.4444
+2021,Atlanta Braves,386,81,4.7654
+2021,Los Angeles Dodgers,419,81,5.1728
+2021,Arizona Diamondbacks,315,82,3.8415
+2021,St. Louis Cardinals,399,81,4.9259
+2021,Texas Rangers,305,81,3.7654
+2021,Tampa Bay Rays,456,81,5.6296
+2021,Chicago White Sox,380,81,4.6914
+2021,Houston Astros,436,81,5.3827
+2021,San Francisco Giants,423,81,5.2222
+2021,Baltimore Orioles,297,81,3.6667
+2021,Kansas City Royals,307,81,3.7901
+2021,New York Mets,333,81,4.1111
+2021,Milwaukee Brewers,388,81,4.7901
+2021,Miami Marlins,306,83,3.6867
+2021,Chicago Cubs,336,81,4.1481
+2021,Boston Red Sox,359,81,4.4321
+2021,Seattle Mariners,371,82,4.5244
+2021,Los Angeles Angels,342,81,4.2222
+2021,Oakland Athletics,404,81,4.9877
+2021,New York Yankees,358,81,4.4198
+2021,Washington Nationals,381,82,4.6463
+2021,Colorado Rockies,283,80,3.5375
+2021,Detroit Tigers,362,81,4.4691
+2021,Philadelphia Phillies,371,81,4.5802
+2021,San Diego Padres,390,83,4.6988
+2021,Cincinnati Reds,341,82,4.1585
+2022,Milwaukee Brewers,363,81,4.4815
+2022,Cleveland Guardians,373,81,4.6049
+2022,Pittsburgh Pirates,278,81,3.4321
+2022,New York Mets,396,81,4.8889
+2022,Cincinnati Reds,281,81,3.4691
+2022,Houston Astros,380,82,4.6341
+2022,San Diego Padres,404,81,4.9877
+2022,Boston Red Sox,343,81,4.2346
+2022,Chicago White Sox,355,81,4.3827
+2022,Oakland Athletics,317,81,3.9136
+2022,Baltimore Orioles,331,81,4.0864
+2022,Los Angeles Dodgers,425,81,5.2469
+2022,Seattle Mariners,372,81,4.5926
+2022,Miami Marlins,290,81,3.5802
+2022,Texas Rangers,365,81,4.5062
+2022,Colorado Rockies,242,81,2.9877
+2022,Toronto Blue Jays,416,81,5.1358
+2022,Washington Nationals,306,81,3.7778
+2022,Chicago Cubs,333,81,4.1111
+2022,Kansas City Royals,305,81,3.7654
+2022,St. Louis Cardinals,380,81,4.6914
+2022,Philadelphia Phillies,351,81,4.3333
+2022,Los Angeles Angels,293,81,3.6173
+2022,Detroit Tigers,278,81,3.4321
+2022,Atlanta Braves,394,81,4.8642
+2022,Arizona Diamondbacks,349,81,4.3086
+2022,Minnesota Twins,353,81,4.358
+2022,New York Yankees,388,81,4.7901
+2022,San Francisco Giants,353,81,4.358
+2022,Tampa Bay Rays,330,81,4.0741
+2023,Atlanta Braves,470,81,5.8025
+2023,San Francisco Giants,367,82,4.4756
+2023,Baltimore Orioles,445,81,5.4938
+2023,Milwaukee Brewers,351,81,4.3333
+2023,Detroit Tigers,330,81,4.0741
+2023,Philadelphia Phillies,378,81,4.6667
+2023,Pittsburgh Pirates,353,81,4.358
+2023,Toronto Blue Jays,404,81,4.9877
+2023,Minnesota Twins,386,81,4.7654
+2023,New York Mets,374,83,4.506
+2023,Chicago White Sox,333,81,4.1111
+2023,Colorado Rockies,296,81,3.6543
+2023,Los Angeles Angels,375,81,4.6296
+2023,Arizona Diamondbacks,381,81,4.7037
+2023,Cleveland Guardians,355,81,4.3827
+2023,Chicago Cubs,387,81,4.7778
+2023,Tampa Bay Rays,441,81,5.4444
+2023,Boston Red Sox,364,81,4.4938
+2023,Washington Nationals,355,82,4.3293
+2023,San Diego Padres,386,81,4.7654
+2023,Los Angeles Dodgers,483,82,5.8902
+2023,Miami Marlins,313,82,3.8171
+2023,Texas Rangers,398,81,4.9136
+2023,Cincinnati Reds,409,81,5.0494
+2023,New York Yankees,345,81,4.2593
+2023,Seattle Mariners,401,81,4.9506
+2023,Houston Astros,462,81,5.7037
+2023,Kansas City Royals,286,82,3.4878
+2023,Oakland Athletics,315,81,3.8889
+2023,St. Louis Cardinals,344,81,4.2469
+2024,Los Angeles Dodgers,439,81,5.4198
+2024,San Diego Padres,404,81,4.9877
+2024,Los Angeles Angels,315,81,3.8889
+2024,Washington Nationals,329,81,4.0617
+2024,San Francisco Giants,359,81,4.4321
+2024,St. Louis Cardinals,335,81,4.1358
+2024,Toronto Blue Jays,341,82,4.1585
+2024,Minnesota Twins,353,81,4.358
+2024,Detroit Tigers,351,81,4.3333
+2024,Pittsburgh Pirates,322,81,3.9753
+2024,New York Yankees,426,81,5.2593
+2024,Chicago Cubs,417,81,5.1481
+2024,Cleveland Guardians,334,81,4.1235
+2024,Colorado Rockies,286,81,3.5309
+2024,Boston Red Sox,385,81,4.7531
+2024,Milwaukee Brewers,410,81,5.0617
+2024,Atlanta Braves,388,81,4.7901
+2024,Kansas City Royals,350,81,4.321
+2024,Cincinnati Reds,342,81,4.2222
+2024,Texas Rangers,350,82,4.2683
+2024,Miami Marlins,294,81,3.6296
+2024,Chicago White Sox,255,81,3.1481
+2024,Oakland Athletics,320,81,3.9506
+2024,Tampa Bay Rays,299,81,3.6914
+2024,Baltimore Orioles,412,82,5.0244
+2024,New York Mets,386,81,4.7654
+2024,Philadelphia Phillies,374,81,4.6173
+2024,Arizona Diamondbacks,429,81,5.2963
+2024,Houston Astros,345,80,4.3125
+2024,Seattle Mariners,371,81,4.5802
+2025,Los Angeles Dodgers,378,81,4.6667
+2025,Milwaukee Brewers,424,81,5.2346
+2025,Baltimore Orioles,315,81,3.8889
+2025,Boston Red Sox,391,81,4.8272
+2025,Philadelphia Phillies,346,81,4.2716
+2025,Cleveland Guardians,334,82,4.0732
+2025,New York Mets,362,81,4.4691
+2025,San Francisco Giants,367,81,4.5309
+2025,Atlanta Braves,387,82,4.7195
+2025,Los Angeles Angels,327,81,4.037
+2025,Pittsburgh Pirates,269,81,3.321
+2025,Minnesota Twins,325,81,4.0123
+2025,Detroit Tigers,360,81,4.4444
+2025,Chicago Cubs,402,81,4.963
+2025,Athletics,365,81,4.5062
+2025,Colorado Rockies,228,81,2.8148
+2025,Kansas City Royals,350,81,4.321
+2025,Texas Rangers,357,81,4.4074
+2025,Washington Nationals,368,81,4.5432
+2025,Arizona Diamondbacks,383,82,4.6707
+2025,Houston Astros,367,81,4.5309
+2025,Cincinnati Reds,354,82,4.3171
+2025,Chicago White Sox,324,81,4.0
+2025,St. Louis Cardinals,343,81,4.2346
+2025,San Diego Padres,338,81,4.1728
+2025,Toronto Blue Jays,367,81,4.5309
+2025,New York Yankees,440,81,5.4321
+2025,Seattle Mariners,414,81,5.1111
+2025,Miami Marlins,392,81,4.8395
+2025,Tampa Bay Rays,342,81,4.2222

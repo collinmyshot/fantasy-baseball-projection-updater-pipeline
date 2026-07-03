@@ -1,0 +1,60 @@
+"park_era_id","venue_id","venue_name","home_team","component","delta_overall","pf_index_overall","park_se","n_bbe"
+"venue_5355__sutter_health","5355","Las Vegas Ballpark","ATH","distance_air",18.7199189591568,106.56436573884,2.24867904542464,342
+"venue_5340__base","5340","Estadio Alfredo Harp Helu","AZ","distance_air",17.633940372162,106.183554227576,2.31977679269052,326
+"venue_19__base","19","Coors Field","COL","distance_air",12.8581945664589,104.508881264901,0.746078533333295,46437
+"venue_2529__sutter_health","2529","Sutter Health Park","ATH","distance_air",4.53986321752592,101.591957883427,0.944740122040022,6288
+"venue_7__walls_in","7","Kauffman Stadium","KCR","distance_air",4.26670326476043,101.496171045938,1.37417978156533,2230
+"venue_15__humidor","15","Chase Field","AZ","distance_air",4.09770324312086,101.436909146656,0.760895942917954,31896
+"venue_15__base","15","Chase Field","AZ","distance_air",3.22299317378728,101.13018149345,0.851246807282414,12726
+"venue_3949__base","3949","Rickwood Field","STL","distance_air",3.13882394362724,101.100666536044,4.14377629298892,32
+"venue_13__base","13","Globe Life Park in Arlington","TEX","distance_air",2.78064483907234,100.975066705861,0.791824064245301,21828
+"venue_2536__base","2536","TD Ballpark","TOR","distance_air",2.49674207670928,100.875512772402,4.10372266642014,46
+"venue_6130__base","6130","Bristol Motor Speedway","CIN","distance_air",2.39897773095483,100.84123052347,3.74419323572237,44
+"venue_12__trop_return","12","Tropicana Field","TBR","distance_air",2.28797718926551,100.802306842526,1.39130551343873,2241
+"venue_5325__globe_life","5325","Globe Life Field","TEX","distance_air",1.83993431232138,100.645195194908,0.779257920530964,22406
+"venue_7__base","7","Kauffman Stadium","KCR","distance_air",1.67422772826735,100.587088179304,0.748379806008884,43345
+"venue_32__base","32","American Family Field","MIL","distance_air",1.29151207380328,100.452884311469,0.749358756103982,41791
+"venue_12__base","12","Tropicana Field","TBR","distance_air",1.09432839891113,100.383739473687,0.756518840158146,35636
+"venue_2536__dunedin","2536","TD Ballpark","TOR","distance_air",1.0524817175151,100.369065429305,1.56311752602759,1086
+"venue_2__wall_medium","2","Oriole Park at Camden Yards","BAL","distance_air",0.742542189819526,100.260381389531,0.949075444050525,6503
+"venue_4705__suntrust","4705","Truist Park","ATL","distance_air",0.720799305693858,100.252756984536,0.756374544846138,34481
+"venue_4169__cf_in_407","4169","Marlins Park","MIA","distance_air",0.706606887405806,100.247780241604,0.815997163076804,16425
+"venue_2602__base","2602","Great American Ball Park","CIN","distance_air",0.479361677675139,100.168093963457,0.747184007929164,42321
+"venue_31__base","31","PNC Park","PIT","distance_air",0.00124711202122656,100.000437314897,0.747784137420213,44069
+"venue_5365__base","5365","TD Ameritrade Park","KCR","distance_air",0,100,,44
+"venue_3312__base","3312","Target Field","MIN","distance_air",-0.00472633709883612,99.9983426527973,0.745657077533234,44582
+"venue_2__wall_deep","2","Oriole Park at Camden Yards","BAL","distance_air",-0.0315970860368458,99.988920100056,0.833581251024956,12551
+"venue_16__base","16","Turner Field","ATL","distance_air",-0.0694051702904632,99.975662238552,0.909647243214318,8391
+"venue_1__base","1","Angel Stadium","LAA","distance_air",-0.184861449815771,99.9351760993063,0.747427253360888,42985
+"venue_4169__base","4169","Marlins Park","MIA","distance_air",-0.236837687693618,99.9169500035682,1.08175791119294,4273
+"venue_14__base","14","Rogers Centre","TOR","distance_air",-0.495476213151332,99.8262552799979,0.774035827124132,27047
+"venue_2392__base","2392","Minute Maid Park","HOU","distance_air",-0.641328808174558,99.7751103055041,0.748470717185681,42346
+"venue_2__base","2","Oriole Park at Camden Yards","BAL","distance_air",-0.773839335625344,99.7286438881905,0.778569931379401,25711
+"venue_2889__base","2889","Busch Stadium","STL","distance_air",-0.894423793187966,99.6863594913623,0.747913400956614,44130
+"venue_3289__base","3289","Citi Field","NYM","distance_air",-1.11025417029669,99.6106759621769,0.770787997672049,27912
+"venue_2756__base","2756","Sahlen Field","TOR","distance_air",-1.12444320853445,99.6057004045007,3.94779715416177,41
+"venue_2394__cf_in_412","2394","Comerica Park","DET","distance_air",-1.16724403422452,99.5906917778946,0.818268208696404,14410
+"venue_4169__fence_reduced","4169","loanDepot park","MIA","distance_air",-1.29942001613519,99.5443426730163,0.780911737506702,22908
+"venue_2681__base","2681","Citizens Bank Park","PHI","distance_air",-1.30275707283262,99.5431724937703,0.748083558059017,43012
+"venue_2735__base","2735","Journey Bank Ballpark","NYM","distance_air",-1.42703901199887,99.4995915303484,2.68270137049923,235
+"venue_3309__base","3309","Nationals Park","WSH","distance_air",-1.76915123510647,99.3796257462493,0.747146163277635,44124
+"venue_22__base","22","Dodger Stadium","LAD","distance_air",-2.00487843962209,99.2969651541597,0.74798006170096,41473
+"venue_2395__bullpen_center","2395","Oracle Park","SFG","distance_air",-2.01327697380127,99.2940201066868,0.782449318199619,22579
+"venue_4__base","4","Guaranteed Rate Field","CHW","distance_air",-2.04757816057526,99.281991981151,0.747726619074845,43008
+"venue_5__wind_tunnel","5","Progressive Field","CLE","distance_air",-2.17401182392123,99.2376564896505,0.861152404843777,9991
+"venue_5__base","5","Progressive Field","CLE","distance_air",-2.31472517567901,99.1883136528951,0.761908011259582,32827
+"venue_3313__base","3313","Yankee Stadium","NYY","distance_air",-2.34349259210251,99.1782260107863,0.74872015992788,41895
+"venue_14__of_renovation","14","Rogers Centre","TOR","distance_air",-2.76420832344114,99.0306969569151,0.815775006601245,14883
+"venue_2394__base","2394","Comerica Park","DET","distance_air",-2.91697727756112,98.9771266775473,0.766945710020018,30105
+"venue_3__base","3","Fenway Park","BOS","distance_air",-2.94165895240385,98.9684717500838,0.747495820757834,44807
+"venue_3289__rf_in_362","3289","Citi Field","NYM","distance_air",-3.05707925899253,98.9279982251828,0.821758996015356,14111
+"venue_10__base","10","Oakland Coliseum","ATH","distance_air",-3.10660231217059,98.9106323682967,0.754030138616146,37621
+"venue_2756__buffalo","2756","Sahlen Field","TOR","distance_air",-3.18108308587636,98.8845147851927,1.40127669515749,1197
+"venue_2680__base","2680","Petco Park","SDP","distance_air",-3.22369276937114,98.8695731849066,0.749299245882924,41941
+"venue_17__base","17","Wrigley Field","CHC","distance_air",-3.32002298026074,98.8357938326904,0.748475236547769,42356
+"venue_680__base","680","T-Mobile Park","SEA","distance_air",-3.77998496323402,98.6745026065486,0.747846354668827,42045
+"venue_2523__steinbrenner","2523","George M. Steinbrenner Field","TBR","distance_air",-3.81367113244019,98.662690144353,1.06561915242762,4071
+"venue_2395__base","2395","AT&T Park","SFG","distance_air",-4.87435981782587,98.2907468426158,0.794650206094489,20983
+"venue_5150__base","5150","Gocheok Sky Dome","LAD","distance_air",-6.21696805432166,97.8199450444047,2.94917864897238,123
+"venue_2397__base","2397","Tokyo Dome","CHC","distance_air",-8.18861337395884,97.1285637935772,3.49748446124448,88
+"venue_5381__base","5381","London Stadium","BOS","distance_air",-11.2298348900725,96.0621227278783,2.73780357687024,346

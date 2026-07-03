@@ -1,27 +1,17 @@
 #!/usr/bin/env Rscript
 source(file.path("R", "utils.R"))
 
+# iPF formulation (July 2026): the Overall factor is the main model's wOBAcon
+# park effect taken directly (no component blend). BACON, HR, XBH, and Carry
+# are component lenses estimated by their own models.
 parsed <- parse_cli_args(list(
-  output_dir   = list(flag = "--output-dir",   default = file.path("data", "processed", "park_factors")),
-  weight_bacon = list(flag = "--weight-bacon", default = 0.45, type = "numeric"),
-  weight_hr    = list(flag = "--weight-hr",    default = 0.35, type = "numeric"),
-  weight_xbh   = list(flag = "--weight-xbh",   default = 0.20, type = "numeric")
+  output_dir = list(flag = "--output-dir", default = file.path("data", "processed", "park_factors"))
 ))
 
-output_dir   <- parsed$output_dir
-weight_bacon <- parsed$weight_bacon
-weight_hr    <- parsed$weight_hr
-weight_xbh   <- parsed$weight_xbh
-
-sum_w <- weight_bacon + weight_hr + weight_xbh
-if (!is.finite(sum_w) || sum_w <= 0) {
-  stop("Component weights must sum to a positive finite value.")
-}
-weight_bacon <- weight_bacon / sum_w
-weight_hr <- weight_hr / sum_w
-weight_xbh <- weight_xbh / sum_w
+output_dir <- parsed$output_dir
 
 required_files <- c(
+  file.path(output_dir, "park_factors_overall.csv"),
   file.path(output_dir, "park_factors_bacon_overall.csv"),
   file.path(output_dir, "park_factors_hr_overall.csv"),
   file.path(output_dir, "park_factors_xbh_overall.csv"),
@@ -186,6 +176,30 @@ xbh <- read_pf_component(file.path(output_dir, "park_factors_xbh_overall.csv"), 
 tbl <- merge(bacon, hr, by = "park_era_id", all = TRUE)
 tbl <- merge(tbl, xbh, by = "park_era_id", all = TRUE)
 
+# Carry (fly ball and line drive distance, feet) is a newer output; tolerate
+# its absence so the script still runs on old build dirs.
+optional_component <- function(name, comp_label) {
+  path <- file.path(output_dir, sprintf("park_factors_%s_overall.csv", name))
+  if (!file.exists(path)) {
+    warning(sprintf("Component file missing, columns will be NA: %s", path))
+    return(NULL)
+  }
+  read_pf_component(path, comp_label)
+}
+carry <- optional_component("distance", "carry")
+if (!is.null(carry)) {
+  tbl <- merge(tbl, carry, by = "park_era_id", all.x = TRUE)
+} else {
+  tbl$carry_delta <- NA_real_
+  tbl$carry_se <- NA_real_
+}
+
+# The Overall factor: the main model's wOBAcon-residual park effect, direct.
+overall_main <- utils::read.csv(file.path(output_dir, "park_factors_overall.csv"), stringsAsFactors = FALSE, check.names = FALSE)
+overall_main <- overall_main[, c("park_era_id", "delta_woba_over_xwoba_overall", "overall_se")]
+names(overall_main) <- c("park_era_id", "overall_delta", "overall_se")
+tbl <- merge(tbl, overall_main, by = "park_era_id", all.x = TRUE)
+
 team_cols <- c("bacon_team", "hr_team", "xbh_team")
 tbl$team_id <- NA_character_
 for (nm in team_cols) {
@@ -220,18 +234,14 @@ tbl$park_name <- mapply(venue_from_team_suffix, tbl$team_id, tbl$suffix, USE.NAM
 tbl$bacon_idx_100 <- std_index(tbl$bacon_delta)
 tbl$hr_idx_100 <- std_index(tbl$hr_delta)
 tbl$xbh_idx_100 <- std_index(tbl$xbh_delta)
-
-tbl$overall_weighted_delta <- (
-  weight_bacon * tbl$bacon_delta +
-    weight_hr * tbl$hr_delta +
-    weight_xbh * tbl$xbh_delta
-)
-tbl$overall_pf_100 <- std_index(tbl$overall_weighted_delta)
+tbl$carry_idx_100 <- std_index(tbl$carry_delta)
+tbl$overall_pf_100 <- std_index(tbl$overall_delta)
 
 tbl$rank <- rank(-tbl$overall_pf_100, ties.method = "min", na.last = "keep")
 tbl$hr_rank <- rank(-tbl$hr_delta, ties.method = "min", na.last = "keep")
 tbl$bacon_rank <- rank(-tbl$bacon_delta, ties.method = "min", na.last = "keep")
 tbl$xbh_rank <- rank(-tbl$xbh_delta, ties.method = "min", na.last = "keep")
+tbl$carry_rank <- rank(-tbl$carry_delta, ties.method = "min", na.last = "keep")
 
 out <- tbl[, c(
   "park_era_id",
@@ -240,21 +250,26 @@ out <- tbl[, c(
   "team_name",
   "park_name",
   "years_used",
+  "overall_delta",
   "bacon_delta",
   "hr_delta",
   "xbh_delta",
-  "overall_weighted_delta",
+  "carry_delta",
   "bacon_idx_100",
   "hr_idx_100",
   "xbh_idx_100",
+  "carry_idx_100",
   "overall_pf_100",
   "total_bbe",
+  "overall_se",
   "bacon_se",
   "hr_se",
   "xbh_se",
+  "carry_se",
   "bacon_rank",
   "hr_rank",
-  "xbh_rank"
+  "xbh_rank",
+  "carry_rank"
 )]
 
 names(out) <- c(
@@ -264,21 +279,26 @@ names(out) <- c(
   "team",
   "park",
   "years_used",
+  "overall_resid",
   "bacon_resid",
   "hr_resid",
   "xbh_resid",
-  "overall_weighted_resid",
+  "carry_ft",
   "bacon_idx_100",
   "hr_idx_100",
   "xbh_idx_100",
+  "carry_idx_100",
   "overall_pf_idx_100",
   "total_bbe",
+  "overall_se",
   "bacon_se",
   "hr_se",
   "xbh_se",
+  "carry_se",
   "bacon_rank",
   "hr_rank",
-  "xbh_rank"
+  "xbh_rank",
+  "carry_rank"
 )
 
 out$team_id <- pretty_team(out$team_id)
@@ -292,21 +312,26 @@ out <- out[, c(
   "team",
   "park",
   "years_used",
+  "overall_resid",
   "bacon_resid",
   "hr_resid",
   "xbh_resid",
-  "overall_weighted_resid",
+  "carry_ft",
   "bacon_idx_100",
   "hr_idx_100",
   "xbh_idx_100",
+  "carry_idx_100",
   "overall_pf_idx_100",
   "total_bbe",
+  "overall_se",
   "bacon_se",
   "hr_se",
   "xbh_se",
+  "carry_se",
   "bacon_rank",
   "hr_rank",
-  "xbh_rank"
+  "xbh_rank",
+  "carry_rank"
 )]
 
 utils::write.csv(
@@ -319,18 +344,6 @@ utils::write.csv(
 utils::write.csv(
   out_with_id,
   file.path(output_dir, "park_factors_savant_style_with_id.csv"),
-  row.names = FALSE,
-  na = ""
-)
-
-weights_tbl <- data.frame(
-  component = c("bacon_resid", "hr_resid", "xbh_resid"),
-  weight = c(weight_bacon, weight_hr, weight_xbh),
-  stringsAsFactors = FALSE
-)
-utils::write.csv(
-  weights_tbl,
-  file.path(output_dir, "park_factors_savant_style_weights.csv"),
   row.names = FALSE,
   na = ""
 )

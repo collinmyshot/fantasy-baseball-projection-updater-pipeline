@@ -1,36 +1,20 @@
 #!/usr/bin/env Rscript
 source(file.path("R", "utils.R"))
 
+# iPF formulation (July 2026): Overall is the main model's wOBAcon park effect
+# taken directly; BACON, HR, and Carry are component lenses. The former Google
+# Sheets export is retired — the fbb-tools Shiny app is the only publish path.
 parsed <- parse_cli_args(list(
-  output_dir             = list(flag = "--output-dir",             default = file.path("data", "processed", "park_factors")),
-  events_csv             = list(flag = "--events-csv",             default = file.path("data", "manual", "park_era_events.csv")),
-  home_parks_csv         = list(flag = "--home-parks-csv",         default = file.path("data", "manual", "mlb_home_parks_2026_verified.csv")),
-  season_target          = list(flag = "--season-target",          default = 2026, type = "numeric"),
-  google_sheet_url       = list(flag = "--google-sheet-url",       default = "https://docs.google.com/spreadsheets/d/1RRY94GcEqKMjvL6-pPkJmvPOnNdGyH5lgAUtSujk6Vo/edit?usp=sharing"),
-  google_sheet_tab_overall = list(flag = "--google-sheet-tab-overall", default = "Overall PF", aliases = "--google-sheet-tab"),
-  google_sheet_tab_1h    = list(flag = "--google-sheet-tab-1h",    default = "1H PF"),
-  google_sheet_tab_2h    = list(flag = "--google-sheet-tab-2h",    default = "2H PF"),
-  google_sheet_tab_known = list(flag = "--google-sheet-tab-known", default = "Known Park Effects"),
-  no_google_export       = list(flag = "--no-google-export",       default = FALSE, type = "boolean"),
-  export_google_sheet    = list(flag = "--export-google-sheet",    default = TRUE, type = "boolean"),
-  weight_bacon           = list(flag = "--weight-bacon",           default = 0.45, type = "numeric"),
-  weight_hr              = list(flag = "--weight-hr",              default = 0.35, type = "numeric"),
-  weight_xbh             = list(flag = "--weight-xbh",             default = 0.20, type = "numeric")
+  output_dir     = list(flag = "--output-dir",     default = file.path("data", "processed", "park_factors")),
+  events_csv     = list(flag = "--events-csv",     default = file.path("data", "manual", "park_era_events.csv")),
+  home_parks_csv = list(flag = "--home-parks-csv", default = file.path("data", "manual", "mlb_home_parks_2026_verified.csv")),
+  season_target  = list(flag = "--season-target",  default = 2026, type = "numeric")
 ))
 
-output_dir             <- parsed$output_dir
-events_csv             <- parsed$events_csv
-home_parks_csv         <- parsed$home_parks_csv
-season_target          <- as.integer(parsed$season_target)
-google_sheet_url       <- parsed$google_sheet_url
-google_sheet_tab_overall <- parsed$google_sheet_tab_overall
-google_sheet_tab_1h    <- parsed$google_sheet_tab_1h
-google_sheet_tab_2h    <- parsed$google_sheet_tab_2h
-google_sheet_tab_known <- parsed$google_sheet_tab_known
-export_google_sheet    <- parsed$export_google_sheet && !parsed$no_google_export
-weight_bacon           <- parsed$weight_bacon
-weight_hr              <- parsed$weight_hr
-weight_xbh             <- parsed$weight_xbh
+output_dir     <- parsed$output_dir
+events_csv     <- parsed$events_csv
+home_parks_csv <- parsed$home_parks_csv
+season_target  <- as.integer(parsed$season_target)
 
 input_path <- file.path(output_dir, "park_factors_savant_style_with_id.csv")
 if (!file.exists(input_path)) {
@@ -75,14 +59,6 @@ extract_year_start <- function(years_used) {
   out <- suppressWarnings(as.integer(sub("-.*$", "", y)))
   out
 }
-
-sum_w <- weight_bacon + weight_hr + weight_xbh
-if (!is.finite(sum_w) || sum_w <= 0) {
-  stop("Component weights must sum to a positive finite value.")
-}
-weight_bacon <- weight_bacon / sum_w
-weight_hr <- weight_hr / sum_w
-weight_xbh <- weight_xbh / sum_w
 
 events <- utils::read.csv(events_csv, stringsAsFactors = FALSE, check.names = FALSE)
 events$team <- normalize_team(events$team)
@@ -221,11 +197,34 @@ pick_row_for_team <- function(team_id, table_data) {
   default_row
 }
 
+# Upstream index columns are standardized over ALL park eras, including
+# retired ones (Turner Field, Walltimore, COVID venues...). Re-standardize the
+# raw deltas over the 30 selected rows so that 100 means "average current
+# park" in every displayed table.
+restandardize_over_selected <- function(picked_tbl) {
+  restd <- function(x) {
+    x <- suppressWarnings(as.numeric(x))
+    if (all(!is.finite(x))) {
+      return(rep(NA_real_, length(x)))
+    }
+    std_index(x)
+  }
+  picked_tbl$bacon_idx_100 <- restd(picked_tbl$bacon_resid)
+  picked_tbl$hr_idx_100 <- restd(picked_tbl$hr_resid)
+  picked_tbl$xbh_idx_100 <- restd(picked_tbl$xbh_resid)
+  if ("carry_ft" %in% names(picked_tbl)) {
+    picked_tbl$carry_idx_100 <- restd(picked_tbl$carry_ft)
+  }
+  picked_tbl$overall_pf_idx_100 <- restd(picked_tbl$overall_resid)
+  picked_tbl
+}
+
 pick_display_rows <- function(table_data) {
   ids <- sort(unique(table_data$team_id))
   picked <- do.call(rbind, lapply(ids, function(id) pick_row_for_team(id, table_data)))
   rownames(picked) <- NULL
   picked <- picked[!duplicated(picked$team_id), , drop = FALSE]
+  picked <- restandardize_over_selected(picked)
   picked <- picked[order(picked$overall_pf_idx_100, decreasing = TRUE, na.last = TRUE), ]
   picked$Rank <- seq_len(nrow(picked))
   picked
@@ -237,6 +236,9 @@ round2 <- function(x) round(as.numeric(x), 2)
 fmt2 <- function(x) sprintf("%.2f", round2(x))
 
 clean_from_picked <- function(picked_tbl) {
+  col_or_na <- function(nm) {
+    if (nm %in% names(picked_tbl)) round2(picked_tbl[[nm]]) else rep(NA_real_, nrow(picked_tbl))
+  }
   data.frame(
     Rank = as.integer(picked_tbl$Rank),
     Team = as.character(picked_tbl$team),
@@ -245,6 +247,8 @@ clean_from_picked <- function(picked_tbl) {
     `Overall Park Factor` = round2(picked_tbl$overall_pf_idx_100),
     `BACON Park Factor` = round2(picked_tbl$bacon_idx_100),
     `HR Park Factor` = round2(picked_tbl$hr_idx_100),
+    `Carry Park Factor` = col_or_na("carry_idx_100"),
+    `Carry (ft vs avg)` = col_or_na("carry_ft"),
     `Total BBE` = as.integer(round(as.numeric(picked_tbl$total_bbe))),
     stringsAsFactors = FALSE,
     check.names = FALSE
@@ -389,30 +393,42 @@ build_known_park_effects <- function(overall_tbl, half_1h_tbl, half_2h_tbl, top_
 }
 
 build_half_display <- function(half_label) {
+  main_path <- file.path(output_dir, "park_factors_by_half.csv")
   bacon_path <- file.path(output_dir, "park_factors_bacon_by_half.csv")
   hr_path <- file.path(output_dir, "park_factors_hr_by_half.csv")
   xbh_path <- file.path(output_dir, "park_factors_xbh_by_half.csv")
-  for (pth in c(bacon_path, hr_path, xbh_path)) {
+  for (pth in c(main_path, bacon_path, hr_path, xbh_path)) {
     if (!file.exists(pth)) {
-      stop(sprintf("Missing required half-component file: %s", pth))
+      stop(sprintf("Missing required half file: %s", pth))
     }
   }
 
-  read_comp <- function(path, comp_label) {
+  read_comp <- function(path, comp_label, delta_col = "delta_half") {
     d <- utils::read.csv(path, stringsAsFactors = FALSE, check.names = FALSE)
     d <- d[d$half == half_label, ]
-    out <- d[, c("park_era_id", "home_team", "n_bbe", "delta_half", "park_se"), drop = FALSE]
-    names(out)[names(out) == "delta_half"] <- paste0(comp_label, "_delta")
+    out <- d[, c("park_era_id", "home_team", "n_bbe", delta_col, "park_se"), drop = FALSE]
+    names(out)[names(out) == delta_col] <- paste0(comp_label, "_delta")
     names(out)[names(out) == "park_se"] <- paste0(comp_label, "_se")
     names(out)[names(out) == "n_bbe"] <- paste0(comp_label, "_n_bbe")
     out
   }
 
+  # Overall at the half level comes straight from the main model's park-half
+  # estimates (park effect + park-half deviation), not from a component blend.
+  m <- read_comp(main_path, "overall", delta_col = "delta_woba_over_xwoba_half")
   b <- read_comp(bacon_path, "bacon")
   h <- read_comp(hr_path, "hr")
   x <- read_comp(xbh_path, "xbh")
-  merged <- merge(b, h, by = c("park_era_id", "home_team"), all = TRUE)
+  merged <- merge(m, b, by = c("park_era_id", "home_team"), all = TRUE)
+  merged <- merge(merged, h, by = c("park_era_id", "home_team"), all = TRUE)
   merged <- merge(merged, x, by = c("park_era_id", "home_team"), all = TRUE)
+
+  carry_path <- file.path(output_dir, "park_factors_distance_by_half.csv")
+  if (file.exists(carry_path)) {
+    merged <- merge(merged, read_comp(carry_path, "carry"), by = c("park_era_id", "home_team"), all.x = TRUE)
+  } else {
+    merged$carry_delta <- NA_real_
+  }
 
   era_lookup <- unique(display[, c(
     "park_era_id", "team_id", "team", "park", "years_used",
@@ -420,20 +436,18 @@ build_half_display <- function(half_label) {
   )])
   merged <- merge(merged, era_lookup, by = "park_era_id", all.x = TRUE)
 
-  merged$total_bbe <- suppressWarnings(as.numeric(merged$bacon_n_bbe))
+  merged$total_bbe <- suppressWarnings(as.numeric(merged$overall_n_bbe))
+  merged$overall_resid <- suppressWarnings(as.numeric(merged$overall_delta))
   merged$bacon_resid <- suppressWarnings(as.numeric(merged$bacon_delta))
   merged$hr_resid <- suppressWarnings(as.numeric(merged$hr_delta))
   merged$xbh_resid <- suppressWarnings(as.numeric(merged$xbh_delta))
-  merged$overall_weighted_resid <- (
-    weight_bacon * merged$bacon_resid +
-      weight_hr * merged$hr_resid +
-      weight_xbh * merged$xbh_resid
-  )
+  merged$carry_ft <- suppressWarnings(as.numeric(merged$carry_delta))
 
   merged$bacon_idx_100 <- std_index(merged$bacon_resid)
   merged$hr_idx_100 <- std_index(merged$hr_resid)
   merged$xbh_idx_100 <- std_index(merged$xbh_resid)
-  merged$overall_pf_idx_100 <- std_index(merged$overall_weighted_resid)
+  merged$carry_idx_100 <- std_index(merged$carry_ft)
+  merged$overall_pf_idx_100 <- std_index(merged$overall_resid)
 
   merged <- merged[!is.na(merged$team_id), , drop = FALSE]
   merged
@@ -498,40 +512,4 @@ utils::write.csv(
 )
 
 message("Wrote clean 2026 park factor table: ", file.path(output_dir, "park_factors_savant_style_clean_2026.csv"))
-
-source(file.path("R", "sheets_formatting.R"))
-
-if (isTRUE(export_google_sheet) && nzchar(google_sheet_url) && nzchar(google_sheet_tab_overall)) {
-  tryCatch(
-    {
-      if (!requireNamespace("googlesheets4", quietly = TRUE)) {
-        stop("Package 'googlesheets4' is required for Google Sheets export.")
-      }
-      source(file.path("R", "gsheets_auth.R"))
-      auth_google_sheets()
-
-      tabs <- tryCatch(googlesheets4::sheet_names(google_sheet_url), error = function(e) character(0))
-      if (!google_sheet_tab_overall %in% tabs && "Sheet 1" %in% tabs) {
-        googlesheets4::sheet_rename(
-          ss = google_sheet_url,
-          sheet = "Sheet 1",
-          new = google_sheet_tab_overall
-        )
-        message(sprintf("Renamed tab 'Sheet 1' -> '%s'.", google_sheet_tab_overall))
-      }
-
-      export_pf_to_google_sheet(clean, google_sheet_url, google_sheet_tab_overall, auth_first = FALSE, freeze_header = TRUE, known_mode = FALSE)
-      export_pf_to_google_sheet(clean_1h, google_sheet_url, google_sheet_tab_1h, auth_first = FALSE, freeze_header = TRUE, known_mode = FALSE)
-      export_pf_to_google_sheet(clean_2h, google_sheet_url, google_sheet_tab_2h, auth_first = FALSE, freeze_header = TRUE, known_mode = FALSE)
-      export_pf_to_google_sheet(known_effects$layout, google_sheet_url, google_sheet_tab_known, auth_first = FALSE, freeze_header = FALSE, known_mode = TRUE)
-    },
-    error = function(e) {
-      warning(sprintf(
-        "Google Sheet export failed for '%s': %s",
-        google_sheet_url,
-        conditionMessage(e)
-      ))
-      invisible(NULL)
-    }
-  )
-}
+message("Publish path: copy the three clean CSVs to fbb-tools-repo/data/park_factors/ and deploy the Shiny app.")

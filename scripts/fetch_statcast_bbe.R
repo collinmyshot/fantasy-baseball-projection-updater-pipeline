@@ -137,8 +137,10 @@ fetch_csv <- function(url, out_file, max_time, retries) {
 }
 
 fetch_window_raw <- function(start_date, end_date, max_time, retries) {
-  # Savant semantics: game_date_gt is exclusive and game_date_lt is inclusive.
-  url <- build_query_url(as.character(start_date - 1L), as.character(end_date), player_type = "pitcher")
+  # Savant semantics (verified 2026-07-01 with a gt=lt single-day query):
+  # game_date_gt and game_date_lt are BOTH inclusive, so query exactly [start, end].
+  # The old start_date - 1 double-fetched every boundary day (~20% duplicate rows).
+  url <- build_query_url(as.character(start_date), as.character(end_date), player_type = "pitcher")
   tmp_raw <- tempfile(fileext = ".csv")
   fetch_res <- fetch_csv(url, tmp_raw, max_time = max_time, retries = retries)
   if (!isTRUE(fetch_res$ok)) {
@@ -222,7 +224,10 @@ validate_raw_bbe_columns <- function(df_raw) {
   if (nrow(df_raw) == 0) {
     return(list(ok = TRUE, error = ""))
   }
-  required <- c("launch_speed", "launch_angle", "game_date", "estimated_ba_using_speedangle")
+  required <- c(
+    "launch_speed", "launch_angle", "game_date", "estimated_ba_using_speedangle",
+    "hit_distance_sc", "estimated_slg_using_speedangle"
+  )
   missing <- required[!vapply(required, function(x) has_column_ci(df_raw, x), logical(1))]
   if (length(missing) > 0) {
     return(list(
@@ -247,8 +252,10 @@ extract_bbe <- function(df) {
     woba_value = numeric(0),
     estimated_woba_using_speedangle = numeric(0),
     estimated_ba_using_speedangle = numeric(0),
+    estimated_slg_using_speedangle = numeric(0),
     launch_speed = numeric(0),
     launch_angle = numeric(0),
+    hit_distance_sc = numeric(0),
     hc_x = numeric(0),
     hc_y = numeric(0),
     bb_type = character(0),
@@ -274,8 +281,10 @@ extract_bbe <- function(df) {
     woba_value = to_numeric(first_present(df, c("woba_value"))),
     estimated_woba_using_speedangle = to_numeric(first_present(df, c("estimated_woba_using_speedangle"))),
     estimated_ba_using_speedangle = to_numeric(first_present(df, c("estimated_ba_using_speedangle"))),
+    estimated_slg_using_speedangle = to_numeric(first_present(df, c("estimated_slg_using_speedangle"))),
     launch_speed = to_numeric(first_present(df, c("launch_speed"))),
     launch_angle = to_numeric(first_present(df, c("launch_angle"))),
+    hit_distance_sc = to_numeric(first_present(df, c("hit_distance_sc"))),
     hc_x = to_numeric(first_present(df, c("hc_x"))),
     hc_y = to_numeric(first_present(df, c("hc_y"))),
     bb_type = as.character(first_present(df, c("bb_type"))),
@@ -309,7 +318,7 @@ build_chunk_table <- function(start_season, end_season, exclude_seasons, step_da
     chunk_start <- season_start
     while (chunk_start <= season_end) {
       chunk_end <- min(chunk_start + (step_days - 1L), season_end)
-      query_gt <- chunk_start - 1L
+      query_gt <- chunk_start
       query_lt <- chunk_end
 
       idx <- idx + 1L
@@ -330,12 +339,37 @@ build_chunk_table <- function(start_season, end_season, exclude_seasons, step_da
   do.call(rbind, rows)
 }
 
+# Chunk ids are per-run sequence numbers, so the same date window can exist
+# under different filenames across runs (e.g. a 2026-only run's 013_... next to
+# a 2015-2026 run's 563_... for the same window). Keep only the most recently
+# fetched file per window.
+dedupe_chunk_files_by_window <- function(chunk_files) {
+  if (length(chunk_files) == 0) {
+    return(chunk_files)
+  }
+  window_key <- sub("^.*?_(\\d{4}-\\d{2}-\\d{2}_\\d{4}-\\d{2}-\\d{2})_bbe\\.csv$", "\\1", basename(chunk_files))
+  mtimes <- file.info(chunk_files)$mtime
+  ord <- order(window_key, mtimes)
+  files_ord <- chunk_files[ord]
+  keys_ord <- window_key[ord]
+  keep <- !duplicated(keys_ord, fromLast = TRUE)
+  n_dropped <- sum(!keep)
+  if (n_dropped > 0) {
+    message(sprintf(
+      "Ignoring %s stale duplicate chunk file(s) whose window is covered by a newer fetch.",
+      n_dropped
+    ))
+  }
+  sort(files_ord[keep])
+}
+
 combine_chunk_files <- function(chunk_files, output_csv) {
   if (file.exists(output_csv)) {
     file.remove(output_csv)
   }
 
   wrote <- FALSE
+  ref_header <- NULL
   for (f in chunk_files) {
     if (!file.exists(f) || file.info(f)$size == 0) {
       next
@@ -343,6 +377,15 @@ combine_chunk_files <- function(chunk_files, output_csv) {
 
     lines <- readLines(f, warn = FALSE)
     if (length(lines) == 0) {
+      next
+    }
+
+    # Appending rows under a mismatched header silently misaligns every column;
+    # refuse instead.
+    if (is.null(ref_header)) {
+      ref_header <- lines[1]
+    } else if (!identical(lines[1], ref_header)) {
+      warning(sprintf("Skipping chunk with mismatched header (stale schema?): %s", f))
       next
     }
 
@@ -371,8 +414,10 @@ required_chunk_columns <- function() {
     "woba_value",
     "estimated_woba_using_speedangle",
     "estimated_ba_using_speedangle",
+    "estimated_slg_using_speedangle",
     "launch_speed",
     "launch_angle",
+    "hit_distance_sc",
     "hc_x",
     "hc_y",
     "bb_type",
@@ -410,11 +455,14 @@ if (file.exists(manifest_path)) {
   manifest <- data.frame()
 }
 
-get_prior_status <- function(chunk_id) {
-  if (!is.data.frame(manifest) || nrow(manifest) == 0 || !"chunk_id" %in% names(manifest)) {
+# Keyed by date range, not chunk_id: chunk ids are per-run sequence numbers and
+# collide across runs with different season ranges.
+get_prior_status <- function(chunk_start, chunk_end) {
+  if (!is.data.frame(manifest) || nrow(manifest) == 0 ||
+      !all(c("chunk_start", "chunk_end", "status") %in% names(manifest))) {
     return(NA_character_)
   }
-  hit <- manifest[manifest$chunk_id == chunk_id, , drop = FALSE]
+  hit <- manifest[manifest$chunk_start == chunk_start & manifest$chunk_end == chunk_end, , drop = FALSE]
   if (nrow(hit) == 0) {
     return(NA_character_)
   }
@@ -434,7 +482,7 @@ for (i in seq_len(nrow(chunks))) {
     sprintf("%s_%s_%s_bbe.csv", chunk_id, ch$chunk_start, ch$chunk_end)
   )
 
-  prior_status <- get_prior_status(chunk_id)
+  prior_status <- get_prior_status(ch$chunk_start, ch$chunk_end)
   chunk_exists <- file.exists(chunk_file) && file.info(chunk_file)$size > 0
   chunk_has_cols <- chunk_file_has_required_columns(chunk_file, req_chunk_cols)
   chunk_usable <- chunk_exists && chunk_has_cols
@@ -447,19 +495,26 @@ for (i in seq_len(nrow(chunks))) {
     next
   }
 
-  # Re-fetch chunks whose end date is within the last 10 days — they may
-  # have been cached when data was incomplete or not yet available on Savant.
-  chunk_is_recent <- !is.na(chunk_end_date) &&
-    chunk_end_date >= (Sys.Date() - 10) &&
-    chunk_end_date <= Sys.Date()
+  # A cached chunk is only trustworthy if it was fetched after its window could
+  # be complete. Require file mtime >= chunk_end + 1.5 days (late games finish
+  # after midnight and Savant needs processing time). Anything fetched earlier
+  # — including empty placeholders written when the window was still in the
+  # future — gets re-fetched. This replaces a 10-day recency heuristic that
+  # permanently froze stale chunks once the window slid past.
+  chunk_mtime <- if (chunk_exists) file.info(chunk_file)$mtime else as.POSIXct(NA)
+  window_complete_at <- as.POSIXct(chunk_end_date + 1L, tz = "UTC") + 12 * 3600
+  chunk_fetched_complete <- !is.na(chunk_mtime) && chunk_mtime >= window_complete_at
 
-  if (!force && !chunk_is_recent && chunk_usable && (is.na(prior_status) || identical(prior_status, "ok"))) {
+  if (!force && chunk_usable && chunk_fetched_complete && (is.na(prior_status) || identical(prior_status, "ok"))) {
     message(sprintf("[%s/%s] chunk %s already complete; skipping.", i, nrow(chunks), chunk_id))
     next
   }
 
-  if (!force && chunk_is_recent && chunk_usable) {
-    message(sprintf("[%s/%s] chunk %s is recent (end=%s); re-fetching for freshness.", i, nrow(chunks), chunk_id, ch$chunk_end))
+  if (!force && chunk_usable && !chunk_fetched_complete) {
+    message(sprintf(
+      "[%s/%s] chunk %s was fetched before its window completed (end=%s); re-fetching.",
+      i, nrow(chunks), chunk_id, ch$chunk_end
+    ))
   }
 
   if (!force && chunk_exists && !chunk_has_cols) {
@@ -541,7 +596,7 @@ for (i in seq_len(nrow(chunks))) {
 run_manifest <- if (length(run_rows) > 0) do.call(rbind, run_rows) else data.frame()
 
 all_chunk_files <- list.files(chunks_dir, pattern = "_bbe\\.csv$", full.names = TRUE)
-all_chunk_files <- sort(all_chunk_files)
+all_chunk_files <- dedupe_chunk_files_by_window(all_chunk_files)
 
 if (length(all_chunk_files) == 0) {
   stop("No chunk files were produced.")

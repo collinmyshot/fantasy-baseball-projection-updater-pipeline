@@ -222,6 +222,32 @@ add_contact_event_residuals <- function(bbe, min_bin_n = 50L, prior_n = 200L) {
   bbe$triple_resid <- bbe$triple_on_contact - bbe$x3b_contact
   bbe$xbh_resid <- bbe$xbh_on_contact - bbe$xxbh_contact
 
+  # Ottoneu FanGraphs Points on contact, from the scoring constants in
+  # R/fangraphs_projections.R (OTTONEU_FG_HITTING_POINTS): AB -1.0, H +5.6,
+  # 2B +2.9, 3B +5.7, HR +9.4. Every BBE is treated as an AB, which slightly
+  # overpenalizes sacrifice flies (~1% of BBE). The expectation reuses the
+  # smoothed contact-shape event probabilities so actual and expected share
+  # one methodology.
+  pts_from_events <- function(hit, dbl, tpl, hr) {
+    -1.0 + 5.6 * hit + 2.9 * dbl + 5.7 * tpl + 9.4 * hr
+  }
+  bbe$pts_on_contact <- pts_from_events(bbe$hit_on_contact, bbe$double_on_contact, bbe$triple_on_contact, bbe$hr_on_contact)
+  bbe$xpts_contact <- pts_from_events(bbe$xhit_contact, bbe$x2b_contact, bbe$x3b_contact, bbe$xhr_contact)
+  bbe$pts_resid <- bbe$pts_on_contact - bbe$xpts_contact
+
+  # Carry outcome: projected landing distance for balls hit in the air.
+  # Grounder "distance" is roll- and defense-dependent, so it is excluded by
+  # leaving it NA (component fits drop non-finite outcomes).
+  if (!"hit_distance" %in% names(bbe)) {
+    bbe$hit_distance <- NA_real_
+  }
+  bb_type_lc <- tolower(trimws(as.character(bbe$bb_type %||% "")))
+  bbe$hit_distance_air <- ifelse(
+    bb_type_lc %in% c("fly_ball", "line_drive") & is.finite(bbe$hit_distance),
+    bbe$hit_distance,
+    NA_real_
+  )
+
   bbe
 }
 
@@ -246,7 +272,22 @@ standardize_bbe_columns <- function(raw) {
 
   out$launch_speed <- suppressWarnings(as.numeric(first_present_column(raw, c("launch_speed", "exit_velocity", "ev"))))
   out$launch_angle <- suppressWarnings(as.numeric(first_present_column(raw, c("launch_angle", "la"))))
+  out$hit_distance <- suppressWarnings(as.numeric(first_present_column(raw, c("hit_distance", "hit_distance_sc"))))
+  out$xslg_con <- suppressWarnings(as.numeric(first_present_column(raw, c("xslg_con", "estimated_slg_using_speedangle"))))
+  out$bb_type <- as.character(first_present_column(raw, c("bb_type", "batted_ball_type")))
+  out$hc_x <- suppressWarnings(as.numeric(first_present_column(raw, c("hc_x"))))
+  out$hc_y <- suppressWarnings(as.numeric(first_present_column(raw, c("hc_y"))))
+
   out$spray_angle <- suppressWarnings(as.numeric(first_present_column(raw, c("spray_angle", "hc_angle"))))
+  # Derive spray angle from Statcast hit coordinates when absent (the BBE store
+  # carries hc_x/hc_y only). Home plate sits at (125.42, 198.27) in hit
+  # coordinate space; 0.75 converts plot-space angle to field bearing
+  # (baseballr convention). Negative = left field, positive = right field.
+  need_spray <- !is.finite(out$spray_angle) & is.finite(out$hc_x) & is.finite(out$hc_y)
+  out$spray_angle[need_spray] <- round(
+    atan((out$hc_x[need_spray] - 125.42) / (198.27 - out$hc_y[need_spray])) * 180 / pi * 0.75,
+    1
+  )
 
   out$temp <- suppressWarnings(as.numeric(first_present_column(raw, c("temp", "temperature", "game_temperature"))))
   out$wind_speed <- suppressWarnings(as.numeric(first_present_column(raw, c("wind_speed", "windspeed"))))
@@ -504,6 +545,7 @@ prepare_bbe_model_data <- function(
   schedule_data = NULL,
   park_events = data.frame(),
   defense_data = data.frame(),
+  drag_data = data.frame(),
   min_season = 2015,
   exclude_seasons = c(2020),
   regular_season_only = TRUE
@@ -536,7 +578,9 @@ prepare_bbe_model_data <- function(
   bbe <- add_contact_event_residuals(bbe)
 
   bbe$month <- as.integer(format(bbe$game_date, "%m"))
-  bbe$half <- ifelse(bbe$month >= 3 & bbe$month <= 6, "1H", ifelse(bbe$month >= 7 & bbe$month <= 9, "2H", NA_character_))
+  # October belongs to 2H: the regular season runs into early October and the
+  # regular_season_only filter above already removes postseason games.
+  bbe$half <- ifelse(bbe$month >= 3 & bbe$month <= 6, "1H", ifelse(bbe$month >= 7 & bbe$month <= 10, "2H", NA_character_))
   bbe <- bbe[!is.na(bbe$half), ]
 
   inning_half <- tolower(trimws(bbe$inning_topbot))
@@ -588,6 +632,50 @@ prepare_bbe_model_data <- function(
     bbe$defense_composite <- NA_real_
   }
 
+  # Daily league-wide ball drag coefficient (Savant drag dashboard). League-wide
+  # by construction — Savant's Cd estimate adjusts for environmental conditions,
+  # so it is a ball property, not a park property (it cannot absorb e.g. Coors
+  # altitude). Joined by game date.
+  bbe$league_cd <- NA_real_
+  if (is.data.frame(drag_data) && nrow(drag_data) > 0) {
+    drag_key <- data.frame(
+      game_date = as_date_safe(first_present_column(drag_data, c("game_date", "date"))),
+      league_cd_join = suppressWarnings(as.numeric(first_present_column(drag_data, c("mean_cd", "league_cd", "drag")))),
+      stringsAsFactors = FALSE
+    )
+    drag_key <- drag_key[!is.na(drag_key$game_date) & is.finite(drag_key$league_cd_join), ]
+    drag_key <- drag_key[!duplicated(drag_key$game_date), ]
+    if (nrow(drag_key) > 0) {
+      bbe <- merge(bbe, drag_key, by = "game_date", all.x = TRUE)
+      bbe$league_cd <- bbe$league_cd_join
+      bbe$league_cd_join <- NULL
+    }
+  }
+
+  # Centered value + missing indicator so lmer keeps rows without coverage
+  # (2015 and early 2016 predate the drag series; 2026 team defense is not yet
+  # in the manual file) instead of silently dropping them via NA handling.
+  # Missing rows sit at the covariate mean and the indicator absorbs any level
+  # difference of the uncovered stratum.
+  center_with_indicator <- function(x) {
+    ok <- is.finite(x)
+    ctr <- if (any(ok)) mean(x[ok]) else 0
+    list(
+      centered = ifelse(ok, x - ctr, 0),
+      missing = ifelse(ok, 0, 1),
+      center = ctr
+    )
+  }
+
+  drag_ci <- center_with_indicator(bbe$league_cd)
+  bbe$drag_c <- drag_ci$centered
+  bbe$drag_missing <- drag_ci$missing
+  attr(bbe, "drag_center") <- drag_ci$center
+
+  def_ci <- center_with_indicator(bbe$defense_composite)
+  bbe$defense_c <- def_ci$centered
+  bbe$defense_missing <- def_ci$missing
+
   rownames(bbe) <- NULL
   bbe
 }
@@ -609,7 +697,7 @@ fit_park_factor_model <- function(model_data, include_measurement_era = TRUE, qu
       length(unique(stats::na.omit(d$measurement_era))) > 1) {
     fixed_terms <- c(fixed_terms, "measurement_era")
   }
-  for (nm in c("temp", "wind_speed", "humidity", "drag", "defense_composite")) {
+  for (nm in c("temp", "wind_speed", "humidity", "drag_c", "drag_missing", "defense_c", "defense_missing")) {
     if (nm %in% names(d) && any(is.finite(d[[nm]]))) {
       vals <- d[[nm]][is.finite(d[[nm]])]
       if (length(unique(vals)) < 2) {
@@ -682,7 +770,7 @@ fit_component_model <- function(
     fixed_terms <- c(fixed_terms, "measurement_era")
   }
 
-  for (nm in c("temp", "wind_speed", "humidity", "drag", "defense_composite")) {
+  for (nm in c("temp", "wind_speed", "humidity", "drag_c", "drag_missing", "defense_c", "defense_missing")) {
     if (nm %in% names(d) && any(is.finite(d[[nm]]))) {
       vals <- d[[nm]][is.finite(d[[nm]])]
       if (length(unique(vals)) < 2) {
@@ -860,6 +948,54 @@ predict_park_effect_rows <- function(fit, new_data) {
   as.numeric(park_val + half_val)
 }
 
+# Map season-keyed random-effect levels ("b661388_2024", "NYY_2023") to their
+# entity's most recent training-season effect, so player/team skill estimated
+# in training can be carried into a holdout season the fit never saw.
+latest_entity_effect_map <- function(fit, group_name) {
+  re <- extract_random_effects_with_se(fit, group_name)
+  if (nrow(re) == 0) {
+    return(stats::setNames(numeric(0), character(0)))
+  }
+  entity <- sub("_[0-9]{4}$", "", re$level)
+  season <- suppressWarnings(as.integer(sub("^.*_", "", re$level)))
+  ord <- order(entity, season)
+  re <- re[ord, ]
+  entity <- entity[ord]
+  keep <- !duplicated(entity, fromLast = TRUE)
+  stats::setNames(re$effect[keep], entity[keep])
+}
+
+# Player/team composition ("nuisance") effect per row. exact_season = TRUE
+# looks up the row's own season-keyed level (for rows the fit was trained on);
+# FALSE carries each entity's most recent training-season effect forward (for
+# holdout rows whose season-keyed levels are unseen by construction).
+predict_nuisance_effect_rows <- function(fit, new_data, exact_season = FALSE) {
+  groups <- c(
+    batter = "batter_season_id",
+    pitcher = "pitcher_season_id",
+    fielding = "fielding_team_season_id",
+    batting = "batting_team_season_id"
+  )
+
+  total <- rep(0, nrow(new_data))
+  for (g in groups) {
+    if (exact_season) {
+      re <- extract_random_effects_with_se(fit, g)
+      if (nrow(re) == 0) next
+      m <- stats::setNames(re$effect, re$level)
+      v <- m[new_data[[g]]]
+    } else {
+      m <- latest_entity_effect_map(fit, g)
+      if (length(m) == 0) next
+      entity_key <- sub("_[0-9]{4}$", "", new_data[[g]])
+      v <- m[entity_key]
+    }
+    v[is.na(v)] <- 0
+    total <- total + as.numeric(v)
+  }
+  total
+}
+
 rolling_validate_park_factors <- function(
   model_data,
   train_window = 3L,
@@ -917,31 +1053,56 @@ rolling_validate_park_factors <- function(
 
     hold$pred_effect <- predict_park_effect_rows(fit_obj$fit, hold)
 
+    # Composition-adjusted realized values: subtract the training fit's
+    # player/team effects from holdout residuals (entities carried forward by
+    # most recent training season). The raw prev-mean baseline "wins" on raw
+    # residuals partly by predicting persistent home-team quality; adjusting
+    # both sides compares them on the park quantity itself.
+    hold$nuisance_effect <- predict_nuisance_effect_rows(fit_obj$fit, hold, exact_season = FALSE)
+    hold$resid_adj <- hold$resid - hold$nuisance_effect
+
     by_key <- list(park_era_id = hold$park_era_id, half = hold$half)
     detail_pred <- stats::aggregate(hold$pred_effect, by = by_key, FUN = mean)
     names(detail_pred)[3] <- "pred_effect"
     detail_real <- stats::aggregate(hold$resid, by = by_key, FUN = mean)
     names(detail_real)[3] <- "realized"
+    detail_real_adj <- stats::aggregate(hold$resid_adj, by = by_key, FUN = mean)
+    names(detail_real_adj)[3] <- "realized_adj"
     detail_n <- stats::aggregate(rep(1, nrow(hold)), by = by_key, FUN = sum)
     names(detail_n)[3] <- "n"
     detail <- merge(detail_pred, detail_real, by = c("park_era_id", "half"), all = TRUE)
+    detail <- merge(detail, detail_real_adj, by = c("park_era_id", "half"), all = TRUE)
     detail <- merge(detail, detail_n, by = c("park_era_id", "half"), all = TRUE)
 
+    train$nuisance_exact <- predict_nuisance_effect_rows(fit_obj$fit, train, exact_season = TRUE)
+    train$resid_adj <- train$resid - train$nuisance_exact
     prev <- stats::aggregate(
       train$resid,
       by = list(park_era_id = train$park_era_id, half = train$half),
       FUN = mean
     )
     names(prev)[3] <- "prev_mean"
+    prev_adj <- stats::aggregate(
+      train$resid_adj,
+      by = list(park_era_id = train$park_era_id, half = train$half),
+      FUN = mean
+    )
+    names(prev_adj)[3] <- "prev_mean_adj"
     detail <- merge(detail, prev, by = c("park_era_id", "half"), all.x = TRUE)
+    detail <- merge(detail, prev_adj, by = c("park_era_id", "half"), all.x = TRUE)
     detail$prev_mean[is.na(detail$prev_mean)] <- 0
+    detail$prev_mean_adj[is.na(detail$prev_mean_adj)] <- 0
 
     rmse_model <- sqrt(weighted_mean((detail$realized - detail$pred_effect)^2, detail$n))
     rmse_zero <- sqrt(weighted_mean((detail$realized - 0)^2, detail$n))
     rmse_prev <- sqrt(weighted_mean((detail$realized - detail$prev_mean)^2, detail$n))
+    rmse_model_adj <- sqrt(weighted_mean((detail$realized_adj - detail$pred_effect)^2, detail$n))
+    rmse_prev_adj <- sqrt(weighted_mean((detail$realized_adj - detail$prev_mean_adj)^2, detail$n))
 
     corr <- suppressWarnings(stats::cor(detail$pred_effect, detail$realized, use = "complete.obs"))
     corr_prev <- suppressWarnings(stats::cor(detail$prev_mean, detail$realized, use = "complete.obs"))
+    corr_adj <- suppressWarnings(stats::cor(detail$pred_effect, detail$realized_adj, use = "complete.obs"))
+    corr_prev_adj <- suppressWarnings(stats::cor(detail$prev_mean_adj, detail$realized_adj, use = "complete.obs"))
 
     slope <- NA_real_
     if (nrow(detail) >= 5 && stats::sd(detail$pred_effect, na.rm = TRUE) > 0) {
@@ -962,8 +1123,12 @@ rolling_validate_park_factors <- function(
       rmse_model = rmse_model,
       rmse_zero = rmse_zero,
       rmse_prev = rmse_prev,
+      rmse_model_adj = rmse_model_adj,
+      rmse_prev_adj = rmse_prev_adj,
       corr_model_vs_realized = corr,
       corr_prev_vs_realized = corr_prev,
+      corr_model_vs_realized_adj = corr_adj,
+      corr_prev_vs_realized_adj = corr_prev_adj,
       calibration_slope = slope,
       stringsAsFactors = FALSE
     )

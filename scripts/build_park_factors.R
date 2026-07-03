@@ -4,11 +4,13 @@ source(file.path("R", "utils.R"))
 parsed <- parse_cli_args(list(
   bbe_input          = list(flag = "--bbe-input",          default = ""),
   defense_input      = list(flag = "--defense-input",      default = ""),
+  drag_input         = list(flag = "--drag-input",         default = file.path("data", "processed", "drag_daily.csv")),
   park_events_csv    = list(flag = "--park-events",        default = file.path("data", "manual", "park_era_events.csv")),
   schedule_cache_csv = list(flag = "--schedule-cache",     default = file.path("data", "raw", "mlb_schedule_venues.csv")),
   output_dir         = list(flag = "--output-dir",         default = file.path("data", "processed", "park_factors")),
   min_season         = list(flag = "--min-season",         default = 2015, type = "numeric"),
   exclude_seasons    = list(flag = "--exclude-seasons",    default = "2020"),
+  max_date           = list(flag = "--max-date",           default = ""),
   train_window       = list(flag = "--train-window",       default = 3, type = "numeric"),
   min_train_seasons  = list(flag = "--min-train-seasons",  default = 3, type = "numeric"),
   max_rows           = list(flag = "--max-rows",           default = 0, type = "numeric"),
@@ -19,11 +21,13 @@ parsed <- parse_cli_args(list(
 
 bbe_input          <- parsed$bbe_input
 defense_input      <- parsed$defense_input
+drag_input         <- parsed$drag_input
 park_events_csv    <- parsed$park_events_csv
 schedule_cache_csv <- parsed$schedule_cache_csv
 output_dir         <- parsed$output_dir
 min_season         <- as.integer(parsed$min_season)
 exclude_seasons    <- parse_int_vec(as.character(parsed$exclude_seasons))
+max_date           <- suppressWarnings(as.Date(as.character(parsed$max_date)))
 train_window       <- as.integer(parsed$train_window)
 min_train_seasons  <- as.integer(parsed$min_train_seasons)
 max_rows           <- as.integer(parsed$max_rows)
@@ -53,7 +57,9 @@ if (nrow(bbe_raw) == 0) {
   stop("BBE input is empty.")
 }
 
-# Deduplicate: player_type=pitcher fetch creates exact duplicate rows (~25%)
+# Deduplicate: legacy chunk fetches double-fetched boundary days (game_date_gt
+# was inclusive, not exclusive as assumed), creating ~20-25% exact duplicates.
+# Fixed in fetch_statcast_bbe.R 2026-07-01; kept as a cheap safety net.
 n_before <- nrow(bbe_raw)
 bbe_raw <- unique(bbe_raw)
 message(sprintf("  Deduplication: %d -> %d rows (removed %d duplicates)",
@@ -129,21 +135,37 @@ if (nzchar(defense_input) && file.exists(defense_input)) {
   message(sprintf("Loaded defense composite for %s team-seasons.", nrow(defense_data)))
 }
 
+drag_data <- data.frame()
+if (nzchar(drag_input) && file.exists(drag_input)) {
+  drag_data <- utils::read.csv(drag_input, stringsAsFactors = FALSE, check.names = FALSE)
+  message(sprintf("Loaded daily drag series: %s rows.", nrow(drag_data)))
+} else if (nzchar(drag_input)) {
+  warning(sprintf("Drag input not found (%s); model runs without drag adjustment.", drag_input))
+}
+
 model_data <- prepare_bbe_model_data(
   bbe_raw = bbe_raw,
   schedule_data = schedule_data,
   park_events = park_events,
   defense_data = defense_data,
+  drag_data = drag_data,
   min_season = min_season,
   exclude_seasons = exclude_seasons,
   regular_season_only = TRUE
 )
 
+if (!is.na(max_date)) {
+  n_before_cap <- nrow(model_data)
+  model_data <- model_data[!is.na(model_data$game_date) & model_data$game_date <= max_date, ]
+  message(sprintf("Applied --max-date %s: %s -> %s rows.", format(max_date), n_before_cap, nrow(model_data)))
+}
+
 if (nrow(model_data) < 2000) {
   stop(sprintf("Insufficient modeled BBEs after filters: %s", nrow(model_data)))
 }
 
-message(sprintf("Modeling rows: %s", nrow(model_data)))
+drag_coverage <- mean(model_data$drag_missing == 0)
+message(sprintf("Modeling rows: %s (drag coverage: %.1f%%)", nrow(model_data), 100 * drag_coverage))
 message(sprintf("Seasons in model data: %s", paste(sort(unique(model_data$season)), collapse = ", ")))
 
 include_measurement_era <- FALSE
@@ -321,9 +343,23 @@ fit_component_or_empty <- function(
       outcome_used = outcome_used,
       label_used = label_used,
       half = empty_component_half(),
-      overall = empty_component_overall()
+      overall = empty_component_overall(),
+      fixef = data.frame()
     ))
   }
+
+  fixef_tbl <- tryCatch(
+    {
+      fe <- lme4::fixef(fit_obj$fit)
+      data.frame(
+        model = label_used,
+        term = names(fe),
+        estimate = as.numeric(fe),
+        stringsAsFactors = FALSE
+      )
+    },
+    error = function(e) data.frame()
+  )
 
   half_tbl <- extract_component_park_factors(fit_obj, model_data, label = label_used)
   overall_tbl <- half_tbl[!duplicated(half_tbl$park_era_id), c(
@@ -343,7 +379,8 @@ fit_component_or_empty <- function(
     outcome_used = outcome_used,
     label_used = label_used,
     half = half_tbl,
-    overall = overall_tbl
+    overall = overall_tbl,
+    fixef = fixef_tbl
   )
 }
 
@@ -397,6 +434,28 @@ component_specs <- list(
     fallback_outcome = "triple_on_contact",
     fallback_label = "triple_on_contact_pseudo",
     fallback_include_contact_shape = TRUE
+  ),
+  list(
+    key = "distance",
+    title = "Carry (air-ball distance)",
+    outcome = "hit_distance_air",
+    label = "distance_air",
+    # Distance is a raw outcome, not a residual: EV/LA polynomials serve as the
+    # expectation, and the park effect is estimated in feet.
+    include_contact_shape = TRUE,
+    fallback_outcome = "",
+    fallback_label = "",
+    fallback_include_contact_shape = FALSE
+  ),
+  list(
+    key = "points",
+    title = "Ottoneu points residual",
+    outcome = "pts_resid",
+    label = "pts_resid",
+    include_contact_shape = FALSE,
+    fallback_outcome = "",
+    fallback_label = "",
+    fallback_include_contact_shape = FALSE
   )
 )
 
@@ -435,12 +494,30 @@ park_factors_double_half <- component_results$double$half
 park_factors_double_overall <- component_results$double$overall
 park_factors_triple_half <- component_results$triple$half
 park_factors_triple_overall <- component_results$triple$overall
+park_factors_distance_half <- component_results$distance$half
+park_factors_distance_overall <- component_results$distance$overall
+park_factors_points_half <- component_results$points$half
+park_factors_points_overall <- component_results$points$overall
 
 component_half_all <- do.call(rbind, lapply(component_results, function(x) x$half))
 component_overall_all <- do.call(rbind, lapply(component_results, function(x) x$overall))
 
 team_era <- summarize_team_park_eras(model_data)
 invariance <- compute_invariance_checks(model_data, park_factors_half)
+
+# Fixed-effect estimates across all models — used to verify the drag
+# adjustment (e.g. the Carry model's drag_c slope should be negative, in the
+# neighborhood of Savant's "-0.01 Cd ~ +5 ft at 100 mph EV" rule of thumb).
+main_fixef <- tryCatch(
+  {
+    fe <- lme4::fixef(final_fit$fit)
+    data.frame(model = "woba_over_xwoba", term = names(fe), estimate = as.numeric(fe), stringsAsFactors = FALSE)
+  },
+  error = function(e) data.frame()
+)
+component_fixef <- do.call(rbind, lapply(component_results, function(x) x$fixef))
+fixed_effects_all <- rbind(main_fixef, component_fixef)
+rownames(fixed_effects_all) <- NULL
 
 utils::write.csv(park_factors_half, file.path(output_dir, "park_factors_by_half.csv"), row.names = FALSE, na = "")
 utils::write.csv(park_overall, file.path(output_dir, "park_factors_overall.csv"), row.names = FALSE, na = "")
@@ -454,6 +531,10 @@ utils::write.csv(park_factors_double_half, file.path(output_dir, "park_factors_d
 utils::write.csv(park_factors_double_overall, file.path(output_dir, "park_factors_double_overall.csv"), row.names = FALSE, na = "")
 utils::write.csv(park_factors_triple_half, file.path(output_dir, "park_factors_triple_by_half.csv"), row.names = FALSE, na = "")
 utils::write.csv(park_factors_triple_overall, file.path(output_dir, "park_factors_triple_overall.csv"), row.names = FALSE, na = "")
+utils::write.csv(park_factors_distance_half, file.path(output_dir, "park_factors_distance_by_half.csv"), row.names = FALSE, na = "")
+utils::write.csv(park_factors_distance_overall, file.path(output_dir, "park_factors_distance_overall.csv"), row.names = FALSE, na = "")
+utils::write.csv(park_factors_points_half, file.path(output_dir, "park_factors_points_by_half.csv"), row.names = FALSE, na = "")
+utils::write.csv(park_factors_points_overall, file.path(output_dir, "park_factors_points_overall.csv"), row.names = FALSE, na = "")
 utils::write.csv(component_half_all, file.path(output_dir, "park_factors_components_by_half.csv"), row.names = FALSE, na = "")
 utils::write.csv(component_overall_all, file.path(output_dir, "park_factors_components_overall.csv"), row.names = FALSE, na = "")
 utils::write.csv(validation$summary, file.path(output_dir, "validation_summary.csv"), row.names = FALSE, na = "")
@@ -461,12 +542,16 @@ utils::write.csv(validation$detail, file.path(output_dir, "validation_detail.csv
 utils::write.csv(team_era$team_year, file.path(output_dir, "team_park_era_audit.csv"), row.names = FALSE, na = "")
 utils::write.csv(team_era$transitions, file.path(output_dir, "team_park_transitions.csv"), row.names = FALSE, na = "")
 utils::write.csv(invariance, file.path(output_dir, "invariance_checks.csv"), row.names = FALSE, na = "")
+utils::write.csv(fixed_effects_all, file.path(output_dir, "park_factor_fixed_effects.csv"), row.names = FALSE, na = "")
 
 run_meta <- data.frame(
   key = c(
     "run_timestamp_utc",
     "bbe_input",
     "defense_input",
+    "drag_input",
+    "max_date",
+    "drag_coverage_share",
     "park_events_csv",
     "schedule_cache_csv",
     "min_season",
@@ -482,16 +567,23 @@ run_meta <- data.frame(
     "xbh_component_available",
     "double_component_available",
     "triple_component_available",
+    "distance_component_available",
+    "points_component_available",
     "bacon_component_outcome_used",
     "hr_component_outcome_used",
     "xbh_component_outcome_used",
     "double_component_outcome_used",
-    "triple_component_outcome_used"
+    "triple_component_outcome_used",
+    "distance_component_outcome_used",
+    "points_component_outcome_used"
   ),
   value = c(
     format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
     bbe_input,
     defense_input,
+    drag_input,
+    ifelse(is.na(max_date), "", format(max_date)),
+    sprintf("%.4f", drag_coverage),
     park_events_csv,
     schedule_cache_csv,
     as.character(min_season),
@@ -507,11 +599,15 @@ run_meta <- data.frame(
     as.character(isTRUE(component_results$xbh$available)),
     as.character(isTRUE(component_results$double$available)),
     as.character(isTRUE(component_results$triple$available)),
+    as.character(isTRUE(component_results$distance$available)),
+    as.character(isTRUE(component_results$points$available)),
     as.character(component_results$bacon$outcome_used),
     as.character(component_results$hr$outcome_used),
     as.character(component_results$xbh$outcome_used),
     as.character(component_results$double$outcome_used),
-    as.character(component_results$triple$outcome_used)
+    as.character(component_results$triple$outcome_used),
+    as.character(component_results$distance$outcome_used),
+    as.character(component_results$points$outcome_used)
   ),
   stringsAsFactors = FALSE
 )
@@ -520,10 +616,7 @@ utils::write.csv(run_meta, file.path(output_dir, "run_metadata.csv"), row.names 
 message("Building Savant-style display table...")
 display_cmd <- c(
   file.path("scripts", "build_park_factor_display.R"),
-  "--output-dir", output_dir,
-  "--weight-bacon", "0.45",  # from config/pipeline.yml park_factors.component_weights
-  "--weight-hr", "0.35",
-  "--weight-xbh", "0.20"     # TODO: read from config when park_factors scripts get config support
+  "--output-dir", output_dir
 )
 display_status <- tryCatch(
   {

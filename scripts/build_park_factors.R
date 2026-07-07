@@ -238,6 +238,9 @@ message("Final park-factor model fit complete.")
 message("Extracting half/overall park-factor tables...")
 park_factors_half <- extract_park_factors(final_fit, model_data)
 
+message("Extracting batter-side park-factor tables...")
+park_factors_hand <- extract_hand_park_factors(final_fit, model_data, label = "woba_over_xwoba")
+
 park_totals <- stats::aggregate(n_bbe ~ park_era_id, park_factors_half, sum)
 park_overall <- park_factors_half[!duplicated(park_factors_half$park_era_id), c(
   "park_era_id", "venue_id", "venue_name", "home_team",
@@ -344,6 +347,7 @@ fit_component_or_empty <- function(
       label_used = label_used,
       half = empty_component_half(),
       overall = empty_component_overall(),
+      hand = data.frame(),
       fixef = data.frame()
     ))
   }
@@ -374,12 +378,21 @@ fit_component_or_empty <- function(
   )
   overall_tbl <- overall_tbl[order(overall_tbl$pf_index_overall, decreasing = TRUE), ]
 
+  hand_tbl <- tryCatch(
+    extract_hand_park_factors(fit_obj, model_data, label = label_used),
+    error = function(e) {
+      warning(sprintf("Hand extraction failed for '%s': %s", label_used, conditionMessage(e)))
+      data.frame()
+    }
+  )
+
   list(
     available = TRUE,
     outcome_used = outcome_used,
     label_used = label_used,
     half = half_tbl,
     overall = overall_tbl,
+    hand = hand_tbl,
     fixef = fixef_tbl
   )
 }
@@ -501,6 +514,7 @@ park_factors_points_overall <- component_results$points$overall
 
 component_half_all <- do.call(rbind, lapply(component_results, function(x) x$half))
 component_overall_all <- do.call(rbind, lapply(component_results, function(x) x$overall))
+component_hand_all <- do.call(rbind, lapply(component_results, function(x) x$hand))
 
 team_era <- summarize_team_park_eras(model_data)
 invariance <- compute_invariance_checks(model_data, park_factors_half)
@@ -535,6 +549,12 @@ utils::write.csv(park_factors_distance_half, file.path(output_dir, "park_factors
 utils::write.csv(park_factors_distance_overall, file.path(output_dir, "park_factors_distance_overall.csv"), row.names = FALSE, na = "")
 utils::write.csv(park_factors_points_half, file.path(output_dir, "park_factors_points_by_half.csv"), row.names = FALSE, na = "")
 utils::write.csv(park_factors_points_overall, file.path(output_dir, "park_factors_points_overall.csv"), row.names = FALSE, na = "")
+utils::write.csv(park_factors_hand, file.path(output_dir, "park_factors_by_hand.csv"), row.names = FALSE, na = "")
+utils::write.csv(component_results$bacon$hand, file.path(output_dir, "park_factors_bacon_by_hand.csv"), row.names = FALSE, na = "")
+utils::write.csv(component_results$hr$hand, file.path(output_dir, "park_factors_hr_by_hand.csv"), row.names = FALSE, na = "")
+utils::write.csv(component_results$xbh$hand, file.path(output_dir, "park_factors_xbh_by_hand.csv"), row.names = FALSE, na = "")
+utils::write.csv(component_results$distance$hand, file.path(output_dir, "park_factors_distance_by_hand.csv"), row.names = FALSE, na = "")
+utils::write.csv(component_hand_all, file.path(output_dir, "park_factors_components_by_hand.csv"), row.names = FALSE, na = "")
 utils::write.csv(component_half_all, file.path(output_dir, "park_factors_components_by_half.csv"), row.names = FALSE, na = "")
 utils::write.csv(component_overall_all, file.path(output_dir, "park_factors_components_overall.csv"), row.names = FALSE, na = "")
 utils::write.csv(validation$summary, file.path(output_dir, "validation_summary.csv"), row.names = FALSE, na = "")

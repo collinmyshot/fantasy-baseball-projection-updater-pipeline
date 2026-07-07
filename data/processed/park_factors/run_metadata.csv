@@ -1,5 +1,5 @@
 "key","value"
-"run_timestamp_utc","2026-07-02T17:07:09Z"
+"run_timestamp_utc","2026-07-07T07:12:21Z"
 "bbe_input","data/raw/statcast_bbe_store.csv"
 "defense_input","data/manual/team_defense_2015_2025.csv"
 "drag_input","data/processed/drag_daily.csv"

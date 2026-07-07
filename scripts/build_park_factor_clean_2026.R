@@ -453,6 +453,68 @@ build_half_display <- function(half_label) {
   merged
 }
 
+# Batter-side slices: same shape as the half slices, sourced from the by_hand
+# tables (park effect + park-hand deviation, shrunken toward the park's
+# overall number where one side's sample is thin).
+build_hand_display <- function(hand_label) {
+  main_path <- file.path(output_dir, "park_factors_by_hand.csv")
+  bacon_path <- file.path(output_dir, "park_factors_bacon_by_hand.csv")
+  hr_path <- file.path(output_dir, "park_factors_hr_by_hand.csv")
+  xbh_path <- file.path(output_dir, "park_factors_xbh_by_hand.csv")
+  for (pth in c(main_path, bacon_path, hr_path, xbh_path)) {
+    if (!file.exists(pth)) {
+      stop(sprintf("Missing required hand file: %s", pth))
+    }
+  }
+
+  read_hand <- function(path, comp_label) {
+    d <- utils::read.csv(path, stringsAsFactors = FALSE, check.names = FALSE)
+    d <- d[d$hand == hand_label, ]
+    out <- d[, c("park_era_id", "home_team", "n_bbe", "delta_hand", "hand_se_combined"), drop = FALSE]
+    names(out)[names(out) == "delta_hand"] <- paste0(comp_label, "_delta")
+    names(out)[names(out) == "hand_se_combined"] <- paste0(comp_label, "_se")
+    names(out)[names(out) == "n_bbe"] <- paste0(comp_label, "_n_bbe")
+    out
+  }
+
+  m <- read_hand(main_path, "overall")
+  b <- read_hand(bacon_path, "bacon")
+  h <- read_hand(hr_path, "hr")
+  x <- read_hand(xbh_path, "xbh")
+  merged <- merge(m, b, by = c("park_era_id", "home_team"), all = TRUE)
+  merged <- merge(merged, h, by = c("park_era_id", "home_team"), all = TRUE)
+  merged <- merge(merged, x, by = c("park_era_id", "home_team"), all = TRUE)
+
+  carry_path <- file.path(output_dir, "park_factors_distance_by_hand.csv")
+  if (file.exists(carry_path)) {
+    merged <- merge(merged, read_hand(carry_path, "carry"), by = c("park_era_id", "home_team"), all.x = TRUE)
+  } else {
+    merged$carry_delta <- NA_real_
+  }
+
+  era_lookup <- unique(display[, c(
+    "park_era_id", "team_id", "team", "park", "years_used",
+    "team_token", "team_norm", "park_suffix", "year_end", "year_start"
+  )])
+  merged <- merge(merged, era_lookup, by = "park_era_id", all.x = TRUE)
+
+  merged$total_bbe <- suppressWarnings(as.numeric(merged$overall_n_bbe))
+  merged$overall_resid <- suppressWarnings(as.numeric(merged$overall_delta))
+  merged$bacon_resid <- suppressWarnings(as.numeric(merged$bacon_delta))
+  merged$hr_resid <- suppressWarnings(as.numeric(merged$hr_delta))
+  merged$xbh_resid <- suppressWarnings(as.numeric(merged$xbh_delta))
+  merged$carry_ft <- suppressWarnings(as.numeric(merged$carry_delta))
+
+  merged$bacon_idx_100 <- std_index(merged$bacon_resid)
+  merged$hr_idx_100 <- std_index(merged$hr_resid)
+  merged$xbh_idx_100 <- std_index(merged$xbh_resid)
+  merged$carry_idx_100 <- std_index(merged$carry_ft)
+  merged$overall_pf_idx_100 <- std_index(merged$overall_resid)
+
+  merged <- merged[!is.na(merged$team_id), , drop = FALSE]
+  merged
+}
+
 clean <- clean_from_picked(picked)
 display_1h <- build_half_display("1H")
 display_2h <- build_half_display("2H")
@@ -460,6 +522,12 @@ picked_1h <- pick_display_rows(display_1h)
 picked_2h <- pick_display_rows(display_2h)
 clean_1h <- clean_from_picked(picked_1h)
 clean_2h <- clean_from_picked(picked_2h)
+display_lhb <- build_hand_display("L")
+display_rhb <- build_hand_display("R")
+picked_lhb <- pick_display_rows(display_lhb)
+picked_rhb <- pick_display_rows(display_rhb)
+clean_lhb <- clean_from_picked(picked_lhb)
+clean_rhb <- clean_from_picked(picked_rhb)
 known_effects <- build_known_park_effects(picked, picked_1h, picked_2h, top_n = 12L)
 
 utils::write.csv(
@@ -511,9 +579,39 @@ utils::write.csv(
   na = ""
 )
 
+utils::write.csv(
+  clean_lhb,
+  file.path(output_dir, "park_factors_savant_style_clean_2026_LHB.csv"),
+  row.names = FALSE,
+  na = ""
+)
+
+utils::write.csv(
+  clean_rhb,
+  file.path(output_dir, "park_factors_savant_style_clean_2026_RHB.csv"),
+  row.names = FALSE,
+  na = ""
+)
+
+utils::write.csv(
+  picked_lhb,
+  file.path(output_dir, "park_factors_savant_style_clean_2026_LHB_with_id.csv"),
+  row.names = FALSE,
+  na = ""
+)
+
+utils::write.csv(
+  picked_rhb,
+  file.path(output_dir, "park_factors_savant_style_clean_2026_RHB_with_id.csv"),
+  row.names = FALSE,
+  na = ""
+)
+
 message("Wrote clean 2026 park factor table: ", file.path(output_dir, "park_factors_savant_style_clean_2026.csv"))
-message("Publish path (single source of truth): copy the THREE _with_id CSVs to fbb-tools-repo/data/park_factors/ , then deploy the Shiny app:")
+message("Publish path (single source of truth): copy the FIVE _with_id CSVs to fbb-tools-repo/data/park_factors/ , then deploy the Shiny app:")
 message("  - park_factors_savant_style_clean_2026_with_id.csv")
 message("  - park_factors_savant_style_clean_2026_1H_with_id.csv")
 message("  - park_factors_savant_style_clean_2026_2H_with_id.csv")
+message("  - park_factors_savant_style_clean_2026_LHB_with_id.csv")
+message("  - park_factors_savant_style_clean_2026_RHB_with_id.csv")
 message("  Both the PF leaderboard and the SP Streamonator/Outlook read these _with_id files. The non _with_id display CSVs are monorepo-only (article/comparison inputs); fbb-tools no longer uses them.")

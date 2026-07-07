@@ -614,6 +614,13 @@ prepare_bbe_model_data <- function(
   bbe$batting_team_season_id <- paste0(bbe$batting_team, "_", bbe$season)
   bbe$park_era_half_id <- paste0(bbe$park_era_id, "__", bbe$half)
 
+  # Batter-side deviation cells (the park-by-half pattern applied to
+  # handedness). stand is per plate appearance, so switch hitters contribute
+  # to both sides correctly. Non-L/R rows (none in the current store) get a
+  # junk level that is ignored at extraction time.
+  bbe$hand <- ifelse(bbe$stand %in% c("L", "R"), bbe$stand, "U")
+  bbe$park_era_hand_id <- paste0(bbe$park_era_id, "__", bbe$hand)
+
   bbe$measurement_era <- ifelse(
     bbe$season <= 2019,
     "trackman",
@@ -692,6 +699,11 @@ fit_park_factor_model <- function(model_data, include_measurement_era = TRUE, qu
   if ("half" %in% names(d) && length(unique(stats::na.omit(d$half))) > 1) {
     fixed_terms <- c(fixed_terms, "half")
   }
+  # League-wide batter-side level, so the park-hand deviations below measure
+  # park asymmetry rather than league platoon dynamics.
+  if ("hand" %in% names(d) && length(unique(stats::na.omit(d$hand))) > 1) {
+    fixed_terms <- c(fixed_terms, "hand")
+  }
   if (isTRUE(include_measurement_era) &&
       "measurement_era" %in% names(d) &&
       length(unique(stats::na.omit(d$measurement_era))) > 1) {
@@ -711,6 +723,7 @@ fit_park_factor_model <- function(model_data, include_measurement_era = TRUE, qu
     fixed_terms,
     "(1 | park_era_id)",
     "(1 | park_era_half_id)",
+    if ("park_era_hand_id" %in% names(d)) "(1 | park_era_hand_id)",
     "(1 | batter_season_id)",
     "(1 | pitcher_season_id)",
     "(1 | fielding_team_season_id)",
@@ -764,6 +777,11 @@ fit_component_model <- function(
   if ("half" %in% names(d) && length(unique(stats::na.omit(d$half))) > 1) {
     fixed_terms <- c(fixed_terms, "half")
   }
+  # League-wide batter-side level, so the park-hand deviations below measure
+  # park asymmetry rather than league platoon dynamics.
+  if ("hand" %in% names(d) && length(unique(stats::na.omit(d$hand))) > 1) {
+    fixed_terms <- c(fixed_terms, "hand")
+  }
   if (isTRUE(include_measurement_era) &&
       "measurement_era" %in% names(d) &&
       length(unique(stats::na.omit(d$measurement_era))) > 1) {
@@ -793,6 +811,7 @@ fit_component_model <- function(
     fixed_terms,
     "(1 | park_era_id)",
     "(1 | park_era_half_id)",
+    if ("park_era_hand_id" %in% names(d)) "(1 | park_era_hand_id)",
     "(1 | batter_season_id)",
     "(1 | pitcher_season_id)",
     "(1 | fielding_team_season_id)",
@@ -929,6 +948,62 @@ extract_component_park_factors <- function(component_fit, model_data, label) {
   out$component <- label
 
   out <- out[order(out$pf_index_half, decreasing = TRUE), ]
+  rownames(out) <- NULL
+  out
+}
+
+# Batter-side park factors: park effect + park-hand deviation per era and
+# side. Works for both the main fit (baseline_xwoba) and component fits
+# (baseline); the "U" junk level is dropped.
+extract_hand_park_factors <- function(model_fit, model_data, label = "") {
+  fit <- model_fit$fit
+  baseline <- model_fit$baseline %||% model_fit$baseline_xwoba
+  if (is.null(baseline) || !is.finite(baseline) || baseline == 0) {
+    baseline <- 1e-6
+  }
+
+  park_re <- extract_random_effects_with_se(fit, "park_era_id")
+  names(park_re) <- c("park_era_id", "park_effect", "park_se")
+
+  hand_re <- extract_random_effects_with_se(fit, "park_era_hand_id")
+  if (nrow(hand_re) == 0) {
+    return(data.frame())
+  }
+  names(hand_re) <- c("park_era_hand_id", "hand_effect", "hand_se")
+
+  keep <- model_data$hand %in% c("L", "R")
+  md <- model_data[keep, , drop = FALSE]
+
+  counts <- stats::aggregate(
+    rep(1, nrow(md)),
+    by = list(park_era_id = md$park_era_id, hand = md$hand),
+    FUN = sum
+  )
+  names(counts)[3] <- "n_bbe"
+
+  meta <- stats::aggregate(
+    md[, c("venue_id", "venue_name", "home_team")],
+    by = list(park_era_id = md$park_era_id),
+    FUN = mode_value
+  )
+
+  out <- merge(counts, meta, by = "park_era_id", all.x = TRUE)
+  out$park_era_hand_id <- paste0(out$park_era_id, "__", out$hand)
+  out <- merge(out, park_re, by = "park_era_id", all.x = TRUE)
+  out <- merge(out, hand_re, by = "park_era_hand_id", all.x = TRUE)
+
+  out$park_effect[is.na(out$park_effect)] <- 0
+  out$hand_effect[is.na(out$hand_effect)] <- 0
+
+  out$delta_hand <- out$park_effect + out$hand_effect
+  out$pf_index_hand <- 100 * (1 + out$delta_hand / baseline)
+  out$hand_se_combined <- sqrt(
+    ifelse(is.na(out$park_se), 0, out$park_se)^2 +
+      ifelse(is.na(out$hand_se), 0, out$hand_se)^2
+  )
+  out$component <- label
+
+  out <- out[order(out$park_era_id, out$hand), ]
   rownames(out) <- NULL
   out
 }

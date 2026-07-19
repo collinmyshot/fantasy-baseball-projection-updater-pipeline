@@ -635,7 +635,7 @@ utils::write.csv(run_meta, file.path(output_dir, "run_metadata.csv"), row.names 
 
 message("Building Savant-style display table...")
 display_cmd <- c(
-  file.path("scripts", "build_park_factor_display.R"),
+  file.path("scripts", "park_factors", "build_park_factor_display.R"),
   "--output-dir", output_dir
 )
 display_status <- tryCatch(

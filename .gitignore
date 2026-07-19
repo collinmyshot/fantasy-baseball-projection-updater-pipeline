@@ -19,3 +19,6 @@ data/processed/park_factors/park_factor_build.pid
 data/processed/park_factors/park_factor_build_current.log
 data/processed/park_factors/.~lock.*
 data/processed/park_factors_smoke_hand/
+# Large refetchable Savant caches (regenerate via the fetch_* scripts).
+data/raw/savant_monthly_mix/
+data/raw/sp_skillz_validation_cache/

@@ -1,5 +1,5 @@
 # Park factor Google Sheets formatting utilities.
-# Extracted from scripts/build_park_factor_clean_2026.R for reuse.
+# Extracted from scripts/park_factors/build_park_factor_clean_2026.R for reuse.
 
 if (!exists("frames_equal")) source(file.path("R", "utils.R"))
 

@@ -4,7 +4,30 @@
 # Grid-search over Streamonator top-level weights (w_sp, w_tr, w_pf) to find
 # the combination that best predicts "good starts" in the 2026 season.
 #
-# Good start score (0–5): one point for each criterion met:
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║ READ FIRST — TWO WAYS THIS FILE WILL MISLEAD YOU                         ║
+# ╠══════════════════════════════════════════════════════════════════════════╣
+# ║ 1. THE 0-5 SCORE BELOW IS STALE. It is NOT the shipped Good Start Metric.║
+# ║    Authoritative GSM is 0-4: no Win component, SLIDING ER cap, and       ║
+# ║    WHIP <= 1.18 (not 1.20). Source of truth is fbb-tools                 ║
+# ║    R/modules/leaderboards/mod_gsm.R.                                     ║
+# ║    Consequence: the good_start_score COLUMN written into starts_YYYY.csv ║
+# ║    by this script is stale. Downstream scripts (bucket_analysis.R,       ║
+# ║    streamonator_defense_*.R) deliberately RECOMPUTE GSM and ignore that  ║
+# ║    column. If you write something new against these CSVs, do the same.   ║
+# ║                                                                          ║
+# ║ 2. SEASON-FINAL SCORING = HINDSIGHT. This script rates an April start    ║
+# ║    with September skill, which is not what the live tool does. It is     ║
+# ║    fine for WEIGHT DERIVATION (relative ranking of weight combos), but   ║
+# ║    do NOT quote its bucket rates as tool performance — they are inflated.║
+# ║    For anything user-facing use the point-in-time backtest instead:      ║
+# ║      fbb-tools scripts/build_stream_calibration.R                        ║
+# ║      -> data/processed/stream_calibration/stream_calib_starts_<yr>.csv   ║
+# ║    Measured gap: success start-minus-sit +31.2 pts on season-final vs    ║
+# ║    +27.3 out-of-sample; bust +16.5 vs +13.2.                             ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+#
+# Good start score AS COMPUTED HERE (0–5, STALE — see box above):
 #   1. IP  >= 5
 #   2. K   >= floor(IP) - 1  (1 K per inning, 1 allowed below)
 #   3. ER  <= 3

@@ -12,6 +12,21 @@
 # NET OF STAFF QUALITY (residualize good_start_rate on the team's avg SP Skillz),
 # so "good orgs have good pitching AND good defense" doesn't inflate it.
 #
+# ── ANSWER (run 2026-06-22): keep 1:1:1. ────────────────────────────────────
+#   At team-season grain, staff-adjusted, the composite correlates ~0.323
+#   (Spearman) with good-start rate — note this is MUCH stronger than the 0.045
+#   the per-start pooled view suggests, because per-start rows pseudo-replicate
+#   150 distinct defense values.
+#   Equal weighting beats every alternative tried:
+#     1:1:1 composite 0.323 | OAA alone 0.288 | DRS 0.272 | UZR 0.256
+#     dropping the "noisy" UZR (OAA+DRS) 0.308 — i.e. dropping it HURTS
+#   Why: the three metrics carry partially-independent noise (DRS<->UZR r=0.72,
+#   but OAA is distinct at r~0.55), so averaging all three cancels error.
+#   HONEST FRAMING: variant gaps are inside n=150 noise. The claim is "no
+#   evidence to move off 1:1:1", NOT "1:1:1 proven optimal."
+#   (Per-start, DRS alone 0.058 edges the composite 0.045 — that's the
+#   pseudo-replication artifact, not a reason to switch.)
+#
 # Fully cached; no API calls.  Usage: Rscript scripts/validation_tuning/streamonator_defense_metric_decomp.R
 
 CACHE_DIR <- file.path("data", "processed", "streamonator_weight_analysis")

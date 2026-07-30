@@ -18,6 +18,22 @@
 # SP-Skillz placeholders, with a valid 6:3:1 score (N ~ 22,917, 2021-2025).
 # GSM is recomputed 0-4 (no Win, sliding ER, WHIP<=1.18) to match mod_gsm.R.
 #
+# ── ANSWER (run 2026-06-22): NO. Defense does not earn a weight bump. ────────
+#   Defense is a small but genuinely ORTHOGONAL positive signal:
+#     Spearman vs GSM ~0.045 per start (park-only is ~0.033)
+#     bottom-third-defense starts 52.0% good vs top-third 55.6%
+#   Folding it into the environment component lifts that component's rho
+#   0.2928 -> 0.2947 (50/50 park:def), but the component's OPTIMAL WEIGHT STAYS
+#   AT 1. So it does not justify raising PF above 1 in 6:3:1.
+#   Best 4-way is 6:2:1:1 (the Def weight comes out of Team Rater, not PF) for
+#   +0.003 Spearman; the >105 bucket's %good is unchanged at ~69.8%.
+#   Verdict: interesting, not shippable. Not adopted.
+#
+#   Follow-ups that came out of this: streamonator_defense_metric_decomp.R
+#   (is 1:1:1 the right internal blend?), streamonator_gb_defense_interaction.R
+#   (does it matter more for groundballers?), streamonator_shape_diagnostic.R
+#   (is the relationship linear?).
+#
 # Fully cached; no API calls.  Usage: Rscript scripts/validation_tuning/streamonator_defense_analysis.R
 
 CACHE_DIR <- file.path("data", "processed", "streamonator_weight_analysis")

@@ -12,6 +12,14 @@
 #   C) 6:3:1     defense folded into PF, weights UNCHANGED
 #                (SP:TR:E, where E = 50/50 z-blend of PF_inv & Def)
 #
+# ── ANSWER (run 2026-06-22): bucket accuracy is UNCHANGED. ──────────────────
+#   Adding defense does not move the thing the user actually sees: the >105
+#   Start bucket's %good stays at ~69.8% across configs. Whatever defense adds
+#   shows up as a tiny Spearman gain (+0.003 for the 6:2:1:1 4-way), not as
+#   better bucket separation.
+#   Verdict: no reason to ship. See streamonator_defense_analysis.R for the
+#   weight-grid version of the same conclusion.
+#
 # Cached; no API.  Usage: Rscript scripts/validation_tuning/streamonator_defense_bucket_compare.R
 
 CACHE_DIR <- file.path("data", "processed", "streamonator_weight_analysis")

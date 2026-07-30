@@ -10,6 +10,25 @@
 # MLBAMID + season.  Defense = team-total OAA+DRS+UZR composite (CAVEAT: team-total
 # blends infield+outfield; GB pitchers benefit mostly from INFIELD defense).
 #
+# ── ANSWER (run 2026-06-22): YES, but too small to act on. SETTLED. ─────────
+#   The interaction is real and correctly signed, controlling for SP Skillz:
+#     def_z x gb_z coefficient +0.029, z = 2.13, p = 0.033
+#   But it is less than half the defense main effect, and it concentrates in the
+#   extreme tail rather than spreading across the pool:
+#     GB% >= 60% tier (n=245): Spearman 0.14, +16pp tercile gap
+#     moderate GB tiers:       ~0.04-0.07  (i.e. league-average inert)
+#   Probably UNDERESTIMATED: team_defense_2015_2025.csv is team-total defense,
+#   which dilutes the INFIELD signal groundballers actually consume. No
+#   infield-only OAA in that file.
+#   Operationally: even for groundballers, defense stays minor per start
+#   (Spearman ~0.047 vs SP Skillz ~0.27). Not a red herring, but it does not
+#   overturn 6:3:1. Nothing shipped.
+#
+# ── DATA GOTCHA ─────────────────────────────────────────────────────────────
+#   Read the FanGraphs BBE CSVs WITHOUT fileEncoding="UTF-8-BOM" — that setting
+#   corrupts the parse. Fix the header column after reading instead:
+#     names(d)[1] <- "Season"
+#
 # Usage: Rscript scripts/validation_tuning/streamonator_gb_defense_interaction.R
 
 DL<-"/Users/ckaufman/Downloads"; CACHE_DIR<-"data/processed/streamonator_weight_analysis"

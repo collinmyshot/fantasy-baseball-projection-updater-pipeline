@@ -5,6 +5,24 @@
 # Produces per-season starts_YYYY.csv and weight_grid_YYYY.csv files,
 # plus a combined summary table at the end.
 #
+# This is the 2021-2024 bulk builder. Companions: derive_streamonator_weights.R
+# (2026) and derive_streamonator_weights_2025.R (2025). Together the three
+# produce the full starts_2021..2026.csv set that the older streamonator
+# validation scripts read.
+#
+# ── INHERITS BOTH CAVEATS FROM derive_streamonator_weights.R ────────────────
+#   1. The good_start_score column it writes is the STALE 0-5 version (Win,
+#      flat ER<=3, WHIP<=1.20). Authoritative GSM is 0-4 with a sliding ER cap
+#      and WHIP <= 1.18. Recompute; do not trust the stored column.
+#   2. Scoring is SEASON-FINAL (hindsight). Fine for ranking weight combos,
+#      wrong for quoting tool performance. Point-in-time equivalent lives in
+#      fbb-tools scripts/build_stream_calibration.R.
+#   Read that file's header box before using this output for anything.
+#
+# COST NOTE: first run fetches ~12,000 boxscores from the MLB Stats API one at
+# a time (0.05s sleep). Everything is cached to CACHE_DIR as box<season>_<pk>.rds,
+# so re-runs are cheap, but a cold run is long. The cache is ~12.7k files.
+#
 # Usage:  Rscript scripts/validation_tuning/derive_streamonator_weights_multi.R
 
 suppressPackageStartupMessages({ library(jsonlite) })

@@ -7,6 +7,19 @@
 #   - Park factors: era-correct 2025 via team_park_era_audit.csv join
 #   - FG URLs: season=2025
 #   - Output filenames: *_2025.*
+#
+# ── INHERITS BOTH CAVEATS FROM derive_streamonator_weights.R ────────────────
+#   1. The good_start_score column it writes is the STALE 0-5 version (Win,
+#      flat ER<=3, WHIP<=1.20). Authoritative GSM is 0-4 with a sliding ER cap
+#      and WHIP <= 1.18. Recompute; do not trust the stored column.
+#   2. Scoring is SEASON-FINAL (hindsight). Fine for ranking weight combos,
+#      wrong for quoting tool performance. Point-in-time equivalent lives in
+#      fbb-tools scripts/build_stream_calibration.R.
+#   Read that file's header box before using this output for anything.
+#
+# Output: data/processed/streamonator_weight_analysis/starts_2025.csv
+#         data/processed/streamonator_weight_analysis/weight_grid_2025.csv
+# Usage:  Rscript scripts/validation_tuning/derive_streamonator_weights_2025.R
 
 suppressPackageStartupMessages({
   library(jsonlite)

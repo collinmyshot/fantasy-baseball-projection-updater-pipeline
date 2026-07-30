@@ -13,6 +13,21 @@
 #    stream scores under the reference 6:3:1 weighting.
 #    Answers: "Do good starts tend to come from high predictions?"
 #
+# ── WHY THIS FILE MATTERS ───────────────────────────────────────────────────
+#   This is the script that RECOMPUTES the authoritative GSM (0-4: no Win,
+#   sliding ER cap, WHIP <= 1.18) rather than trusting the stale 0-5
+#   good_start_score column baked into starts_YYYY.csv by the derive_* scripts.
+#   If you are looking for "the actual bucket validation", it is this one.
+#   Any new script reading starts_YYYY.csv must recompute GSM the same way.
+#
+# ── NOTE ON SCORING VINTAGE ─────────────────────────────────────────────────
+#   Runs on SEASON-FINAL scoring (hindsight), which is fine for comparing
+#   weight combos but inflates absolute bucket rates. The point-in-time
+#   equivalent — and the source of the published appendix figures — is
+#   fbb-tools scripts/build_stream_calibration.R. For the 95-105 band
+#   specifically, streamonator_coinflip_reweight.R supersedes Analysis A here:
+#   same question, point-in-time data, LOSO CV and clustered bootstrap.
+#
 # All data is fully cached — no API calls made.
 # Usage: Rscript scripts/validation_tuning/bucket_analysis.R
 

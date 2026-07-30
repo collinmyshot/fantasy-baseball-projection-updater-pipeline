@@ -12,6 +12,18 @@
 #   - quadratic glm: is there statistically visible curvature (controlling SP)?
 #   - tail isolation: Coors specifically; worst vs best defense terciles/deciles
 #
+# ── ANSWER (run 2026-06-22): LINEAR. Outlier-emphasis REJECTED. ─────────────
+#   No statistically visible curvature in any component, staff-adjusted:
+#     quadratic term p = 0.62 (park) / 0.41 (defense) / 0.66 (team rater)
+#   Coors is the key test, being the most extreme park (PF 128.9). Its
+#   staff-adjusted good-rate is 47.6% against a linear-fit expectation of 48.1%
+#   — dead on the line. No special penalty is warranted.
+#   Coors' raw 41.6% good-rate is Rockies PITCHING, not the park punishing
+#   arms beyond its index. Likewise, the earlier raw-tercile "defense floor"
+#   turned out to be a staff confound and washes out once you adjust for
+#   pitcher quality.
+#   Verdict: keep linear scaling everywhere. Do not add tail weighting.
+#
 # Cached; no API.  Usage: Rscript scripts/validation_tuning/streamonator_shape_diagnostic.R
 
 CACHE_DIR <- file.path("data","processed","streamonator_weight_analysis")

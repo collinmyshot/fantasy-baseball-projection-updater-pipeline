@@ -10,6 +10,13 @@
 #   3. Authoritative GSM (0-4, no Win, WHIP <= 1.18, sliding ER) and
 #      blow-up flags (ER >= 5 primary, ER >= 6 robustness)
 #
+# Note this script DOES compute the authoritative GSM (0-4, no Win, sliding ER,
+# WHIP <= 1.18), unlike the derive_streamonator_weights*.R scripts whose stored
+# good_start_score column is the stale 0-5 version. starts_with_pf_lenses.csv is
+# therefore safe to read directly on GSM.
+#
+# Consumed by: streamonator_lens_ladder.R (Phase 1). Run this first.
+#
 # Output: data/processed/streamonator_weight_analysis/starts_with_pf_lenses.csv
 # Fully cached — no API calls. Usage: Rscript scripts/validation_tuning/derive_streamonator_pf_lenses.R
 

@@ -31,6 +31,32 @@
 #   INSIDE the flip zone (95-105) — the zone where decisions actually happen.
 #
 # Also: outer meta-weight recheck (does 6:3:1 hold under the caution scoreboard?)
+#
+# ── VERDICT (run 2026-07-02): EVERY RUNG REJECTED. Keep S0 Overall. ─────────
+#   S1 bacon-swap    LOSO 0.5% WORSE, holds in 1/5 seasons. The pooled bacon
+#                    edge (rho +0.0012, boot CI 0.0004-0.0020, positive 5/5)
+#                    is REAL but does not replicate on the caution metric.
+#                    Textbook "98% as good" territory — complexity unpaid.
+#   S2 two-lens      +1.1% but 0/5 seasons. Noise.
+#   S3 four-lens     -0.3%, 3/5, CI spans 0, fold winners unstable. Noise.
+#   Even PF-AT-ALL vs no-PF is marginal on M1q (-2.4%, 4/5, CI crosses 0).
+#   Park's seat in the composite rests on rho, not on caution.
+#
+#   Meta-weight recheck: 6:3:1 ranks 7/231 on rho (plateau-optimal). Caution-
+#   tilted metas (e.g. .30/.35/.35) improve M1q by 4.8% but crater rho to 0.235.
+#   Not recommended — that trade is far worse than it looks.
+#
+#   Risk ladder: R2 (spz+tr+overall) OOS AUC 0.5995, flip-zone spread 4.8pp.
+#   R3 (+bacon x hr) AUC 0.6001, spread 5.0pp — exactly AT the pre-registered
+#   5pp ship line, and the interaction adds only +0.2pp, failing its own 1pp
+#   rule. Deferred.
+#
+#   SHIPPED OUT OF THIS: only the data refresh (the live app was scoring on a
+#   stale May-21 park factor file). Kept Overall lens, 6:3:1, and 105/95
+#   thresholds. No sub-weight UI was built. HR x BACON stayed an article aside.
+#   Follow-on: streamonator_coinflip_reweight.R re-asked the meta-weight
+#   question restricted to the 95-105 band and also rejected (2026-07-30).
+#
 # Usage: Rscript scripts/validation_tuning/streamonator_lens_ladder.R   (fully cached, no API calls)
 
 IN  <- file.path("data", "processed", "streamonator_weight_analysis", "starts_with_pf_lenses.csv")

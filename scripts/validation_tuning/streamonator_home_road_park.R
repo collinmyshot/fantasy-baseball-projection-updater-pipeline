@@ -11,7 +11,29 @@
 #   3. decompose split into FIP (HR/BB/K = defense-free, park-on-air) vs
 #      BABIP (balls in play = park geometry, the channel that masquerades as defense)
 #
+# ── ANSWER (run 2026-06-22): park DOES drive home-road splits. No conflict. ─
+#   This exists to answer a fair challenge: "if park is such a weak per-start
+#   input, why do pitchers post bad ERAs in bad parks?"
+#     HFA baseline: -0.28 ERA (better at home), mostly FIP/peripherals;
+#                   the BABIP split is ~0
+#     ERA split vs Park Factor:  r = +0.42  (~+0.024 ERA per PF point;
+#                                Coors runs a +0.42 split)
+#     ERA split vs defense:      r = -0.16  (defense travels, so it CANNOT
+#                                drive a split — exactly as predicted)
+#     PF <-> defense:            r = -0.07  (no confound between them)
+#   Park works through BOTH channels about equally:
+#     hr_idx    <-> FIP split   r = 0.48   (the HR / over-the-fence channel)
+#     bacon_idx <-> BABIP split r = 0.40   (the balls-in-play channel — this is
+#                                the one that masquerades as defense)
+#   NO CONTRADICTION with the Streamonator: park matters for ERA, but it is
+#   already captured, it is linear, it is skill-dominated per start, and it is
+#   genuinely distinct from defense. This investigation VALIDATES 6:3:1 plus
+#   linear scaling; nothing was overturned.
+#
 # Data: team_pitching_{home,away}_YYYY.csv (2021-2025), park eras from the PF model.
+#   Era-correct PF comes from team_park_era_audit.csv joined to each team's
+#   PRIMARY home venue by max n_bbe. The dedup matters: neutral-site games
+#   otherwise give a team two "home" venues in a season.
 # Usage: Rscript scripts/validation_tuning/streamonator_home_road_park.R
 
 DL <- "/Users/ckaufman/Downloads"

@@ -1,4 +1,47 @@
 #!/usr/bin/env Rscript
+# ══════════════════════════════════════════════════════════════════════════════
+# derive_park_factor_weights.R  —  composite park-factor weights, v1
+#
+# Finds the blend of the three component park deltas
+#   bacon_resid  (batting average on contact)
+#   hr_resid     (home runs per batted-ball event)
+#   xbh_resid    (extra-base hits)
+# that best reconstructs the OVERALL wOBAcon-residual park effect, i.e. the
+# target column delta_woba_over_xwoba_overall.
+#
+# Method: weights are parameterised through a softmax so they are non-negative
+# and sum to 1 by construction (no constrained optimiser needed). Fit is
+# BBE-weighted at PARK-ERA grain, park eras with fewer than --min-bbe (default
+# 1000) batted balls are dropped, and the weights are bootstrapped
+# (--n-boot, default 400; --seed 42) to get p05 / median / p95 bands.
+#
+# ⚠ KNOWN LIMITATION OF THIS TARGET — READ BEFORE QUOTING v1 WEIGHTS.
+#   The target is the wOBAcon residual, and bacon_resid is very nearly that
+#   same variable. So this derivation GUARANTEES that BACON dominates the
+#   blend. It is a self-consistency check, not evidence about what matters
+#   for fantasy value, and it says nothing about points.
+#   derive_park_factor_weights_v2.R exists specifically to fix this: it
+#   regresses the OTTONEU-POINTS park effect on the same three deltas with
+#   free coefficients, which is the question you usually actually want.
+#   Prefer v2 unless you specifically want the wOBAcon-reconstruction view.
+#
+# Inputs (all must already exist in --output-dir, else it stops loudly):
+#   park_factors_overall.csv, park_factors_bacon_overall.csv,
+#   park_factors_hr_overall.csv, park_factors_xbh_overall.csv
+#
+# Outputs (to --output-dir, default data/processed/park_factors):
+#   park_factor_weight_recommendation.csv   weights + bootstrap bands
+#   plus a diagnostics table (n park eras, weighted RMSE, weighted corr) and a
+#   per-park-era predicted-vs-target table
+#
+# ⚠ NO VERDICT RECORDED — no stored result for this run, so nothing is asserted
+#   here about what weights it returned. Re-run for the numbers.
+#
+# Usage:
+#   Rscript scripts/validation_tuning/derive_park_factor_weights.R
+#   Rscript scripts/validation_tuning/derive_park_factor_weights.R \
+#       --output-dir data/processed/park_factors --n-boot 400 --min-bbe 1000
+# ══════════════════════════════════════════════════════════════════════════════
 source(file.path("R", "utils.R"))
 
 parsed <- parse_cli_args(list(

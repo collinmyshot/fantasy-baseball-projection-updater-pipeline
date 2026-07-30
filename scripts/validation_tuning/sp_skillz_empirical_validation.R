@@ -14,6 +14,28 @@
 # Data: 2021-2025 (post-2020 only; Stuff+/Pitching+ available throughout)
 # Metric candidates: siera, xfip, k_minus_bb_pct, ball_pct, stuff_plus,
 #                    pitching_plus, whiff_pct, z_contact_pct, high_gb_flag
+#
+# ── WHERE THIS SITS ───────────────────────────────────────────────────────
+#   This is the EXPLORATORY predecessor (largest file in the folder at ~1,300
+#   lines). It screens the wide candidate list and tests whether IP-tier
+#   paradigms are justified. The surviving design was then re-derived cleanly
+#   in derive_sp_skillz_weights_v2.R, which is what actually produces the
+#   LIVE weights.
+#   Practical rule: for "what does the model use today?", read
+#   derive_sp_skillz_weights_v2.R. Read this one for why candidates were cut.
+#
+#   Note the candidate list here includes siera, xfip and z_contact_pct, none
+#   of which survive into the shipped 7-metric v2 set — that attrition is the
+#   useful content of this file.
+#
+# ⚠ NO VERDICT RECORDED beyond that. I have no stored per-metric results for
+#   this run, so nothing is asserted here about individual screen outcomes or
+#   the IP-tier question. Re-run for specifics.
+#
+# ── RELATED DATA NOTE (saves a needless refetch) ───────────────────────────
+#   The sp_skillz_validation_cache JSONs already carry per-pitch Stuff+
+#   (sp_s_* columns) plus pfx mix / velo / movement. Arsenal-flavoured research
+#   against this cache does NOT need a new fetch.
 # ===========================================================================
 
 suppressPackageStartupMessages({

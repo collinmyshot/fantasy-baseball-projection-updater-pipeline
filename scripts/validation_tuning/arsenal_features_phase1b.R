@@ -2,6 +2,61 @@
 # ===========================================================================
 # Arsenal Features Phase 1b — dose-response, pitch-family variety, joint model
 # ===========================================================================
+# ── RESULT (2026-07-15) ───────────────────────────────────────────────────
+#   DOSE-RESPONSE IS A CLIFF, NOT A SLOPE. spz-adjusted good rates by
+#   n_pitches_10: <=2 50.9% | 3 54.9% | 4 56.3% | 5 56.2% | 6+ 58.1%.
+#   Marginal jumps: <=2->3 = +4.0pp [+1.3, +6.6]; 3->4 +1.4 [-0.1, +2.8];
+#   4->5 ~0. The Phase-1a "+1.5pp per pitch" was a linear average smeared
+#   across a cliff — everything is in getting off two pitches.
+#   Fastball family IS monotone though: 1->2 +1.8pp [+0.4, +3.3],
+#   2->3 +1.9pp [+0.1, +3.7] (54.0 / 55.8 / 57.7%).
+#
+#   FAMILY COMPOSITION HAS SIGNS: breaking-ball variety NEGATIVE
+#   (brk_family_count_10 GSM -0.027 [-0.056, -0.002], 5/5, channels ER/WHIP
+#   not innings; 3+ breaking balls = 48.9%, n=60); offspeed POSITIVE (+0.034,
+#   innings channel; 2+ offspeed only n=52 starts).
+#   ⚠ This one was later CORRECTED in phase1c: the joint model showed the
+#     "breaking-ball penalty" was just the MIRROR of fastball count. The real
+#     axes are fastball variety and having an offspeed pitch. Do not cite the
+#     breaking-ball penalty as a standalone finding.
+#
+#   PAIRS: cu+kc, ch+fs, fs+fo are essentially nonexistent among SPs (0-4
+#   SP-seasons) and therefore untestable. slider+sweeper at >=5% both (n=78
+#   SP-seasons) gave GSM +0.037 [+0.009, +0.062], 4/5, via IP/WHIP channels —
+#   intriguing, never confirmed.
+#   SUB-LEVEL COUNTING (sweeper separate from slider) LOST to parent counting
+#   on both harnesses -> keep parent taxonomy.
+#   ⚠ ALSO LATER OVERTURNED. The sweeper-aware granular taxonomy is what
+#     shipped on 2026-07-18. This file's "keep parent taxonomy" conclusion is
+#     superseded; see project memory and derive_sp_skillz_weights_v2.R.
+#
+#   JOINT VERDICT (user stance: adopt a combo only if it beats the best
+#   single feature): skill side — n_pitches_10 ALONE wins (blended CV R^2
+#   0.3545, vs +fb 0.3535, vs +le2 0.3514, base 0.3506). GSM side —
+#   fb_family + flag_le2 make n10 redundant (joint coefs n10 +0.003 n.s.,
+#   fb +0.038*, le2 -0.038*).
+#   AUC honesty: spz alone 0.6265 -> all three 0.6273. Tiny. The value is in
+#   subgroup effects, not in global discrimination.
+#
+#   INTEGRATION SHAPE OUT OF THIS: SP Skillz v2.x candidate = n_pitches_10
+#   only; Streamonator candidates = fb_family_count_10 + flag_le2_p10.
+#   (phase1c then REJECTED all the Streamonator arms — see that file.)
+#
+#   PFX PROVENANCE SETTLED HERE: FanGraphs "pfx" columns are MLBAM
+#   Gameday/Statcast classifications under a legacy section name, NOT defunct
+#   Sportvision hardware. Proof: sweeper/slurve vocabulary (Statcast 2023
+#   additions) plus cross-validation against the Savant arsenal CSV (593
+#   pitchers, 2024) at R^2 .94-.98 on stable types, mean |diff| < 1pp.
+#   SL/ST and CU-family boundaries are looser at R^2 .69-.80 (~1.5-2pp of
+#   classifier-vintage wobble) — Phase 2 change detection MUST NOT read a
+#   vintage flip as a new pitch.
+#   Tracking eras: PITCHf/x 2007-16 -> TrackMan 2017-19 -> Hawk-Eye 2020+.
+#
+# ── DATA GOTCHA ───────────────────────────────────────────────────────────
+#   Savant arsenal CSV endpoint:
+#     leaderboard/pitch-arsenals?year=YYYY&min=250&type=n_&csv=true
+#   Read it WITHOUT fileEncoding (BOM trap), then names(d)[1] <- "name".
+#
 # Follow-ups to arsenal_features_phase1.R (same harnesses, same registered
 # screen rules — see that header):
 #   1. DOSE-RESPONSE: is the +1-pitch GSM effect linear across 2->3->4->5->6+?

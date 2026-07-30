@@ -10,6 +10,49 @@
 #
 # GROUPED taxonomy (phase 1b: parent-level counting beat sub-level):
 #   members = ff, si, fc, SLfam(sl+st+sv), cu, ch, fs, kn
+#   ⚠ SUPERSEDED: the sweeper-aware GRANULAR taxonomy (sweeper and slurve
+#     counted as distinct pitches) shipped 2026-07-18 and is what runs now.
+#     The grouped taxonomy below is the vintage this file was run under.
+#
+# ── RESULT (2026-07-15) — THE DECISIVE PHASE ──────────────────────────────
+#   SoT SWAP WAS A NON-EVENT: moving from FG pfx to Savant moved almost
+#   nothing. n10 exact agreement 94.5% (100% within +/-1); le2 flag 99.6%.
+#   Good news — it means the phase 1/1b findings were not classifier artifacts.
+#
+#   SKILL SIDE: ADOPT n10_sav as the 7th SP Skillz metric. All three
+#   pre-registered rules passed:
+#     blended LOYO CV R^2 0.3494 -> 0.3536 (+0.0042, 3/4 folds)
+#     coefficient quality-aligned on 4/4 targets
+#     blended weight +0.62, clearing the 0.05 floor (cf. high_gb_flag 0.37)
+#   Payoff concentrates in next_whip (+0.0100 CV R^2) with next_k_pct FLAT.
+#   Breadth is a WHIP / run-shape signal, not a strikeout signal.
+#
+#   STREAMONATOR SIDE: REJECT all three adjustment arms (le2-only -2.5 pts,
+#   fb-only +1.1/type, and both). LOSO delta-rho ~0.0000-0.0007, CIs span 0,
+#   M1q not improved. This is COHERENT rather than disappointing: a 2.5-point
+#   shift on ~7% of starts cannot move pooled rho at this scale (park's entire
+#   seat is worth about +0.002), AND once n10 lives inside SP Skillz the
+#   composite inherits it anyway — a separate knob would double-count.
+#   INTEGRATION POINT IS UPSTREAM ONLY.
+#
+#   COMPOSITION RESOLVED: joint model gives fb +0.052*, off +0.032*,
+#   brk -0.012 n.s. So phase 1b's "breaking-ball penalty" was the mirror of
+#   fastball count. The real axes are FASTBALL VARIETY and HAVING AN OFFSPEED.
+#
+#   ARTICLE-READY DOSE-RESPONSE (Savant SoT, spz-adjusted good rate):
+#     n10  <=2 50.3% | 3 55.1% | 4 56.1% | 5+ 56.8%
+#          cliff 2->3 = +4.7pp [+2.0, +7.5]; higher jumps n.s.
+#     FB   1 53.9% | 2 56.0% (+2.1 [+0.6, +3.7]) | 3 57.5% (+1.5 [-0.3, +3.6])
+#
+#   PLATOON LIMITATION: statcast_search has NO pitcher x pitch-type group_by
+#   (verified — only name, name-date, pitch-type, team-pitch-type; a
+#   batter_stands param does exist). Weak-side platoon breadth therefore needs
+#   a Phase-2 pitch-level cache. Registered prediction, still untested: the
+#   weak-side count should SHARPEN the <=2 cliff.
+#
+#   ⚠ The candidate weights this file reports are a RESEARCH re-derivation
+#     (n10 ~0.62), NOT production. Sample and randomness differ. Production
+#     weights come from derive_sp_skillz_weights_v2.R.
 #
 # PRE-REGISTERED ADOPTION RULES (set before running):
 #  A) SKILL (SP Skillz v2.x candidate = n_pitches_10_sav as 7th ridge metric,

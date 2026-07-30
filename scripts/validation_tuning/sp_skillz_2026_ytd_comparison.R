@@ -2,6 +2,22 @@
 # ===========================================================================
 # SP Skillz 2026 YTD — Score with BOTH v1 and v2, compare rankings
 # ===========================================================================
+# Face-validity check on live data rather than a formal test. Scores the
+# in-progress 2026 season under BOTH the v1 and v2 weight sets and diffs the
+# resulting rankings, so a version change can be inspected on names you
+# actually recognise before it reaches users.
+#
+# Prints to stdout only — writes no CSV. Reads cached SP Skillz scores plus
+# FanGraphs leaderboard data under base_dir (hardcoded absolute path; edit it
+# or run from that machine).
+#
+# Sibling: sp_skillz_v1_v2_comparison.R does the same v1-vs-v2 diff on
+# COMPLETED seasons (2021-2025) with biggest-movers output. Use that one for
+# evidence; use this one for a sanity look at the current year.
+#
+# ⚠ NO VERDICT RECORDED. Nothing asserted here about what the comparison
+#   showed. This is a look-at-it script — re-run it when you need the view.
+# ===========================================================================
 
 suppressPackageStartupMessages({
   library(dplyr)

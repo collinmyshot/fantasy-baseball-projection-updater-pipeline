@@ -1,6 +1,23 @@
 #!/usr/bin/env Rscript
 # SP Skillz v1 vs v2 — Predictive Comparison + Biggest Movers
 # All output via cat() so it actually prints in the console
+#
+# Compares the v1 and v2 SP Skillz weight sets on COMPLETED seasons
+# (2021-2025) — predictive performance plus the biggest individual movers, so
+# a weight change can be judged both on aggregate skill and on whether the
+# names that move make baseball sense.
+#
+# Reads data/processed/sp_skillz_v2/sp_skillz_v2_full_seasons_2021_2025.csv
+# under base_dir (hardcoded absolute path; edit it or run from that machine).
+# Prints to stdout only — writes no CSV.
+#
+# Siblings: derive_sp_skillz_weights_v2.R produces the weights being compared;
+# sp_skillz_2026_ytd_comparison.R runs the same diff on the in-progress season.
+#
+# ⚠ NO VERDICT RECORDED. Nothing asserted here about how v2 compared. Re-run
+#   for the numbers rather than assuming v2 won.
+#
+# Usage: Rscript scripts/validation_tuning/sp_skillz_v1_v2_comparison.R
 
 suppressPackageStartupMessages({
   library(dplyr)

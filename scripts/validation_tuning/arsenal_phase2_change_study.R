@@ -11,6 +11,48 @@
 # name-month; 8 families ff/si/fc/slfam(SL+ST+SV)/cufam(CU+KC+CS)/ch/fs/kn).
 # Outcomes: per-start GSM from starts_with_pf_lenses.csv (2021-2025).
 #
+# ── RESULT (2026-07-15): HYPOTHESIS REJECTED IN ITS STRONG FORM. ──────────
+#   The premise was that a mix change makes season-to-date stats STALE and
+#   should trigger re-windowing. It does not.
+#
+#   MIX CHANGES ARE COMMON AND STICKY: a >=10pp monthly usage shift happens in
+#   50.5% of SP pitcher-seasons (7.5pp: 71%; 15pp: 18%), and 64% of changers
+#   hold at least half the delta afterward. So this is normal behaviour, not a
+#   rare event.
+#
+#   SELECTION CONFOUND FOUND AND QUANTIFIED — this is the important part.
+#   Changers were STRUGGLING BEFORE they changed (before good-rate 51.1% vs
+#   57.7% for never-changers). The raw difference-in-differences of +8.8pp
+#   shrinks to +3.1pp [+0.2, +6.0] after before-level ANCOVA. Direction holds
+#   in all three before-terciles. The raw effect scales with the threshold
+#   (15pp gives +14.4 raw) but regression to the mean scales right along with
+#   it, so the raw number is not the effect.
+#
+#   DISPERSION TEST NULL: SD ratio events vs controls 0.99 [0.89, 1.11].
+#   Changes do NOT make pitchers less predictable.
+#
+#   REFRAME: a mix change is a mild POSITIVE ADAPTATION signal, not a
+#   "throw out season-to-date data" staleness alarm. Do not build re-windowing
+#   on this.
+#
+#   CONVERGENCE (this is also the stabilization answer for n10 — mix is a
+#   CHOICE, not a sample): cumulative n10 vs full season is 98% within +/-1
+#   and 95% on the le2 flag by 150-400 pitches; exact n10 hits 93% by 1500+.
+#   -> ship n10 with a small pitches-based stabilization (~150, ball_pct
+#   convention) or nearly none. The instinct that "stabilization is weird
+#   here" was correct: you are not waiting for a sample to stabilize, you are
+#   observing a decision.
+#
+#   2026 CHANGER PROTOTYPE WORKS (phase2_changers_2026.csv, 66 flags at >=800
+#   pitches) and the list is face-valid: Robbie Ray new sinker, Sasaki
+#   splitter surge, Logan Gilbert FF +19pp, Ohtani sweeper +16pp,
+#   Imanaga FF -15pp.
+#
+# ── DATA NOTE ─────────────────────────────────────────────────────────────
+#   Savant buckets Mar/Apr together and Sep/Oct together — months are not
+#   uniform. The 10k-row response cap also makes name-date grain infeasible in
+#   bulk, which is why this runs at monthly grain.
+#
 # PRE-REGISTERED DESIGN (set before running):
 #   Qualifying month: >= 150 total pitches. SP universe: pitcher-seasons
 #   present in the starts panel (non-placeholder).

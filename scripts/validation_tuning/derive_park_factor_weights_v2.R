@@ -16,6 +16,16 @@
 # Also reported: how well the existing 45/35/20 blend and the direct points
 # component line up with the points target, so the "just use the points PF
 # directly" option can be judged on numbers.
+#
+# PREFER THIS OVER v1 for any fantasy-value question. v1's target makes BACON
+# dominance a mathematical certainty; this one does not prejudge the answer.
+#
+# ⚠ NO VERDICT RECORDED for this specific run. But note the surrounding park
+#   factor work HAS since moved on: the current iPF model uses a direct
+#   wOBAcon Overall lens with a drag correction and a Carry lens, and the
+#   45/35/20 blend referenced above is the OLD scheme. Treat the weights this
+#   script reports as a historical check, not as the live configuration.
+#   Live park factor behaviour is governed by the iPF build, not by this file.
 
 source(file.path("R", "utils.R"))
 

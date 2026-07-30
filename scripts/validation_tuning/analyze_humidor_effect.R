@@ -20,6 +20,23 @@
 #
 # Output: data/processed/park_factors/humidor_did_analysis.csv + console
 # summary. Research artifact — no model changes are made here.
+#
+# ── RESULT + DECISION (run 2026-07-01, decided by user 2026-07-02) ─────────
+#   Excluding BAL / DET / NYM as era-event confounds (wall moves and the like
+#   land in the same window and would be attributed to the humidor):
+#     HR effect       -0.0055 per BBE for 2022 adopters, z = -2.51
+#     wOBAcon effect  NULL
+#   So the humidor shows up on home runs specifically, not on contact quality
+#   overall, and the magnitude is small.
+#
+#   DECISION: NO era splits at 2022. The recommendation was no 18-way split
+#   (with an optional single group-level fixed effect as a middle path), and
+#   the user signed off on "humidor = no era splits" on 2026-07-02.
+#   This question is CLOSED. Do not reopen it without new evidence.
+#
+#   Humidor adoption facts, for reuse (Savant drag dashboard, fetched
+#   2026-07-01): 2021 = 10 clubs (HOU, TOR/Rogers, STL, AZ, SEA, MIA, NYM,
+#   TEX, BOS, COL); 2022 = all 30. Coors runs 65% RH, the rest 57%, all 70F.
 
 source(file.path("R", "utils.R"))
 source(file.path("R", "park_factors.R"))

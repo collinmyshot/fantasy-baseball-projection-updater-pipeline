@@ -13,6 +13,18 @@
 #   New pitch    = family with baseline < 3% and recent >= 10%
 # Goal: confirm the fetch works and the feed is face-valid before building the
 # fbb-tools module. NOT the shippable module — a validation harness.
+#
+# ── OUTCOME: prototype validated, and the real module SHIPPED. ─────────────
+#   The Arsenal Tracker was subsequently built in fbb-tools and rebuilt on the
+#   sweeper-aware GRANULAR taxonomy, gaining a Pitch Characteristics table
+#   (velo / horizontal / vertical, with optional volatility bands).
+#   ⚠ So this file is now a HISTORICAL HARNESS. It is the thing that proved
+#     the windowed detector was worth building; it is not what runs. For live
+#     behaviour read the fbb-tools module, not this.
+#
+#   Taxonomy warning if you do re-run it: this prototype predates the granular
+#   switch. Counting here follows the older grouped families, so its numbers
+#   will not line up with the live tracker.
 # ===========================================================================
 
 suppressPackageStartupMessages({ library(curl) })

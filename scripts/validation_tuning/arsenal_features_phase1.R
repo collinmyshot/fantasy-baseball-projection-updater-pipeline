@@ -11,6 +11,41 @@
 #   B) GSM target: per-start good-start rate (authoritative 0-4 GSM) on the
 #      streamonator starts sample, controlling for sp_skillz_index
 #
+# ── RESULT (2026-07-14, 2021-2025, 525 YoY pairs / 22,414 matched starts) ──
+#   HEADLINE: arsenal breadth buys INNINGS, not rates.
+#   GSM component decomposition shows breadth loading on ip_ok (~+0.15), the
+#   K channel slightly NEGATIVE (two-pitch arms are whiffier but shorter), and
+#   ER/WHIP ~0. That asymmetry explains why the GSM side looks solid while the
+#   skill/rate side is only marginal — they are measuring different things.
+#
+#   flag_le2_p10 (<=2 pitches at 10% usage) — CONFIRMED on GSM.
+#     coef -0.050 [-0.078, -0.017], holds 5/5 seasons,
+#     adjusted good-rate -4.8pp (55.7% -> 50.9%) at EQUAL SP Skillz.
+#     KILLED on the skill side — it is a leash/depth effect, not a rate effect.
+#     Only ~12-21 qualified SP-seasons a year, and the 2025 pool includes
+#     Sale / Gausman / Cease / Burnes / Ohtani. The penalty survives even with
+#     aces in it, but this is NEVER a raw "avoid" signal.
+#   flag_ge5_p10 (5+ pitch bonus) — DEAD both sides. The effect is asymmetric:
+#     there is a penalty end, not a bonus end.
+#   n_pitches_10 / eff_pitch_count (1/HHI) / fb_family_count_10 — PROMISING
+#     both sides. n_pitches_10 best on skill (dCV-R^2 +0.0045, 3/4 folds);
+#     fb_family_count_10 strongest on GSM (+0.0503 [+0.023, +0.080], 5/5).
+#     The 10% usage floor empirically beats 5% and 15%. FB-family counted WITH
+#     the cutter beats without.
+#   ALL Stuff+-DISTRIBUTION FEATURES DEAD/WEAK (best, second-best, weapons
+#     count, spread): R^2 0.57-0.67 against the existing stuff_plus input —
+#     overall Stuff+ already absorbs that information.
+#
+#   Survivors are essentially ONE breadth signal (intercorrelation R^2 0.4-0.6);
+#   flag_le2 and fb_family are nearly independent of each other (R^2 0.08).
+#
+#   CAVEATS LOGGED: skill-side z-scored-residual sensitivity is equivocal (the
+#   raw stack is ERA/SIERA-dominated); borderline verdicts flip run-to-run at
+#   bootstrap edges; full-season features are joined per start (same convention
+#   as sp_skillz_index — descriptive screen, NOT walk-forward); 14 features
+#   tested, so survivors needed the confirmatory ladder before shipping.
+#   That ladder is phase1b -> phase1c.
+#
 # PRE-REGISTERED SCREEN RULES (set before running, per lens-ladder practice):
 #   Skill side — feature is PROMISING iff BOTH:
 #     (S1) mean blended dCV-R2 > 0 with >= 3/4 LOYO folds positive

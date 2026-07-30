@@ -2,11 +2,41 @@
 # ===========================================================================
 # SP Skillz Weight Derivation v2 — Final Empirical Model
 # ===========================================================================
-# Metrics: k_minus_bb_pct, whiff_pct, stuff_plus, pitching_plus, ball_pct, high_gb_flag
+# Metrics (SEVEN — the header used to list six and predate arsenal_breadth;
+#   corrected 2026-07-30): k_minus_bb_pct, whiff_pct, stuff_plus,
+#   pitching_plus, ball_pct, high_gb_flag, arsenal_breadth
 # Targets: next_k_pct (1/3), next_whip (1/3), next_siera (2/9), next_era (1/9)
 # Method: Ridge regression with LOYO-CV, universal weights, 2-pass starter-pool z-scoring
 # Data: 2021-2025, qualified SPs (start_share >= 2/3, TBF >= 100)
 # Stuff+/Pitching+ use fixed-scale (x-100)/10 per live model convention
+#
+# ── THIS IS THE SCRIPT THAT PRODUCES THE LIVE WEIGHTS ──────────────────────
+#   Not exploratory. Whatever this emits is what the shipped SP Skillz model
+#   uses, so re-running it CHANGES THE PRODUCT. set.seed(20260715) is load-
+#   bearing: cv.glmnet picks lambda on random CV folds, so without the fixed
+#   seed the weights move run to run. Do not remove or change that seed
+#   casually — it is why the published weights are reproducible.
+#
+# ── RECORDED WEIGHTS ──────────────────────────────────────────────────────
+#   Canonical seeded run, GROUPED pitch taxonomy:
+#     kbb 2.0000 | whiff 1.3027 | stuff+ 0.7118 | pitching+ 1.1660
+#     ball 0.0778 | gb 0.3660 | arsenal 0.6133
+#   Adding arsenal_breadth lifted next-WHIP CV R^2 from 0.248 to 0.258, with
+#   K% flat — which is the point: breadth is a WHIP / run-shape signal, not a
+#   strikeout signal. That asymmetry is the mechanism check, not a side note.
+#
+#   SHIPPED + DEPLOYED 2026-07-18 under the SWEEPER-AWARE GRANULAR taxonomy
+#   this file now implements (sweeper and slurve count as pitches distinct
+#   from slider). Under granular, the breadth weight settled at 0.5153
+#   (down from the 0.6133 above). CV R^2 came out flat versus grouped:
+#     K 0.535 | WHIP 0.257 | SIERA 0.322 | ERA 0.153
+#   ⚠ Only the BREADTH weight is separately recorded for the granular run.
+#     The other six above are from the grouped run — do not assume they are
+#     byte-identical under granular. Re-run if you need all seven exactly.
+#
+#   Related history: an earlier "counting sub-pitches LOSES, keep the parent
+#   taxonomy" finding was later OVERTURNED by the sweeper-aware work. The
+#   granular taxonomy is current.
 # ===========================================================================
 
 suppressPackageStartupMessages({

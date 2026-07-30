@@ -5,6 +5,19 @@
 # totals against MLB's OFFICIAL league totals (MLB Stats API team season
 # hitting, summed) -- catches dropped games, double-counts, parse drift.
 # Also quantifies the pitcher-batting rows (should be ~0 HR/SB in 2024).
+#
+# ── RESULT (2026-07): PERFECT RECONCILIATION. Spine is trustworthy. ────────
+#   2024 spine HR = 5,453 and SB = 3,617, matching the MLB official Stats API
+#   EXACTLY — 0.00% difference across all 30 teams. End-to-end validated: no
+#   dropped games, no double-counting, no parse drift.
+#
+#   One fix came out of it: an explicit pitcher filter was added to
+#   build_weekly_hitter_value.R, removing 46 pitcher-weeks that the
+#   games-started >= 3 rule had let through (40,239 -> 40,193 hitter-weeks).
+#   Those 46 had no Steamer projection, so no downstream result changed.
+#
+#   Re-run this after any change to the game-log spine or the weekly roll-up.
+#   It is cheap and it is the only end-to-end check that exists.
 # ---------------------------------------------------------------------------
 suppressWarnings(suppressMessages({library(data.table); library(jsonlite)}))
 options(timeout = 120)

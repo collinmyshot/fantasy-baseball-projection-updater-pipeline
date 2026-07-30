@@ -2,6 +2,29 @@
 # analyze_topk_sweep.R -- Q3: extend the top-N win-rate sweep to find the ceiling,
 # on the FULL startable pool (not top-150), and compare against the K-free
 # pairwise metrics (all-pairs + similar-pair). 2016-2025 shipped/live panel.
+#
+# HITTER streamonator. Exists to answer "is K=5 cherry-picked?" — i.e. does the
+# reported top-5 win-rate survive sweeping K over 1/3/5/10/20/50/100/150/200/300.
+#
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║ DOES NOT RUN AS COMMITTED — DEAD SCRATCHPAD DEPENDENCY                   ║
+# ╠══════════════════════════════════════════════════════════════════════════╣
+# ║ Reads ext_panel.rds out of the SCRATCH path below, a scratchpad from      ║
+# ║ session b1414f12 that no longer exists. This script does NOT build the    ║
+# ║ panel — compare_streamonator_extended.R does.                            ║
+# ║                                                                          ║
+# ║ TO REVIVE, in order:                                                     ║
+# ║   1. repoint SCRATCH in BOTH files to something durable, e.g.            ║
+# ║        file.path("data","processed","hitter_stream_eval")                ║
+# ║   2. run compare_streamonator_extended.R to rebuild ext_panel.rds        ║
+# ║   3. run this                                                            ║
+# ║ Step 2 is the expensive one; this sweep is cheap once the panel exists.  ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+#
+# ⚠ NO RESULT IS RECORDED for the sweep itself. The related published figures
+#   (win-rates SB 62 / HR 61 / AVG 66, pairwise floor 50-53%) come from
+#   compare_streamonator_extended.R, not from this file. Re-run to get the
+#   K-ceiling answer; do not assume it was ever concluded.
 suppressWarnings(suppressMessages(library(data.table))); set.seed(42)
 SCRATCH <- "/private/tmp/claude-501/-Users-ckaufman-Documents-New-project/b1414f12-4c91-4780-a4ed-5fb1e469e838/scratchpad"
 gl <- readRDS(file.path(SCRATCH, "ext_panel.rds"))

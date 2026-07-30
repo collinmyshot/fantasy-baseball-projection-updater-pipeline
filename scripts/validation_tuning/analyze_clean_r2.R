@@ -7,6 +7,22 @@
 # moments (not knowable in advance). Recompute against PROJECTED (pre-knowable)
 # moments and report the honest number. Per-category R^2 was already clean
 # (raw projected count vs raw realized count, no week-moment scaling).
+#
+# ── RESULT (2026-07): the leak was DEFLATING the number, not inflating it. ─
+#   Clean blended R^2 = 8.7%, not the 6.7% previously reported.
+#   ARTICLE NUMBER: projections explain ~8.7% of weekly 5x5 variance.
+#   Still low, so the thesis holds — weekly hitter outcomes are mostly noise.
+#
+#   Rankings and pick-accuracy are UNAFFECTED (z-scaling is monotone, so every
+#   rank-based result is scale-invariant). Every other finding stands.
+#
+#   PROCESS NOTE worth remembering: the audit predicted this leak would inflate
+#   R^2. It did the opposite. The direction was called wrong and only actually
+#   running it settled the matter. Predicted sign of a bias is not evidence.
+#
+#   Per-category R^2 for context (already clean, unchanged):
+#     SB 19% | R 15% | RBI 12% | HR 11% | AVG 1.9%
+#   AVG is ~unpredictable week to week, as expected.
 # ---------------------------------------------------------------------------
 suppressWarnings(suppressMessages(library(data.table)))
 ROOT <- "/Users/ckaufman/Documents/New project"

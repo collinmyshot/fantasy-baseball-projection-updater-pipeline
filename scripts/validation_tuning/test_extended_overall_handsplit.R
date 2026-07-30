@@ -1,6 +1,33 @@
 #!/usr/bin/env Rscript
-# test_shrunk_stacking.R -- improvement path #3
+# test_extended_overall_handsplit.R -- extended eval, HAND-SPLIT park factors
 # ---------------------------------------------------------------------------
+# NOTE: the header used to be a copy-paste of test_shrunk_stacking.R. Same
+# machinery, but this file is the hand-split-park variant. Corrected 2026-07-30.
+#
+# Identical to test_extended_overall.R (2016-2025 ex-2020, 9 LOSO folds) except
+# the park factor is HAND-SPLIT: it reads park_factors_by_hand_era.csv and joins
+# on the batter's EFFECTIVE hand versus the starter (switch hitters take the
+# opposite side of the pitcher), rather than one season-level park index.
+#
+# ── RESULT (2026-07-07): the headline HOLDS under hand-split park. ────────
+#   Overall 61% [55, 67], unchanged from the season-level-park version.
+#   Reliability weights equally stable: 0.53 / 0.53 / 0.45 / 0.24 / 0.21
+#   (R / HR / RBI / SB / AVG).
+#   Read: hand-splitting the park is a small sharpening, exactly as predicted,
+#   not a new source of edge. Park's game-level HR effect is modest (~1.25x).
+#
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║ BUG CAUGHT AND FIXED HERE (2026-07-07) — CHECK THIS IN ANY REUSE         ║
+# ╠══════════════════════════════════════════════════════════════════════════╣
+# ║ TIER SELECTION MUST RANK PLAYERS, NOT GAMES.                             ║
+# ║ frank(-proj, by=season) over game-level rows selects ~150 GAMES per       ║
+# ║ season, which is 1-2 players — not the top 150 players.                  ║
+# ║ Fix: take a player-level unique rank first, then filter.                 ║
+# ║ Pre-fix numbers were wrong in a way that looked plausible: platoon read   ║
+# ║ x1.35 and park read x0.99. Post-fix everything validates.                ║
+# ║ The same failure mode applies to compare_streamonator_extended.R.        ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+#
 # Reliability-shrunk stacking for the OVERALL blend: per category, decompose
 # pred_z = base_z (Steamer) + delta_z (model's deviation), then learn per-
 # category coefficients (a_c, b_c) on TRAIN seasons only:

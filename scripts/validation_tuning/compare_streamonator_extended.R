@@ -13,6 +13,38 @@
 #      matchup-decile figure: how much does TALENT separate on the same scale?)
 # Panel machinery identical to compare_streamonator_v2 (dynamic pools, tuned
 # shrinkage, modal-7 slot, ADP prior in SB). Panel cached to scratch RDS.
+#
+# ⚠ HITTER streamonator (SB/HR/AVG), not the SP tool. See the note at the top
+#   of compare_streamonator_baselines.R.
+#
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║ DOES NOT RUN AS COMMITTED — DEAD SCRATCHPAD PATH                         ║
+# ╠══════════════════════════════════════════════════════════════════════════╣
+# ║ SCRATCH below points at a session scratchpad from session b1414f12 that   ║
+# ║ no longer exists. Both the panel cache write AND analyze_topk_sweep.R's   ║
+# ║ read of ext_panel.rds depend on it.                                      ║
+# ║                                                                          ║
+# ║ TO REVIVE: repoint SCRATCH at a durable location, e.g.                    ║
+# ║   SCRATCH <- file.path("data","processed","hitter_stream_eval")           ║
+# ║ then run this file BEFORE analyze_topk_sweep.R, which consumes the same   ║
+# ║ ext_panel.rds. Rebuilding the panel is the expensive part; the sweep is   ║
+# ║ cheap once it exists.                                                    ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+#
+# ── RESULT (2026-07-07, full 2016-2025 ex-2020 window) ─────────────────────
+#   Win-rates: SB 62 / HR 61 / AVG 66. Pairwise floor 50-53%.
+#   These are the ARTICLE numbers — single provenance, one window, so every
+#   published figure is comparable. SB effects come out milder on the full
+#   window than on 2021-2025 (exp_pa 1.20 and hold 0.80, vs 1.48 / 0.63)
+#   because the 2023 rule change dilutes the era. Hence the SB era-note that
+#   accompanies the published table.
+#
+#   ⚠ REUSE CAUTION (bug caught and fixed 2026-07-07 in the sibling
+#   test_extended_overall_handsplit.R, same failure mode applies here):
+#   TIER SELECTION MUST RANK PLAYERS, NOT GAMES. Using
+#   frank(-proj, by=season) on game-level rows yields ~150 GAMES per season,
+#   which is 1-2 players. Rank at player level via a unique player-level rank
+#   first. The pre-fix numbers were wrong (platoon looked x1.35, park x0.99).
 # ---------------------------------------------------------------------------
 suppressWarnings(suppressMessages(library(data.table)))
 ROOT <- "/Users/ckaufman/Documents/New project"; set.seed(42)

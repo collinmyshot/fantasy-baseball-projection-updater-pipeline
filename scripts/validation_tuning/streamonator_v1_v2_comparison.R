@@ -2,10 +2,36 @@
 # ===========================================================================
 # Streamonator Weight Validation: v1+2025PF (baseline) vs v2+2026PF (updated)
 # ===========================================================================
+# This IS the SP Streamonator (unlike the compare_streamonator_*.R files next
+# to it, which are the hitter tool). Asks a maintenance question rather than a
+# design one: when SP Skillz moved v1 -> v2 and the park factors were rebuilt,
+# did the 6:3:1 weights still hold, and did the composite get better?
+#
 # Loads cached starts_YYYY.csv (2021-2025), adds:
 #   - v2 SP Skillz index (from cached v2 scores)
 #   - 2026 park factor (from rebuilt clean file)
 # Runs grid search under both configurations, compares.
+#
+# Compares on a MATCHED SUBSET (starts scoreable under both v1 and v2), which
+# is the right call — v1-vs-v2 on different row sets would confound the
+# version change with coverage.
+#
+# Reports, all to stdout (no CSV is written):
+#   1. best weights + Spearman + pct_ge3 for v1+PF2025 (all starts),
+#      v1+PF2025 (matched), v2+PF2026 (matched)
+#   2. the same at fixed 6:3:1, with the v2-minus-v1 delta
+#   3. season-by-season at 6:3:1 across 2021-2025
+#
+# ⚠ NO VERDICT IS RECORDED FOR THIS SCRIPT. Unlike its neighbours, I have no
+#   stored result for this run, so nothing is asserted here about how v2
+#   compared. Re-run it if you need the answer; do not assume it passed.
+#
+# ── INHERITED CAVEATS (reads starts_YYYY.csv) ──────────────────────────────
+#   Season-final scoring (hindsight), and the stored good_start_score column
+#   is the stale 0-5 version. See the header box in
+#   derive_streamonator_weights.R before trusting absolute levels here.
+#
+# Usage: Rscript scripts/validation_tuning/streamonator_v1_v2_comparison.R
 # ===========================================================================
 
 suppressPackageStartupMessages(library(dplyr))

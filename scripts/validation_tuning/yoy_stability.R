@@ -7,6 +7,18 @@
 # floor (reduces measurement-noise attenuation on the per-swing geometry metrics).
 # NOTE: YoY r conflates sampling noise + real talent change -> LOWER BOUND on
 # reliability. 2024 (tracking started ~mid-May) and 2026 (partial) are light.
+#
+# SCOPE: this is the BAT-SPEED / SWING-MAP article line of work, not the
+# streamonators. Reads data/processed/swing_map/hitter_swing_map.csv. Sibling
+# scripts on the same dataset: wide_corr_stability.R (feature x outcome matrix
+# plus the stable-AND-predictive synthesis) and plot_miss_scatters.R (the
+# article's scatter figures).
+#
+# ⚠ NO VERDICT RECORDED. I have no stored result for this run, so nothing is
+#   asserted here about which metrics proved to be skills. Re-run it for the
+#   answer rather than assuming one.
+#
+# Usage: Rscript scripts/validation_tuning/yoy_stability.R
 
 suppressPackageStartupMessages({library(readr); library(dplyr); library(ggplot2)})
 

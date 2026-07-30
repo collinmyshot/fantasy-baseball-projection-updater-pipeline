@@ -2,6 +2,11 @@
 # plot_miss_scatters.R
 # Scatter+trend plots for the swing-timing MISS metrics, pooled 2024-26
 # (one point per player-season, PA >= 100). fbb-tools research-article style.
+#
+# SCOPE: BAT-SPEED / SWING-MAP article figures, not the streamonators. This is
+# a FIGURE-PRODUCING script (the only one in this folder) — it emits plots for
+# the article, it does not test a hypothesis or return a verdict. Siblings:
+# yoy_stability.R and wide_corr_stability.R do the analysis behind it.
 #   1. Early%  vs Pull%
 #   2. Under%  vs Fly Ball%
 #   3. Miss Distance vs K%

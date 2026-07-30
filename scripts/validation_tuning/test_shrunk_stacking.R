@@ -10,6 +10,20 @@
 # Compare at week horizon: Steamer vs plain blend vs shrunk blend
 # (gap-10 pick-acc + top-5 weekly win-rate, bootstrap by week).
 # Panel = v2 machinery (identical to export_hitter_stream_engine.R).
+#
+# WINDOW: 2022-2025 (pitcher OBP-against 2021-2025). This is the NARROW window
+# version. Two siblings share this machinery and differ only in window/park:
+#   test_extended_overall.R           2016-2025 ex-2020, season-level iPF
+#   test_extended_overall_handsplit.R 2016-2025 ex-2020, hand-split iPF
+#
+# ── RESULT (2026-07-05): on 2022-25 alone, shrinkage is a WASH. ────────────
+#   The method is sound but this window cannot resolve it — too few LOSO folds.
+#   Correctly called "underpowered, not refuted" rather than "no effect", and
+#   that call was then CONFIRMED: extending to 9 folds in
+#   test_extended_overall.R separates plain (57%) from shrunk (61%).
+#
+#   Lesson worth keeping: a wash on a short window is a power problem, not a
+#   verdict. Extend before discarding a mechanism that has a prior.
 # ---------------------------------------------------------------------------
 suppressWarnings(suppressMessages(library(data.table)))
 ROOT <- "/Users/ckaufman/Documents/New project"; set.seed(42)

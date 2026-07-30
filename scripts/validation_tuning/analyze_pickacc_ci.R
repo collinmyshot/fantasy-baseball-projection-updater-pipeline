@@ -8,6 +8,22 @@
 #
 # Baseline here = Steamer, each category on its own top-120 projected pop, gap=10.
 # 50% = coin flip. Reusable: gap_week_stats() + boot_ci().
+#
+# ── RESULT (2026-07): machinery BUILT AND VERIFIED. Reuse it. ──────────────
+#   Steamer baselines, gap-10, top-120 population:
+#     SB 51.9% [51.6, 52.2] | R 52.1 | RBI 51.6 | HR 51.4 | AVG 50.6
+#   All are barely-but-significantly above a coin flip.
+#
+#   The tight +/-0.3 CI is REAL, not a bug. It looks implausibly narrow at
+#   first glance, but overlapping gap-pairs are negatively correlated, and the
+#   week-clustered bootstrap agrees with the normal approximation. Checked.
+#
+#   OPERATIONAL BAR: a genuine SB lift has to clear ~52.2% cleanly. Feature
+#   tests should use a PAIRED-difference bootstrap against this baseline, not
+#   an unpaired comparison of two independent estimates.
+#
+#   gap_week_stats() and boot_ci() are the reusable pieces — later hitter work
+#   should call these rather than re-implementing the clustering.
 # ---------------------------------------------------------------------------
 suppressWarnings(suppressMessages(library(data.table)))
 ROOT <- "/Users/ckaufman/Documents/New project"

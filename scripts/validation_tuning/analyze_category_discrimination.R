@@ -7,6 +7,26 @@
 # genuinely harder to predict. This replaces the earlier apples-to-oranges
 # "SB-among-runners vs other-cats-whole-pool" comparison.
 # gap = 10  (the realistic "top-10 vs top-20" streaming choice). 50% = coin flip.
+#
+# ── RESULT (2026-07): fairly compared, EVERY category is near coin flip. ───
+#   SB 53-54.5% | R 52.8% | HR ~52% | RBI ~52% | AVG 51%
+#
+#   This DEFLATES an earlier claim. SB's apparent "big edge" was an artifact of
+#   the unfair setup (SB judged among runners while other categories were
+#   judged on the whole pool). Compared fairly, SB is only MARGINALLY best.
+#
+#   Consequence for the roadmap: SB-first is still the right call, but it is
+#   justified on MECHANISM (catcher arm / pitcher hold / handedness are
+#   orthogonal to the projection) rather than on predictability. Best-hedged
+#   bet, not a clear winner.
+#
+#   Tier finding: the marginal tier is NOT less predictable — equal or slightly
+#   better, with more ties. The worry that marginal players are noise did not
+#   hold up. Caveat: category-specialist marginals self-select toward
+#   separation, which may flatter them.
+#
+#   Also settled here: Steamer is a LEGITIMATE bar, not a strawman. Preseason
+#   projections usually beat in-season stats. Calling it a strawman was wrong.
 # ---------------------------------------------------------------------------
 suppressWarnings(suppressMessages(library(dplyr)))
 ROOT <- "/Users/ckaufman/Documents/New project"

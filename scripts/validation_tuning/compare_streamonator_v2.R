@@ -10,6 +10,38 @@
 #  (4) slot = MODAL lineup slot over previous 7 started games
 # Also computes, for the interpretation question: top-5 overlap with Steamer
 # and gap-10 accuracy on DISAGREEMENT pairs only (week horizon).
+#
+# ⚠ HITTER streamonator (SB/HR/AVG), not the SP tool. See the note at the top
+#   of compare_streamonator_baselines.R.
+#
+# Output: streamonator_baseline_comparison_v2.csv
+#
+# ── RESULT: THE HEADLINE NUMBERS. Quote THIS file, not v1. ──────────────────
+#   SB FLIPPED. Weekly win-rate vs Steamer went 44 -> 67% [59, 75].
+#   Beats Steamer 60/67/67% at game/half/week. HR 66 and AVG 64 stable.
+#   Beats naive L14 streaming in 66-95% of weeks; beats random 77-100%.
+#
+#   FINAL HEADLINE (v2, all live, LOSO): the streamonator beats random
+#   77-100%, naive L14/L30 66-95%, and Steamer 58-68% of weeks, across all
+#   three categories.
+#
+#   HONESTY NOTE: the SB flip is a BUNDLE effect. All five changes shipped at
+#   once with NO ablation, so the individual credit is unassigned. The dynamic
+#   population (change 1) is the lead suspect. If that attribution ever
+#   matters, it needs a real ablation run — it was never done.
+#
+#   Tuned shrinkage landed at batter pseudo-counts 100 HR / 500 AVG / 150 SB
+#   against a-priori guesses of 170 / 900 / 300, with entity multiplier 0.5.
+#   Read: the data wants to-date performance weighted MORE than priors did.
+#
+# ── WHY TINY PICK-ACCURACY GAPS STILL PRODUCE BIG WIN-RATES ────────────────
+#   This answers "are those small accuracy gains meaningful?" — yes, and the
+#   mechanism is agreement dilution:
+#     top-5 overlap with Steamer        50 / 63 / 37%  (SB / HR / AVG)
+#     accuracy on DISAGREEMENT pairs    54.8 / 56.3 / 52.1%
+#   Most pairs are ones where both systems already agree, which drags the
+#   all-pairs number toward 50%. The edge lives on contested slots, and that
+#   is what turns into 60-68% weekly win-rates.
 # ---------------------------------------------------------------------------
 suppressWarnings(suppressMessages(library(data.table)))
 ROOT <- "/Users/ckaufman/Documents/New project"; set.seed(42)

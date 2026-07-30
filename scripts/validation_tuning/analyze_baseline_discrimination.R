@@ -9,6 +9,27 @@
 #      the projected base-stealers (comparing two non-runners on steals is
 #      meaningless and just manufactures ties).
 # 50% = coin flip.
+#
+# ── RESULT (2026-06-30). THIS IS THE ARTICLE'S HONEST BAR. ─────────────────
+#   adjacent (gap-1)     49.9% overall / 50.2% SB   <- a literal coin flip
+#   realistic streaming  52-58%  (gap 10-50)
+#   only gap >= 100 reaches the 60s
+#
+#   ⚠ DO NOT CITE THE ALL-PAIRS NUMBER (58% overall / 66% SB). It is inflated
+#   by easy stud-vs-scrub comparisons that nobody actually agonises over. The
+#   gap-conditioned number is the honest one, and conditioning on gap is the
+#   entire point of this script.
+#
+#   SB tie problem: 61% of adjacent similar pairs TIE on weekly steals, because
+#   most full-timers steal 0-1 per week. Restricting SB to projected RUNNERS
+#   drops ties from 61% to ~34%, but accuracy is still ~50% adjacent and ~55%
+#   at a top10-vs-top20 gap. Half of top-60 projected-runner weeks produce
+#   ZERO steals; 2+ SB happens only ~20% of the time.
+#
+#   WHY THIS MATTERS: among SIMILAR hitters, Steamer alone is ~a coin flip.
+#   That is the bar the matchup features (catcher arm, pitcher hold, handedness,
+#   park) have to clear, and it is the whole reason the tool can exist at all.
+#   A null result here would itself have been publishable.
 # ---------------------------------------------------------------------------
 suppressWarnings(suppressMessages(library(dplyr)))
 ROOT <- "/Users/ckaufman/Documents/New project"

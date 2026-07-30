@@ -4,6 +4,20 @@
 #     pitch-type splits) x every outcome.
 # (2) Synthesis: for each feature, YoY stability vs. peak correlation with outcomes
 #     -> find the metrics that are BOTH stable and predictive.
+#
+# SCOPE: BAT-SPEED / SWING-MAP article work, not the streamonators. Siblings on
+# the same dataset: yoy_stability.R (the stability axis this script consumes)
+# and plot_miss_scatters.R (article figures).
+#
+# ⚠ NO VERDICT RECORDED — nothing asserted here about which features won the
+#   stable-and-predictive quadrant. Re-run for the answer.
+#
+# DEPENDENCY: reads the FLOORED hitter_swing_map.csv from data/processed/swing_map,
+# and writes back there. Note DL points at ~/Downloads, so any manual CSV this
+# needs must be sitting there. See the README in this folder for the list of
+# scripts with ~/Downloads dependencies.
+#
+# Usage: Rscript scripts/validation_tuning/wide_corr_stability.R
 
 suppressPackageStartupMessages({library(readr); library(dplyr); library(tidyr); library(ggplot2)})
 

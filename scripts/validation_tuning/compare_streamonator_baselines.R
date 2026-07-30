@@ -1,6 +1,12 @@
 #!/usr/bin/env Rscript
 # compare_streamonator_baselines.R
 # ---------------------------------------------------------------------------
+# ⚠ THIS IS THE **HITTER** STREAMONATOR, NOT THE SP ONE.
+#   Despite sitting next to the SP scripts, all three compare_streamonator_*.R
+#   files evaluate the HITTER tool (SB / HR / AVG on hitter_game_logs).
+#   The SP-side equivalent is streamonator_v1_v2_comparison.R. Don't mix them:
+#   different data spine, different target metric, different baselines.
+# ---------------------------------------------------------------------------
 # THE HEADLINE COMPARISON: streamonator (live per-game engines) vs
 #   (a) RANDOM  -- pick-acc vs 50%; top-5 vs pool-average-five
 #   (b) L14/L30 -- rank purely by trailing 14/30-day category rate (naive
@@ -10,6 +16,33 @@
 # games), horizons game/half-week/week, LOSO 2022-2025.
 # Metrics: gap-10 pick-acc; top-5 selection lift; WEEK WIN-RATE = share of
 # pools where model's top-5 out-produced the baseline's top-5 (ties=0.5).
+#
+# Output: streamonator_baseline_comparison.csv
+#
+# ── RESULT (run 2026-07-04) — v1 of the four-way. SUPERSEDED by v2. ─────────
+#   Weekly top-5 win-rates (model vs strategy, ties = 0.5):
+#     vs RANDOM      82-96% everywhere
+#     vs L14 / L30   HR 79-89%, AVG 67-82%, SB 54-64%
+#                    -> naive recency streaming is the WORST strategy tested
+#                       (pick-acc ~50-52%), beaten even by plain Steamer
+#     vs STEAMER     HR 63/67/68% and AVG 63/61/66% (game/half/week, all
+#                    CIs above 50) = beats projections ~2/3 of weeks
+#                    SB does NOT beat Steamer weekly: 53/50/44
+#   Read on SB: its edge is real in TOTAL production but CONCENTRATED in
+#   green-light weeks and ties elsewhere. SB = spot tool; HR/AVG = every-week
+#   tools.
+#
+#   ⚠ SB LATER FLIPPED. compare_streamonator_v2.R fixes the design issues below
+#   and SB goes 44 -> 67% weekly win-rate vs Steamer. Quote v2, not this file.
+#
+# ── KNOWN LIMITATIONS OF THIS VERSION (the v2 to-do list) ───────────────────
+#   * static top-150 populations miss in-season risers  <- biggest one
+#   * iPF era factors carry mild backtest look-ahead
+#   * shrinkage pseudo-counts untuned
+#   * one-game slot memory
+#   * ceiling tables are retrodictive upper bounds
+#   * tie-breaks deterministic (fixed here with seeded random)
+#   * multiple comparisons unadjusted
 # ---------------------------------------------------------------------------
 suppressWarnings(suppressMessages(library(data.table)))
 ROOT <- "/Users/ckaufman/Documents/New project"; set.seed(42)

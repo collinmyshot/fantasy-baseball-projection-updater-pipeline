@@ -264,7 +264,52 @@ restandardize_over_selected <- function(picked_tbl) {
     picked_tbl$k_idx_100 <- restd(picked_tbl$k_resid)
   }
   picked_tbl$overall_pf_idx_100 <- restd(picked_tbl$overall_resid)
+  picked_tbl <- add_ratio_indices(picked_tbl)
   picked_tbl
+}
+
+# Second scale, alongside the z-score index above. The default index answers
+# "how unusual is this park" (100 + 10 * z, so 10 points is one standard
+# deviation). The ratio index answers "how much does this park change the
+# rate" (100 * (1 + effect / league baseline), so 110 means ten percent above
+# league average), which is the convention Savant uses.
+#
+# Both are honest; they answer different questions, and the gap between them is
+# largest exactly where a lens has a tight spread across parks. K is the case
+# that motivated this: a four point swing in strikeout rate is nearly three
+# standard deviations, so the z-scale prints Coors at 77 and Seattle at 121
+# while the ratio scale prints 91 and 109 for the same underlying 20.1% versus
+# 24.2%.
+LENS_BASELINE_FILE <- file.path("data", "processed", "park_factors", "lens_baselines.csv")
+
+load_lens_baselines <- function(path = LENS_BASELINE_FILE) {
+  if (!file.exists(path)) {
+    warning(sprintf("Lens baselines not found (%s); ratio-scale columns will be NA. Run scripts/park_factors/compute_lens_baselines.R.", path))
+    return(NULL)
+  }
+  b <- utils::read.csv(path, stringsAsFactors = FALSE, check.names = FALSE)
+  stats::setNames(suppressWarnings(as.numeric(b$baseline)), b$lens)
+}
+
+add_ratio_indices <- function(tbl) {
+  base <- load_lens_baselines()
+  ratio <- function(effect_col, lens) {
+    x <- suppressWarnings(as.numeric(tbl[[effect_col]]))
+    if (is.null(base) || !lens %in% names(base) || !is.finite(base[[lens]]) || base[[lens]] == 0) {
+      return(rep(NA_real_, length(x)))
+    }
+    ifelse(is.finite(x), 100 * (1 + x / base[[lens]]), NA_real_)
+  }
+  tbl$overall_ratio_idx <- ratio("overall_resid", "overall")
+  tbl$bacon_ratio_idx <- ratio("bacon_resid", "bacon")
+  tbl$hr_ratio_idx <- ratio("hr_resid", "hr")
+  if ("carry_ft" %in% names(tbl)) {
+    tbl$carry_ratio_idx <- ratio("carry_ft", "carry")
+  }
+  if ("k_resid" %in% names(tbl)) {
+    tbl$k_ratio_idx <- ratio("k_resid", "k")
+  }
+  tbl
 }
 
 pick_display_rows <- function(table_data) {
@@ -500,6 +545,7 @@ build_half_display <- function(half_label) {
   merged$carry_idx_100 <- std_index(merged$carry_ft)
   merged$k_idx_100 <- std_index(merged$k_resid)
   merged$overall_pf_idx_100 <- std_index(merged$overall_resid)
+  merged <- add_ratio_indices(merged)
 
   merged <- merged[!is.na(merged$team_id), , drop = FALSE]
   merged
@@ -565,6 +611,7 @@ build_hand_display <- function(hand_label) {
   merged$carry_idx_100 <- std_index(merged$carry_ft)
   merged$k_idx_100 <- std_index(merged$k_resid)
   merged$overall_pf_idx_100 <- std_index(merged$overall_resid)
+  merged <- add_ratio_indices(merged)
 
   merged <- merged[!is.na(merged$team_id), , drop = FALSE]
   merged

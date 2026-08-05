@@ -98,6 +98,27 @@ idx_on <- function(x, sc) {
   ifelse(is.finite(x), 100 + 10 * (x - sc$m) / sc$s, NA_real_)
 }
 
+# Second scale: percentage of league average rather than standard deviations,
+# matching the leaderboard's scale toggle. See build_park_factor_clean_2026.R
+# for why both exist.
+lens_baselines <- local({
+  p <- file.path(output_dir, "lens_baselines.csv")
+  if (!file.exists(p)) {
+    warning("lens_baselines.csv not found; archive ratio columns will be NA.")
+    return(NULL)
+  }
+  b <- utils::read.csv(p, stringsAsFactors = FALSE)
+  stats::setNames(suppressWarnings(as.numeric(b$baseline)), b$lens)
+})
+ratio_on <- function(x, lens) {
+  x <- suppressWarnings(as.numeric(x))
+  if (is.null(lens_baselines) || !lens %in% names(lens_baselines) ||
+      !is.finite(lens_baselines[[lens]]) || lens_baselines[[lens]] == 0) {
+    return(rep(NA_real_, length(x)))
+  }
+  ifelse(is.finite(x), 100 * (1 + x / lens_baselines[[lens]]), NA_real_)
+}
+
 sc_overall <- scale_from_picked("overall_resid")
 sc_bacon <- scale_from_picked("bacon_resid")
 sc_hr <- scale_from_picked("hr_resid")
@@ -107,6 +128,11 @@ arch$overall_idx <- idx_on(arch$overall_resid, sc_overall)
 arch$bacon_idx <- idx_on(arch$bacon_resid, sc_bacon)
 arch$hr_idx <- idx_on(arch$hr_resid, sc_hr)
 arch$carry_idx <- idx_on(arch$carry_ft, sc_carry)
+
+arch$overall_ratio_idx <- ratio_on(arch$overall_resid, "overall")
+arch$bacon_ratio_idx <- ratio_on(arch$bacon_resid, "bacon")
+arch$hr_ratio_idx <- ratio_on(arch$hr_resid, "hr")
+arch$carry_ratio_idx <- ratio_on(arch$carry_ft, "carry")
 
 # K% on the same current-30 scale as everything else. The scale comes from the
 # picked rows' k_resid so an era shows the same K number here as on the
@@ -118,9 +144,11 @@ if (nrow(k_eras) > 0 && "k_resid" %in% names(picked)) {
   # Raw effect in K% points is the interpretable companion to the z-scale
   # index, the same way carry_ft sits next to carry_idx.
   arch$k_pct_pts <- ifelse(is.finite(arch$k_resid), 100 * arch$k_resid, NA_real_)
+  arch$k_ratio_idx <- ratio_on(arch$k_resid, "k")
 } else {
   arch$k_idx <- NA_real_
   arch$k_pct_pts <- NA_real_
+  arch$k_ratio_idx <- NA_real_
 }
 
 # Batter-side overall factors, standardized per side over the current 30
@@ -136,18 +164,24 @@ if (nrow(hand) > 0) {
     side_current <- side_current[is.finite(side_current)]
     sc_side <- list(m = mean(side_current), s = stats::sd(side_current))
     arch[[paste0(tolower(side), "hb_overall_idx")]] <- idx_on(arch$delta_side, sc_side)
+    arch[[paste0(tolower(side), "hb_overall_ratio_idx")]] <- ratio_on(arch$delta_side, "overall")
     arch$delta_side <- NULL
   }
 } else {
   arch$lhb_overall_idx <- NA_real_
   arch$rhb_overall_idx <- NA_real_
+  arch$lhb_overall_ratio_idx <- NA_real_
+  arch$rhb_overall_ratio_idx <- NA_real_
 }
 
 out_cols <- c(
   "park_era_id", "status", "team_id", "team", "park", "era", "years_used",
   "total_bbe", "overall_idx", "bacon_idx", "hr_idx", "carry_idx", "carry_ft",
   "k_idx", "k_pct_pts",
-  "lhb_overall_idx", "rhb_overall_idx", "overall_resid", "overall_se"
+  "lhb_overall_idx", "rhb_overall_idx",
+  "overall_ratio_idx", "bacon_ratio_idx", "hr_ratio_idx", "carry_ratio_idx",
+  "k_ratio_idx", "lhb_overall_ratio_idx", "rhb_overall_ratio_idx",
+  "overall_resid", "overall_se"
 )
 out_cols <- out_cols[out_cols %in% names(arch)]
 arch_out <- arch[, out_cols]
@@ -159,7 +193,10 @@ hist <- hist[order(hist$team, hist$years_used), ]
 arch_out <- rbind(cur, hist)
 rownames(arch_out) <- NULL
 
-for (nm in c("overall_idx", "bacon_idx", "hr_idx", "carry_idx", "carry_ft", "k_idx", "k_pct_pts", "lhb_overall_idx", "rhb_overall_idx")) {
+for (nm in c("overall_idx", "bacon_idx", "hr_idx", "carry_idx", "carry_ft", "k_idx", "k_pct_pts",
+             "lhb_overall_idx", "rhb_overall_idx",
+             "overall_ratio_idx", "bacon_ratio_idx", "hr_ratio_idx", "carry_ratio_idx",
+             "k_ratio_idx", "lhb_overall_ratio_idx", "rhb_overall_ratio_idx")) {
   if (nm %in% names(arch_out)) {
     arch_out[[nm]] <- round(as.numeric(arch_out[[nm]]), 2)
   }

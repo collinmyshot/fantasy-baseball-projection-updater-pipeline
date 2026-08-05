@@ -2,10 +2,16 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "fbb-tools",
+      "runtimeExecutable": "Rscript",
+      "runtimeArgs": ["-e", "shiny::runApp('/Users/ckaufman/Documents/fbb-tools-repo', host='127.0.0.1', port=8080)"],
+      "port": 8080
+    },
+    {
       "name": "Shiny App",
       "runtimeExecutable": "Rscript",
-      "runtimeArgs": ["-e", "shiny::runApp('/Users/ckaufman/Documents/New project', host='127.0.0.1', port=8080)"],
-      "port": 8080
+      "runtimeArgs": ["-e", "shiny::runApp('/Users/ckaufman/Documents/New project', host='127.0.0.1', port=8082)"],
+      "port": 8082
     },
     {
       "name": "Portal",

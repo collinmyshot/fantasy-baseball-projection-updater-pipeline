@@ -11,6 +11,11 @@ rsconnect/
 data/raw/statcast_bbe_store.csv
 data/raw/statcast_bbe_store_chunks/
 data/raw/statcast_bbe_chunks_2015_2025/
+data/raw/statcast_pa_store.csv
+data/raw/statcast_pa_store_chunks/
+# Raw drag-dashboard payload archive; the processed series
+# (data/processed/drag_daily.csv) is what the model reads and is tracked.
+data/raw/savant_drag/
 # Smoke-test / scratch outputs from park factor builds.
 data/processed/park_factors_smoke/
 data/processed/park_factors_smoke_resid_off/

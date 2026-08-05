@@ -1,49 +1,49 @@
-"park_era_id","status","team_id","team","park","era","years_used","total_bbe","overall_idx","bacon_idx","hr_idx","carry_idx","carry_ft","lhb_overall_idx","rhb_overall_idx","overall_resid","overall_se"
-"venue_19__base","current","COL","Rockies","Coors Field","base configuration","2015-2026",46437,130.83,134.38,105.16,138.76,12.8,130.67,130.83,0.0354898624960152,0.00314658401498012
-"venue_2529__sutter_health","current","ATH","Athletics","Sutter Health Park","sutter health","2025-2026",6288,124.01,120.15,114.38,113.89,4.5,123.57,124.34,0.027598829103304,0.00583738661104004
-"venue_2602__base","current","CIN","Reds","Great American Ball Park","base configuration","2015-2026",42321,114.85,109.61,120.62,101.82,0.48,116.2,113.41,0.0169848667566276,0.00320118008030366
-"venue_3__base","current","BOS","Red Sox","Fenway Park","base configuration","2015-2026",44807,109.16,117.44,88.94,91.5,-2.96,108.46,109.82,0.0103957694358695,0.00316894638762504
-"venue_2392__base","current","HOU","Astros","Daikin Park","base configuration","2015-2026",42346,108.16,105.43,109.64,98.42,-0.66,107.34,108.94,0.0092361869986108,0.00321773514418811
-"venue_2681__base","current","PHI","Phillies","Citizens Bank Park","base configuration","2015-2026",43012,107.8,103.88,109.65,96.54,-1.29,107.47,108.08,0.00881611290412489,0.00318953422632912
-"venue_2__wall_medium","current","BAL","Orioles","Oriole Park at Camden Yards","wall medium","2025-2026",6503,106.25,103.63,108.83,102.66,0.76,106.53,105.94,0.00702935331439464,0.00575778972590745
-"venue_32__base","current","MIL","Brewers","American Family Field","base configuration","2015-2026",41791,104.38,100.83,109.01,104.19,1.27,104.99,103.75,0.0048594440098154,0.00321014857794804
-"venue_7__walls_in","current","KC","Royals","Kauffman Stadium","walls in","2026",2230,101.83,100.28,96.99,113.15,4.26,102.13,101.52,0.00190984143953172,0.00831851537133902
-"venue_14__of_renovation","current","TOR","Blue Jays","Rogers Centre","of renovation","2023-2026",14883,100.26,101.32,103.05,92.29,-2.7,100.85,99.66,8.505525696594e-05,0.00432256570762022
-"venue_15__humidor","current","AZ","Diamondbacks","Chase Field","humidor","2018-2026",31896,99.74,102.17,86.49,112.66,4.09,99.82,99.66,-0.000517887564128724,0.00343131725560536
-"venue_12__trop_return","current","TBR","Rays","Tropicana Field","trop return","2026",2241,99.66,100.52,106.28,107.23,2.28,99.48,99.83,-0.000609969148653352,0.00830726337859984
-"venue_22__base","current","LAD","Dodgers","Dodger Stadium","base configuration","2015-2026",41473,99.34,94.26,110.11,94.33,-2.02,98.18,100.51,-0.000978306125369809,0.00321369715446069
-"venue_17__base","current","CHC","Cubs","Wrigley Field","base configuration","2015-2026",42356,97.97,97.04,100.53,90.46,-3.31,98,97.95,-0.0025605862991562,0.00320387072348953
-"venue_4__base","current","CHW","White Sox","Rate Field","base configuration","2015-2026",43008,97.22,94.56,104.33,94.39,-2,96.51,97.95,-0.00343319571203305,0.00319563026973934
-"venue_2394__cf_in_412","current","DET","Tigers","Comerica Park","cf in 412","2023-2026",14410,97.11,95.45,96.82,96.88,-1.17,97.25,96.98,-0.00356169921200316,0.00435090920726915
-"venue_5__wind_tunnel","current","CLE","Guardians","Progressive Field","wind tunnel","2024-2026",9991,96.09,95.91,92.03,93.88,-2.17,95.76,96.44,-0.00474275707645569,0.0049321668630276
-"venue_3312__base","current","MIN","Twins","Target Field","base configuration","2015-2026",44582,95.8,101.12,94.41,100.36,-0.01,95.38,96.24,-0.00507870076473413,0.00316444839501108
-"venue_3313__base","current","NYY","Yankees","Yankee Stadium","base configuration","2015-2026",41895,95.63,91.87,112.24,93.36,-2.34,96.95,94.33,-0.0052725009950757,0.00321129643732016
-"venue_4705__suntrust","current","ATL","Braves","Truist Park","suntrust","2017-2026",34481,95.05,98.12,95.17,102.59,0.73,95.6,94.52,-0.00594194581998913,0.00336706640514143
-"venue_3309__base","current","WSH","Nationals","Nationals Park","base configuration","2015-2026",44124,94.99,96.82,98.72,95.15,-1.75,94.59,95.4,-0.00601964285630212,0.00317061681242157
-"venue_4169__fence_reduced","current","MIA","Marlins","loanDepot park","fence reduced","2021-2026",22908,94.61,97.53,88.67,96.47,-1.31,95.21,94.03,-0.00645605811512077,0.00375573778375304
-"venue_1__base","current","LAA","Angels","Angel Stadium","base configuration","2015-2026",42985,94.14,93.15,104.32,99.73,-0.22,93.99,94.33,-0.0069931697734215,0.0032002777231494
-"venue_2395__bullpen_center","current","SFG","Giants","Oracle Park","bullpen center","2021-2026",22579,93.7,99.16,78.58,94.36,-2.01,92.91,94.52,-0.00751048362343697,0.00376937844350491
-"venue_5325__globe_life","current","TEX","Rangers","Globe Life Field","globe life","2021-2026",22406,93.62,96.01,100.74,105.9,1.84,92.45,94.83,-0.00760118889187151,0.00378073523095102
-"venue_31__base","current","PIT","Pirates","PNC Park","base configuration","2015-2026",44069,93.53,95.4,85.63,100.44,0.02,94.85,92.23,-0.00770985992633993,0.00317430808534474
-"venue_2680__base","current","SDP","Padres","Petco Park","base configuration","2015-2026",41941,93.24,91.51,95.13,90.55,-3.28,93.25,93.27,-0.00803765391862099,0.00320877159811503
-"venue_3289__rf_in_362","current","NYM","Mets","Citi Field","rf in 362","2023-2026",14111,90.5,89.09,99.13,91.24,-3.05,91.74,89.3,-0.0112162930209763,0.00437562709536701
-"venue_680__base","current","SEA","Mariners","T-Mobile Park","base configuration","2015-2026",42045,86.22,83.21,101.52,89.12,-3.76,85.89,86.62,-0.0161733020509106,0.00320455145420358
-"venue_2889__base","current","STL","Cardinals","Busch Stadium","base configuration","2015-2026",44130,84.33,90.16,82.88,97.7,-0.89,83.98,84.77,-0.01835518422852,0.00318132066928987
-"venue_10__base","historical","ATH","Athletics","Oakland Coliseum","base configuration","2015-2024",37621,84.31,84.66,84.88,91.25,-3.05,83.78,84.93,-0.0183804066544397,0.00331024341659348
-"venue_14__base","historical","TOR","Blue Jays","Rogers Centre","base configuration","2015-2022",27047,93.3,89.56,104.93,98.86,-0.51,93.52,93.1,-0.00797662678023233,0.00363796780786013
-"venue_2536__dunedin","historical","TOR","Blue Jays","TD Ballpark","dunedin","2021",1086,117.77,107.35,118.45,103.5,1.04,117.41,118.04,0.0203663868576345,0.00998608731532274
-"venue_2756__buffalo","historical","TOR","Blue Jays","Sahlen Field","buffalo","2021",1197,109.92,104.86,113.65,90.93,-3.15,109.61,110.19,0.0112801456362914,0.0097078566383726
-"venue_16__base","historical","ATL","Braves","Turner Field","base configuration","2015-2016",8391,93.07,96.01,85.03,100.24,-0.05,93.43,92.74,-0.0082400280739084,0.00536538809029443
-"venue_15__base","historical","AZ","Diamondbacks","Chase Field","base configuration","2015-2017",12726,105.03,107.52,99.37,109.93,3.18,104.98,105.04,0.0056075429474944,0.00464683149979852
-"venue_2395__base","historical","SFG","Giants","AT&T Park","base configuration","2015-2019",20983,85.72,92.22,72.28,85.86,-4.85,85.06,86.47,-0.0167454029746946,0.00392313670090258
-"venue_5__base","historical","CLE","Guardians","Progressive Field","base configuration","2015-2023",32827,97.92,95.49,98.15,93.52,-2.29,97.61,98.24,-0.00262043390816773,0.00342682076455839
-"venue_4169__base","historical","MIA","Marlins","Marlins Park","base configuration","2015",4273,90.27,96.14,84.04,99.6,-0.26,90.96,89.62,-0.0114813515482345,0.00686795785434744
-"venue_4169__cf_in_407","historical","MIA","Marlins","loanDepot park","cf in 407","2016-2019",16425,91.76,95.24,85.4,102.6,0.74,91.9,91.65,-0.00975797251720495,0.00424839822067748
-"venue_3289__base","historical","NYM","Mets","Citi Field","base configuration","2015-2022",27912,93.81,92.56,97.75,97.11,-1.09,93.71,93.95,-0.00737585542769439,0.00357904223882473
-"venue_2__base","historical","BAL","Orioles","Oriole Park at Camden Yards","base configuration","2015-2021",25711,101.61,97.92,116.63,98.15,-0.75,101.06,102.17,0.00165748953023605,0.00369933361781841
-"venue_2__wall_deep","historical","BAL","Orioles","Oriole Park at Camden Yards","wall deep","2022-2024",12551,87.67,96.67,86.29,100.32,-0.02,88.37,87.02,-0.0144947422998643,0.00458275093187289
-"venue_13__base","historical","TEX","Rangers","Globe Life Park in Arlington","base configuration","2015-2019",21828,109.29,108.15,106.01,108.77,2.8,109.08,109.47,0.0105503384983045,0.0038882654229271
-"venue_12__base","historical","TBR","Rays","Tropicana Field","base configuration","2015-2024",35636,96.79,97.85,96.91,103.56,1.06,96.63,96.95,-0.00393525969296589,0.00334602950908465
-"venue_2523__steinbrenner","historical","TBR","Rays","George M. Steinbrenner Field","steinbrenner","2025",4071,105.37,103.33,108.21,89.04,-3.79,104.89,105.82,0.00600130816964875,0.0068680957679505
-"venue_7__base","historical","KC","Royals","Kauffman Stadium","base configuration","2015-2025",43345,88.39,95.63,80.22,105.31,1.64,88.88,87.96,-0.0136572433785363,0.00320158016003426
-"venue_2394__base","historical","DET","Tigers","Comerica Park","base configuration","2015-2022",30105,84.39,90.23,86.39,91.61,-2.93,83.79,85.08,-0.0182864775022742,0.00353199345236322
+"park_era_id","status","team_id","team","park","era","years_used","total_bbe","overall_idx","bacon_idx","hr_idx","carry_idx","carry_ft","k_idx","k_pct_pts","lhb_overall_idx","rhb_overall_idx","overall_resid","overall_se"
+"venue_19__base","current","COL","Rockies","Coors Field","base configuration","2015-2026",47101,130.58,134.22,105.4,138.65,12.84,76.95,-2.03,130.51,130.47,0.0353315020190448,0.00324726199744779
+"venue_2529__sutter_health","current","ATH","Athletics","Sutter Health Park","sutter health","2025-2026",6913,124.48,120.25,117.33,114.9,4.87,93.78,-0.48,123.89,124.93,0.0282508845442131,0.00570090987195244
+"venue_2602__base","current","CIN","Reds","Great American Ball Park","base configuration","2015-2026",42971,114.51,109.53,119.92,101.55,0.39,108.05,0.83,115.93,112.99,0.0166771446954468,0.00329824648599843
+"venue_3__base","current","BOS","Red Sox","Fenway Park","base configuration","2015-2026",45369,109.41,117.73,89.2,91.58,-2.96,90.74,-0.76,108.69,110.08,0.0107615305363393,0.00326956980402338
+"venue_2681__base","current","PHI","Phillies","Citizens Bank Park","base configuration","2015-2026",43531,107.99,103.94,109.64,96.82,-1.2,108.44,0.87,107.61,108.32,0.00910642400687937,0.00328932176423267
+"venue_2392__base","current","HOU","Astros","Daikin Park","base configuration","2015-2026",42878,107.93,105.36,109.3,98.62,-0.6,115.83,1.55,106.93,108.87,0.00903662742218017,0.00331625038077469
+"venue_32__base","current","MIL","Brewers","American Family Field","base configuration","2015-2026",42323,104.42,100.98,108.88,104.16,1.26,114.7,1.44,105.07,103.74,0.00496472175291646,0.00330849282443676
+"venue_7__walls_in","current","KC","Royals","Kauffman Stadium","walls in","2026",2819,104.21,102.54,98.8,114.11,4.61,86.18,-1.18,104.57,103.82,0.00471829793389021,0.00775035868025955
+"venue_2__wall_medium","current","BAL","Orioles","Oriole Park at Camden Yards","wall medium","2025-2026",7055,103.73,100.85,109.56,101.98,0.53,97.53,-0.14,104.21,103.23,0.0041686859391928,0.00565996077342678
+"venue_22__base","current","LAD","Dodgers","Dodger Stadium","base configuration","2015-2026",42190,99.62,94.62,109.75,94.78,-1.88,105.46,0.59,98.32,100.93,-0.000601792721435466,0.00330836254935733
+"venue_14__of_renovation","current","TOR","Blue Jays","Rogers Centre","of renovation","2023-2026",15334,99.58,101.11,102.16,92.06,-2.8,103.65,0.43,100.19,98.96,-0.000656279039279185,0.00436474340440257
+"venue_15__humidor","current","AZ","Diamondbacks","Chase Field","humidor","2018-2026",32465,99.53,102.18,86.44,112.49,4.06,92.65,-0.58,99.65,99.41,-0.000713310907161627,0.00351754156235859
+"venue_12__trop_return","current","TBR","Rays","Tropicana Field","trop return","2026",2909,99.43,99.28,104.96,105.22,1.62,104.35,0.49,99.09,99.78,-0.000824980370345683,0.0076903395390087
+"venue_17__base","current","CHC","Cubs","Wrigley Field","base configuration","2015-2026",42920,98.38,97.44,100.75,90.9,-3.19,104.4,0.5,98.52,98.25,-0.00204039950868026,0.00330276628937116
+"venue_5__wind_tunnel","current","CLE","Guardians","Progressive Field","wind tunnel","2024-2026",10667,97.29,97.48,92.88,93.3,-2.38,105.5,0.6,97,97.59,-0.00331109553776769,0.00489864843806931
+"venue_2394__cf_in_412","current","DET","Tigers","Comerica Park","cf in 412","2023-2026",15066,97.14,95.44,96.16,97.09,-1.11,92.23,-0.62,97.26,97.04,-0.00348070852995945,0.0043724756921929
+"venue_4__base","current","CHW","White Sox","Rate Field","base configuration","2015-2026",43652,96.82,94.32,103.56,94.1,-2.11,99.37,0.03,96.01,97.66,-0.00385250106034639,0.00329379106483237
+"venue_4705__suntrust","current","ATL","Braves","Truist Park","suntrust","2017-2026",35295,96.39,99.32,96.19,102.92,0.85,104.09,0.47,97.07,95.72,-0.00435804550897203,0.00345070791261642
+"venue_3313__base","current","NYY","Yankees","Yankee Stadium","base configuration","2015-2026",42360,95.41,91.62,111.78,93.43,-2.34,104.97,0.55,96.77,94.07,-0.0054940907073604,0.00331029342481535
+"venue_3312__base","current","MIN","Twins","Target Field","base configuration","2015-2026",45172,95.32,100.59,93.9,100.32,-0.02,92.34,-0.61,94.87,95.81,-0.0055917556815166,0.00326490426065772
+"venue_3309__base","current","WSH","Nationals","Nationals Park","base configuration","2015-2026",44952,95.19,96.95,98.71,95.47,-1.65,92.88,-0.56,94.63,95.78,-0.00574784682420047,0.0032672787446202
+"venue_4169__fence_reduced","current","MIA","Marlins","loanDepot park","fence reduced","2021-2026",23523,94.62,97.58,88.59,96.25,-1.39,97.14,-0.17,95.36,93.9,-0.00641230375223369,0.00382290188830549
+"venue_5325__globe_life","current","TEX","Rangers","Globe Life Field","globe life","2021-2026",23232,94.04,96.65,100.69,105.86,1.84,101.56,0.24,92.82,95.31,-0.0070750784411498,0.00383535759338211
+"venue_31__base","current","PIT","Pirates","PNC Park","base configuration","2015-2026",44725,93.74,95.69,85.76,100.46,0.02,85.37,-1.25,95.26,92.25,-0.00743464856321512,0.00327326373242446
+"venue_1__base","current","LAA","Angels","Angel Stadium","base configuration","2015-2026",43595,93.55,92.62,103.57,99.53,-0.29,109.92,1,93.3,93.84,-0.00765064922384947,0.00329915962614439
+"venue_2680__base","current","SDP","Padres","Petco Park","base configuration","2015-2026",42512,93.18,91.61,94.81,90.58,-3.3,105.86,0.63,93.08,93.31,-0.00808247863363993,0.00330660237545616
+"venue_2395__bullpen_center","current","SFG","Giants","Oracle Park","bullpen center","2021-2026",23263,93.15,98.38,78.85,94.46,-1.99,92.05,-0.64,92.46,93.89,-0.00811205200688595,0.00383159183538898
+"venue_3289__rf_in_362","current","NYM","Mets","Citi Field","rf in 362","2023-2026",14811,89.98,88.91,98.17,91.16,-3.1,105.61,0.61,91.39,88.63,-0.0117931246513761,0.00438924749524336
+"venue_680__base","current","SEA","Mariners","T-Mobile Park","base configuration","2015-2026",42564,86.28,82.95,101.62,89.49,-3.66,121.23,2.04,85.94,86.71,-0.0160846020494605,0.00330304375031923
+"venue_2889__base","current","STL","Cardinals","Busch Stadium","base configuration","2015-2026",44977,84.11,89.84,82.68,97.75,-0.89,87.18,-1.09,83.6,84.71,-0.0186086125933291,0.00327738728818437
+"venue_10__base","historical","ATH","Athletics","Oakland Coliseum","base configuration","2015-2024",37621,84.72,84.94,85.13,91.55,-2.97,98.87,-0.01,84.15,85.37,-0.0179012416828599,0.0034165986958092
+"venue_14__base","historical","TOR","Blue Jays","Rogers Centre","base configuration","2015-2022",27047,93.38,89.58,104.87,98.76,-0.55,99.33,0.03,93.67,93.13,-0.00784729985761302,0.00373681362841665
+"venue_2536__dunedin","historical","TOR","Blue Jays","TD Ballpark","dunedin","2021",1086,119.25,108.42,119.61,105.8,1.81,105.33,0.58,118.88,119.51,0.022182783600127,0.00998012294403408
+"venue_2756__buffalo","historical","TOR","Blue Jays","Sahlen Field","buffalo","2021",1197,107.12,103.03,111.54,87.92,-4.19,98.24,-0.07,106.83,107.38,0.00810518145039664,0.00970118833610605
+"venue_16__base","historical","ATL","Braves","Turner Field","base configuration","2015-2016",8391,92.78,95.73,84.6,100.28,-0.04,103.23,0.39,93.18,92.42,-0.00854719138610624,0.00543510619836917
+"venue_15__base","historical","AZ","Diamondbacks","Chase Field","base configuration","2015-2017",12726,105.26,107.83,99.34,110.28,3.32,99.52,0.05,105.24,105.25,0.00594390925257045,0.00472762922960014
+"venue_2395__base","historical","SFG","Giants","AT&T Park","base configuration","2015-2019",20983,86.15,92.57,72.72,86.21,-4.76,96.3,-0.25,85.39,86.99,-0.0162403409207662,0.00401479473849712
+"venue_5__base","historical","CLE","Guardians","Progressive Field","base configuration","2015-2023",32827,98.03,95.64,98.08,93.65,-2.27,98.96,0,97.74,98.34,-0.00244579622235914,0.00352898620144861
+"venue_4169__base","historical","MIA","Marlins","Marlins Park","base configuration","2015",4273,90.33,96.07,83.78,99.61,-0.26,97.28,-0.16,91.09,89.62,-0.0113914483957545,0.00692086887399716
+"venue_4169__cf_in_407","historical","MIA","Marlins","loanDepot park","cf in 407","2016-2019",16425,91.9,95.33,85.43,102.49,0.7,102.09,0.28,92.06,91.78,-0.00956599925166418,0.00433435195304071
+"venue_3289__base","historical","NYM","Mets","Citi Field","base configuration","2015-2022",27912,93.94,92.65,97.81,97.33,-1.03,114.05,1.38,93.86,94.06,-0.00719181378700587,0.00367741375909722
+"venue_2__base","historical","BAL","Orioles","Oriole Park at Camden Yards","base configuration","2015-2021",25711,101.69,98.04,116.26,98.12,-0.76,87.09,-1.09,101.1,102.27,0.00179619023392581,0.00379725341601632
+"venue_2__wall_deep","historical","BAL","Orioles","Oriole Park at Camden Yards","wall deep","2022-2024",12551,87.59,96.59,86.24,100.24,-0.05,92.7,-0.58,88.35,86.9,-0.0145720361075004,0.00466327969189366
+"venue_13__base","historical","TEX","Rangers","Globe Life Park in Arlington","base configuration","2015-2019",21828,109.5,108.52,105.87,108.77,2.81,85.25,-1.26,109.27,109.66,0.010857057651022,0.00398148968524241
+"venue_12__base","historical","TBR","Rays","Tropicana Field","base configuration","2015-2024",35636,96.98,98.05,96.81,103.6,1.08,116.56,1.61,96.84,97.15,-0.00366419236925701,0.00345079417593926
+"venue_2523__steinbrenner","historical","TBR","Rays","George M. Steinbrenner Field","steinbrenner","2025",4071,105.53,103.54,108.53,90.06,-3.47,94.07,-0.45,105.01,106.02,0.00625439814436784,0.00692161429052131
+"venue_7__base","historical","KC","Royals","Kauffman Stadium","base configuration","2015-2025",43345,88.52,95.68,80.43,105.43,1.69,79.93,-1.75,89.09,88.03,-0.0134822407743844,0.00331063504106808
+"venue_2394__base","historical","DET","Tigers","Comerica Park","base configuration","2015-2022",30105,84.43,90.22,86.2,91.63,-2.94,86.26,-1.17,83.79,85.18,-0.0182285043866871,0.00363379665261917

@@ -38,6 +38,21 @@ hand <- if (file.exists(hand_path)) {
   data.frame()
 }
 
+# Park K% comes from the separate PA-level model, so it is joined by era here
+# rather than arriving with the contact table. Eras present in the contact
+# model but not the K model (or vice versa) simply carry NA.
+k_path <- file.path(output_dir, "park_factors_k_overall.csv")
+k_eras <- if (file.exists(k_path)) {
+  kd <- utils::read.csv(k_path, stringsAsFactors = FALSE, check.names = FALSE)
+  data.frame(
+    park_era_id = as.character(kd$park_era_id),
+    k_resid = suppressWarnings(as.numeric(kd$park_effect)),
+    stringsAsFactors = FALSE
+  )
+} else {
+  data.frame()
+}
+
 if (!nzchar(data_through)) {
   meta_path <- file.path(output_dir, "run_metadata.csv")
   if (file.exists(meta_path)) {
@@ -93,6 +108,21 @@ arch$bacon_idx <- idx_on(arch$bacon_resid, sc_bacon)
 arch$hr_idx <- idx_on(arch$hr_resid, sc_hr)
 arch$carry_idx <- idx_on(arch$carry_ft, sc_carry)
 
+# K% on the same current-30 scale as everything else. The scale comes from the
+# picked rows' k_resid so an era shows the same K number here as on the
+# leaderboard.
+if (nrow(k_eras) > 0 && "k_resid" %in% names(picked)) {
+  arch <- merge(arch, k_eras, by = "park_era_id", all.x = TRUE)
+  sc_k <- scale_from_picked("k_resid")
+  arch$k_idx <- idx_on(arch$k_resid, sc_k)
+  # Raw effect in K% points is the interpretable companion to the z-scale
+  # index, the same way carry_ft sits next to carry_idx.
+  arch$k_pct_pts <- ifelse(is.finite(arch$k_resid), 100 * arch$k_resid, NA_real_)
+} else {
+  arch$k_idx <- NA_real_
+  arch$k_pct_pts <- NA_real_
+}
+
 # Batter-side overall factors, standardized per side over the current 30
 # parks — the same convention the LHB/RHB leaderboard views use, so the same
 # era shows the same number in both places. Each column reads "vs the average
@@ -116,6 +146,7 @@ if (nrow(hand) > 0) {
 out_cols <- c(
   "park_era_id", "status", "team_id", "team", "park", "era", "years_used",
   "total_bbe", "overall_idx", "bacon_idx", "hr_idx", "carry_idx", "carry_ft",
+  "k_idx", "k_pct_pts",
   "lhb_overall_idx", "rhb_overall_idx", "overall_resid", "overall_se"
 )
 out_cols <- out_cols[out_cols %in% names(arch)]
@@ -128,7 +159,7 @@ hist <- hist[order(hist$team, hist$years_used), ]
 arch_out <- rbind(cur, hist)
 rownames(arch_out) <- NULL
 
-for (nm in c("overall_idx", "bacon_idx", "hr_idx", "carry_idx", "carry_ft", "lhb_overall_idx", "rhb_overall_idx")) {
+for (nm in c("overall_idx", "bacon_idx", "hr_idx", "carry_idx", "carry_ft", "k_idx", "k_pct_pts", "lhb_overall_idx", "rhb_overall_idx")) {
   if (nm %in% names(arch_out)) {
     arch_out[[nm]] <- round(as.numeric(arch_out[[nm]]), 2)
   }

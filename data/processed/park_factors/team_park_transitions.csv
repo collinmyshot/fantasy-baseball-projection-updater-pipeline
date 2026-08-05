@@ -9,7 +9,7 @@
 2023,"ATH",10,"Oakland Coliseum","venue_10__base",4039,"venue_10__base",FALSE
 2024,"ATH",10,"Oakland Coliseum","venue_10__base",4141,"venue_10__base",FALSE
 2025,"ATH",2529,"Sutter Health Park","venue_2529__sutter_health",4279,"venue_10__base",TRUE
-2026,"ATH",2529,"Sutter Health Park","venue_2529__sutter_health",2009,"venue_2529__sutter_health",FALSE
+2026,"ATH",2529,"Sutter Health Park","venue_2529__sutter_health",2634,"venue_2529__sutter_health",FALSE
 2015,"ATL",16,"Turner Field","venue_16__base",4173,,FALSE
 2016,"ATL",16,"Turner Field","venue_16__base",4218,"venue_16__base",FALSE
 2017,"ATL",4705,"SunTrust Park","venue_4705__suntrust",4297,"venue_16__base",TRUE
@@ -20,7 +20,7 @@
 2023,"ATL",4705,"Truist Park","venue_4705__suntrust",4094,"venue_4705__suntrust",FALSE
 2024,"ATL",4705,"Truist Park","venue_4705__suntrust",3959,"venue_4705__suntrust",FALSE
 2025,"ATL",4705,"Truist Park","venue_4705__suntrust",4101,"venue_4705__suntrust",FALSE
-2026,"ATL",4705,"Truist Park","venue_4705__suntrust",1997,"venue_4705__suntrust",FALSE
+2026,"ATL",4705,"Truist Park","venue_4705__suntrust",2811,"venue_4705__suntrust",FALSE
 2015,"AZ",15,"Chase Field","venue_15__base",4280,,FALSE
 2016,"AZ",15,"Chase Field","venue_15__base",4398,"venue_15__base",FALSE
 2017,"AZ",15,"Chase Field","venue_15__base",4048,"venue_15__base",FALSE
@@ -31,7 +31,7 @@
 2023,"AZ",15,"Chase Field","venue_15__humidor",4204,"venue_15__humidor",FALSE
 2024,"AZ",15,"Chase Field","venue_15__humidor",4376,"venue_15__humidor",FALSE
 2025,"AZ",15,"Chase Field","venue_15__humidor",4329,"venue_15__humidor",FALSE
-2026,"AZ",15,"Chase Field","venue_15__humidor",2226,"venue_15__humidor",FALSE
+2026,"AZ",15,"Chase Field","venue_15__humidor",2795,"venue_15__humidor",FALSE
 2015,"BAL",2,"Oriole Park at Camden Yards","venue_2__base",4144,,FALSE
 2016,"BAL",2,"Oriole Park at Camden Yards","venue_2__base",4172,"venue_2__base",FALSE
 2017,"BAL",2,"Oriole Park at Camden Yards","venue_2__base",4420,"venue_2__base",FALSE
@@ -42,7 +42,7 @@
 2023,"BAL",2,"Oriole Park at Camden Yards","venue_2__wall_deep",4115,"venue_2__wall_deep",FALSE
 2024,"BAL",2,"Oriole Park at Camden Yards","venue_2__wall_deep",4228,"venue_2__wall_deep",FALSE
 2025,"BAL",2,"Oriole Park at Camden Yards","venue_2__wall_medium",4098,"venue_2__wall_deep",TRUE
-2026,"BAL",2,"Oriole Park at Camden Yards","venue_2__wall_medium",2405,"venue_2__wall_medium",FALSE
+2026,"BAL",2,"Oriole Park at Camden Yards","venue_2__wall_medium",2957,"venue_2__wall_medium",FALSE
 2015,"BOS",3,"Fenway Park","venue_3__base",4454,,FALSE
 2016,"BOS",3,"Fenway Park","venue_3__base",4391,"venue_3__base",FALSE
 2017,"BOS",3,"Fenway Park","venue_3__base",4324,"venue_3__base",FALSE
@@ -53,7 +53,7 @@
 2023,"BOS",3,"Fenway Park","venue_3__base",4289,"venue_3__base",FALSE
 2024,"BOS",3,"Fenway Park","venue_3__base",4160,"venue_3__base",FALSE
 2025,"BOS",3,"Fenway Park","venue_3__base",4250,"venue_3__base",FALSE
-2026,"BOS",3,"Fenway Park","venue_3__base",2174,"venue_3__base",FALSE
+2026,"BOS",3,"Fenway Park","venue_3__base",2736,"venue_3__base",FALSE
 2015,"CHC",17,"Wrigley Field","venue_17__base",3890,,FALSE
 2016,"CHC",17,"Wrigley Field","venue_17__base",3930,"venue_17__base",FALSE
 2017,"CHC",17,"Wrigley Field","venue_17__base",4050,"venue_17__base",FALSE
@@ -64,7 +64,7 @@
 2023,"CHC",17,"Wrigley Field","venue_17__base",4141,"venue_17__base",FALSE
 2024,"CHC",17,"Wrigley Field","venue_17__base",3968,"venue_17__base",FALSE
 2025,"CHC",17,"Wrigley Field","venue_17__base",4018,"venue_17__base",FALSE
-2026,"CHC",17,"Wrigley Field","venue_17__base",2205,"venue_17__base",FALSE
+2026,"CHC",17,"Wrigley Field","venue_17__base",2769,"venue_17__base",FALSE
 2015,"CHW",4,"U.S. Cellular Field","venue_4__base",4144,,FALSE
 2016,"CHW",4,"U.S. Cellular Field","venue_4__base",4192,"venue_4__base",FALSE
 2017,"CHW",4,"Guaranteed Rate Field","venue_4__base",4111,"venue_4__base",FALSE
@@ -75,7 +75,7 @@
 2023,"CHW",4,"Guaranteed Rate Field","venue_4__base",4100,"venue_4__base",FALSE
 2024,"CHW",4,"Guaranteed Rate Field","venue_4__base",4153,"venue_4__base",FALSE
 2025,"CHW",4,"Rate Field","venue_4__base",4093,"venue_4__base",FALSE
-2026,"CHW",4,"Rate Field","venue_4__base",2107,"venue_4__base",FALSE
+2026,"CHW",4,"Rate Field","venue_4__base",2751,"venue_4__base",FALSE
 2015,"CIN",2602,"Great American Ball Park","venue_2602__base",4239,,FALSE
 2016,"CIN",2602,"Great American Ball Park","venue_2602__base",4169,"venue_2602__base",FALSE
 2017,"CIN",2602,"Great American Ball Park","venue_2602__base",4084,"venue_2602__base",FALSE
@@ -86,7 +86,7 @@
 2023,"CIN",2602,"Great American Ball Park","venue_2602__base",4091,"venue_2602__base",FALSE
 2024,"CIN",2602,"Great American Ball Park","venue_2602__base",4033,"venue_2602__base",FALSE
 2025,"CIN",2602,"Great American Ball Park","venue_2602__base",3986,"venue_2602__base",FALSE
-2026,"CIN",2602,"Great American Ball Park","venue_2602__base",1872,"venue_2602__base",FALSE
+2026,"CIN",2602,"Great American Ball Park","venue_2602__base",2522,"venue_2602__base",FALSE
 2015,"CLE",5,"Progressive Field","venue_5__base",4101,,FALSE
 2016,"CLE",5,"Progressive Field","venue_5__base",4187,"venue_5__base",FALSE
 2017,"CLE",5,"Progressive Field","venue_5__base",4023,"venue_5__base",FALSE
@@ -97,7 +97,7 @@
 2023,"CLE",5,"Progressive Field","venue_5__base",4237,"venue_5__base",FALSE
 2024,"CLE",5,"Progressive Field","venue_5__wind_tunnel",4014,"venue_5__base",TRUE
 2025,"CLE",5,"Progressive Field","venue_5__wind_tunnel",3974,"venue_5__wind_tunnel",FALSE
-2026,"CLE",5,"Progressive Field","venue_5__wind_tunnel",2003,"venue_5__wind_tunnel",FALSE
+2026,"CLE",5,"Progressive Field","venue_5__wind_tunnel",2679,"venue_5__wind_tunnel",FALSE
 2015,"COL",19,"Coors Field","venue_19__base",4527,,FALSE
 2016,"COL",19,"Coors Field","venue_19__base",4488,"venue_19__base",FALSE
 2017,"COL",19,"Coors Field","venue_19__base",4304,"venue_19__base",FALSE
@@ -108,7 +108,7 @@
 2023,"COL",19,"Coors Field","venue_19__base",4435,"venue_19__base",FALSE
 2024,"COL",19,"Coors Field","venue_19__base",4242,"venue_19__base",FALSE
 2025,"COL",19,"Coors Field","venue_19__base",4498,"venue_19__base",FALSE
-2026,"COL",19,"Coors Field","venue_19__base",2292,"venue_19__base",FALSE
+2026,"COL",19,"Coors Field","venue_19__base",2956,"venue_19__base",FALSE
 2015,"DET",2394,"Comerica Park","venue_2394__base",4408,,FALSE
 2016,"DET",2394,"Comerica Park","venue_2394__base",4191,"venue_2394__base",FALSE
 2017,"DET",2394,"Comerica Park","venue_2394__base",4551,"venue_2394__base",FALSE
@@ -119,7 +119,7 @@
 2023,"DET",2394,"Comerica Park","venue_2394__cf_in_412",4096,"venue_2394__base",TRUE
 2024,"DET",2394,"Comerica Park","venue_2394__cf_in_412",4032,"venue_2394__cf_in_412",FALSE
 2025,"DET",2394,"Comerica Park","venue_2394__cf_in_412",4092,"venue_2394__cf_in_412",FALSE
-2026,"DET",2394,"Comerica Park","venue_2394__cf_in_412",2190,"venue_2394__cf_in_412",FALSE
+2026,"DET",2394,"Comerica Park","venue_2394__cf_in_412",2846,"venue_2394__cf_in_412",FALSE
 2015,"HOU",2392,"Minute Maid Park","venue_2392__base",3949,,FALSE
 2016,"HOU",2392,"Minute Maid Park","venue_2392__base",4000,"venue_2392__base",FALSE
 2017,"HOU",2392,"Minute Maid Park","venue_2392__base",3962,"venue_2392__base",FALSE
@@ -130,7 +130,7 @@
 2023,"HOU",2392,"Minute Maid Park","venue_2392__base",4166,"venue_2392__base",FALSE
 2024,"HOU",2392,"Minute Maid Park","venue_2392__base",4144,"venue_2392__base",FALSE
 2025,"HOU",2392,"Daikin Park","venue_2392__base",3954,"venue_2392__base",FALSE
-2026,"HOU",2392,"Daikin Park","venue_2392__base",2068,"venue_2392__base",FALSE
+2026,"HOU",2392,"Daikin Park","venue_2392__base",2600,"venue_2392__base",FALSE
 2015,"KCR",7,"Kauffman Stadium","venue_7__base",4290,,FALSE
 2016,"KCR",7,"Kauffman Stadium","venue_7__base",4418,"venue_7__base",FALSE
 2017,"KCR",7,"Kauffman Stadium","venue_7__base",4343,"venue_7__base",FALSE
@@ -141,7 +141,7 @@
 2023,"KCR",7,"Kauffman Stadium","venue_7__base",4346,"venue_7__base",FALSE
 2024,"KCR",7,"Kauffman Stadium","venue_7__base",4249,"venue_7__base",FALSE
 2025,"KCR",7,"Kauffman Stadium","venue_7__base",4234,"venue_7__base",FALSE
-2026,"KCR",7,"Kauffman Stadium","venue_7__walls_in",2230,"venue_7__base",TRUE
+2026,"KCR",7,"Kauffman Stadium","venue_7__walls_in",2819,"venue_7__base",TRUE
 2015,"LAA",1,"Angel Stadium of Anaheim","venue_1__base",4123,,FALSE
 2016,"LAA",1,"Angel Stadium of Anaheim","venue_1__base",4236,"venue_1__base",FALSE
 2017,"LAA",1,"Angel Stadium of Anaheim","venue_1__base",4224,"venue_1__base",FALSE
@@ -152,7 +152,7 @@
 2023,"LAA",1,"Angel Stadium","venue_1__base",4000,"venue_1__base",FALSE
 2024,"LAA",1,"Angel Stadium","venue_1__base",4041,"venue_1__base",FALSE
 2025,"LAA",1,"Angel Stadium","venue_1__base",4038,"venue_1__base",FALSE
-2026,"LAA",1,"Angel Stadium","venue_1__base",2070,"venue_1__base",FALSE
+2026,"LAA",1,"Angel Stadium","venue_1__base",2680,"venue_1__base",FALSE
 2015,"LAD",22,"Dodger Stadium","venue_22__base",3960,,FALSE
 2016,"LAD",22,"Dodger Stadium","venue_22__base",3882,"venue_22__base",FALSE
 2017,"LAD",22,"Dodger Stadium","venue_22__base",3893,"venue_22__base",FALSE
@@ -163,7 +163,7 @@
 2023,"LAD",22,"Dodger Stadium","venue_22__base",4077,"venue_22__base",FALSE
 2024,"LAD",22,"Dodger Stadium","venue_22__base",4027,"venue_22__base",FALSE
 2025,"LAD",22,"Dodger Stadium","venue_22__base",4047,"venue_22__base",FALSE
-2026,"LAD",22,"UNIQLO Field at Dodger Stadium","venue_22__base",1911,"venue_22__base",FALSE
+2026,"LAD",22,"UNIQLO Field at Dodger Stadium","venue_22__base",2628,"venue_22__base",FALSE
 2015,"MIA",4169,"Marlins Park","venue_4169__base",4273,,FALSE
 2016,"MIA",4169,"Marlins Park","venue_4169__cf_in_407",3985,"venue_4169__base",TRUE
 2017,"MIA",4169,"Marlins Park","venue_4169__cf_in_407",4073,"venue_4169__cf_in_407",FALSE
@@ -174,7 +174,7 @@
 2023,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",4140,"venue_4169__fence_reduced",FALSE
 2024,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",4335,"venue_4169__fence_reduced",FALSE
 2025,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",4239,"venue_4169__fence_reduced",FALSE
-2026,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",2205,"venue_4169__fence_reduced",FALSE
+2026,"MIA",4169,"loanDepot park","venue_4169__fence_reduced",2820,"venue_4169__fence_reduced",FALSE
 2015,"MIL",32,"Miller Park","venue_32__base",4208,,FALSE
 2016,"MIL",32,"Miller Park","venue_32__base",3968,"venue_32__base",FALSE
 2017,"MIL",32,"Miller Park","venue_32__base",4023,"venue_32__base",FALSE
@@ -185,7 +185,7 @@
 2023,"MIL",32,"American Family Field","venue_32__base",3894,"venue_32__base",FALSE
 2024,"MIL",32,"American Family Field","venue_32__base",3898,"venue_32__base",FALSE
 2025,"MIL",32,"American Family Field","venue_32__base",4015,"venue_32__base",FALSE
-2026,"MIL",32,"American Family Field","venue_32__base",2151,"venue_32__base",FALSE
+2026,"MIL",32,"American Family Field","venue_32__base",2683,"venue_32__base",FALSE
 2015,"MIN",3312,"Target Field","venue_3312__base",4402,,FALSE
 2016,"MIN",3312,"Target Field","venue_3312__base",4481,"venue_3312__base",FALSE
 2017,"MIN",3312,"Target Field","venue_3312__base",4385,"venue_3312__base",FALSE
@@ -196,7 +196,7 @@
 2023,"MIN",3312,"Target Field","venue_3312__base",3876,"venue_3312__base",FALSE
 2024,"MIN",3312,"Target Field","venue_3312__base",4166,"venue_3312__base",FALSE
 2025,"MIN",3312,"Target Field","venue_3312__base",4241,"venue_3312__base",FALSE
-2026,"MIN",3312,"Target Field","venue_3312__base",2378,"venue_3312__base",FALSE
+2026,"MIN",3312,"Target Field","venue_3312__base",2968,"venue_3312__base",FALSE
 2015,"NYM",3289,"Citi Field","venue_3289__base",4092,,FALSE
 2016,"NYM",3289,"Citi Field","venue_3289__base",3972,"venue_3289__base",FALSE
 2017,"NYM",3289,"Citi Field","venue_3289__base",4166,"venue_3289__base",FALSE
@@ -207,7 +207,7 @@
 2023,"NYM",3289,"Citi Field","venue_3289__rf_in_362",3960,"venue_3289__base",TRUE
 2024,"NYM",3289,"Citi Field","venue_3289__rf_in_362",3912,"venue_3289__rf_in_362",FALSE
 2025,"NYM",3289,"Citi Field","venue_3289__rf_in_362",4078,"venue_3289__rf_in_362",FALSE
-2026,"NYM",3289,"Citi Field","venue_3289__rf_in_362",2161,"venue_3289__rf_in_362",FALSE
+2026,"NYM",3289,"Citi Field","venue_3289__rf_in_362",2861,"venue_3289__rf_in_362",FALSE
 2015,"NYY",3313,"Yankee Stadium","venue_3313__base",4222,,FALSE
 2016,"NYY",3313,"Yankee Stadium","venue_3313__base",4148,"venue_3313__base",FALSE
 2017,"NYY",3313,"Yankee Stadium","venue_3313__base",3964,"venue_3313__base",FALSE
@@ -218,7 +218,7 @@
 2023,"NYY",3313,"Yankee Stadium","venue_3313__base",3985,"venue_3313__base",FALSE
 2024,"NYY",3313,"Yankee Stadium","venue_3313__base",4043,"venue_3313__base",FALSE
 2025,"NYY",3313,"Yankee Stadium","venue_3313__base",3964,"venue_3313__base",FALSE
-2026,"NYY",3313,"Yankee Stadium","venue_3313__base",1891,"venue_3313__base",FALSE
+2026,"NYY",3313,"Yankee Stadium","venue_3313__base",2356,"venue_3313__base",FALSE
 2015,"PHI",2681,"Citizens Bank Park","venue_2681__base",4303,,FALSE
 2016,"PHI",2681,"Citizens Bank Park","venue_2681__base",4058,"venue_2681__base",FALSE
 2017,"PHI",2681,"Citizens Bank Park","venue_2681__base",4148,"venue_2681__base",FALSE
@@ -229,7 +229,7 @@
 2023,"PHI",2681,"Citizens Bank Park","venue_2681__base",4032,"venue_2681__base",FALSE
 2024,"PHI",2681,"Citizens Bank Park","venue_2681__base",4113,"venue_2681__base",FALSE
 2025,"PHI",2681,"Citizens Bank Park","venue_2681__base",4095,"venue_2681__base",FALSE
-2026,"PHI",2681,"Citizens Bank Park","venue_2681__base",2215,"venue_2681__base",FALSE
+2026,"PHI",2681,"Citizens Bank Park","venue_2681__base",2734,"venue_2681__base",FALSE
 2015,"PIT",31,"PNC Park","venue_31__base",4249,,FALSE
 2016,"PIT",31,"PNC Park","venue_31__base",3952,"venue_31__base",FALSE
 2017,"PIT",31,"PNC Park","venue_31__base",4319,"venue_31__base",FALSE
@@ -240,7 +240,7 @@
 2023,"PIT",31,"PNC Park","venue_31__base",4132,"venue_31__base",FALSE
 2024,"PIT",31,"PNC Park","venue_31__base",4170,"venue_31__base",FALSE
 2025,"PIT",31,"PNC Park","venue_31__base",4083,"venue_31__base",FALSE
-2026,"PIT",31,"PNC Park","venue_31__base",2308,"venue_31__base",FALSE
+2026,"PIT",31,"PNC Park","venue_31__base",2964,"venue_31__base",FALSE
 2015,"SDP",2680,"Petco Park","venue_2680__base",3908,,FALSE
 2016,"SDP",2680,"Petco Park","venue_2680__base",4196,"venue_2680__base",FALSE
 2017,"SDP",2680,"Petco Park","venue_2680__base",3827,"venue_2680__base",FALSE
@@ -251,7 +251,7 @@
 2023,"SDP",2680,"Petco Park","venue_2680__base",3891,"venue_2680__base",FALSE
 2024,"SDP",2680,"Petco Park","venue_2680__base",4093,"venue_2680__base",FALSE
 2025,"SDP",2680,"Petco Park","venue_2680__base",4008,"venue_2680__base",FALSE
-2026,"SDP",2680,"Petco Park","venue_2680__base",2153,"venue_2680__base",FALSE
+2026,"SDP",2680,"Petco Park","venue_2680__base",2724,"venue_2680__base",FALSE
 2015,"SEA",680,"Safeco Field","venue_680__base",4104,,FALSE
 2016,"SEA",680,"Safeco Field","venue_680__base",4156,"venue_680__base",FALSE
 2017,"SEA",680,"Safeco Field","venue_680__base",4203,"venue_680__base",FALSE
@@ -262,7 +262,7 @@
 2023,"SEA",680,"T-Mobile Park","venue_680__base",3868,"venue_680__base",FALSE
 2024,"SEA",680,"T-Mobile Park","venue_680__base",3655,"venue_680__base",FALSE
 2025,"SEA",680,"T-Mobile Park","venue_680__base",3926,"venue_680__base",FALSE
-2026,"SEA",680,"T-Mobile Park","venue_680__base",2041,"venue_680__base",FALSE
+2026,"SEA",680,"T-Mobile Park","venue_680__base",2560,"venue_680__base",FALSE
 2015,"SFG",2395,"AT&T Park","venue_2395__base",4005,,FALSE
 2016,"SFG",2395,"AT&T Park","venue_2395__base",4173,"venue_2395__base",FALSE
 2017,"SFG",2395,"AT&T Park","venue_2395__base",4415,"venue_2395__base",FALSE
@@ -273,7 +273,7 @@
 2023,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",4084,"venue_2395__bullpen_center",FALSE
 2024,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",4161,"venue_2395__bullpen_center",FALSE
 2025,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",4201,"venue_2395__bullpen_center",FALSE
-2026,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",2060,"venue_2395__bullpen_center",FALSE
+2026,"SFG",2395,"Oracle Park","venue_2395__bullpen_center",2744,"venue_2395__bullpen_center",FALSE
 2015,"STL",2889,"Busch Stadium","venue_2889__base",4041,,FALSE
 2016,"STL",2889,"Busch Stadium","venue_2889__base",4244,"venue_2889__base",FALSE
 2017,"STL",2889,"Busch Stadium","venue_2889__base",4108,"venue_2889__base",FALSE
@@ -284,7 +284,7 @@
 2023,"STL",2889,"Busch Stadium","venue_2889__base",4318,"venue_2889__base",FALSE
 2024,"STL",2889,"Busch Stadium","venue_2889__base",4191,"venue_2889__base",FALSE
 2025,"STL",2889,"Busch Stadium","venue_2889__base",4277,"venue_2889__base",FALSE
-2026,"STL",2889,"Busch Stadium","venue_2889__base",2384,"venue_2889__base",FALSE
+2026,"STL",2889,"Busch Stadium","venue_2889__base",3231,"venue_2889__base",FALSE
 2015,"TBR",12,"Tropicana Field","venue_12__base",4026,,FALSE
 2016,"TBR",12,"Tropicana Field","venue_12__base",3959,"venue_12__base",FALSE
 2017,"TBR",12,"Tropicana Field","venue_12__base",3788,"venue_12__base",FALSE
@@ -295,7 +295,7 @@
 2023,"TBR",12,"Tropicana Field","venue_12__base",3911,"venue_12__base",FALSE
 2024,"TBR",12,"Tropicana Field","venue_12__base",3983,"venue_12__base",FALSE
 2025,"TBR",2523,"George M. Steinbrenner Field","venue_2523__steinbrenner",4071,"venue_12__base",TRUE
-2026,"TBR",12,"Tropicana Field","venue_12__trop_return",2241,"venue_2523__steinbrenner",TRUE
+2026,"TBR",12,"Tropicana Field","venue_12__trop_return",2909,"venue_2523__steinbrenner",TRUE
 2015,"TEX",13,"Globe Life Park in Arlington","venue_13__base",4442,,FALSE
 2016,"TEX",13,"Globe Life Park in Arlington","venue_13__base",4381,"venue_13__base",FALSE
 2017,"TEX",13,"Globe Life Park in Arlington","venue_13__base",4301,"venue_13__base",FALSE
@@ -306,7 +306,7 @@
 2023,"TEX",5325,"Globe Life Field","venue_5325__globe_life",4161,"venue_5325__globe_life",FALSE
 2024,"TEX",5325,"Globe Life Field","venue_5325__globe_life",4035,"venue_5325__globe_life",FALSE
 2025,"TEX",5325,"Globe Life Field","venue_5325__globe_life",4039,"venue_5325__globe_life",FALSE
-2026,"TEX",5325,"Globe Life Field","venue_5325__globe_life",1850,"venue_5325__globe_life",FALSE
+2026,"TEX",5325,"Globe Life Field","venue_5325__globe_life",2676,"venue_5325__globe_life",FALSE
 2015,"TOR",14,"Rogers Centre","venue_14__base",4273,,FALSE
 2016,"TOR",14,"Rogers Centre","venue_14__base",4202,"venue_14__base",FALSE
 2017,"TOR",14,"Rogers Centre","venue_14__base",4167,"venue_14__base",FALSE
@@ -317,7 +317,7 @@
 2023,"TOR",14,"Rogers Centre","venue_14__of_renovation",4064,"venue_14__base",TRUE
 2024,"TOR",14,"Rogers Centre","venue_14__of_renovation",4190,"venue_14__of_renovation",FALSE
 2025,"TOR",14,"Rogers Centre","venue_14__of_renovation",4210,"venue_14__of_renovation",FALSE
-2026,"TOR",14,"Rogers Centre","venue_14__of_renovation",2419,"venue_14__of_renovation",FALSE
+2026,"TOR",14,"Rogers Centre","venue_14__of_renovation",2870,"venue_14__of_renovation",FALSE
 2015,"WSH",3309,"Nationals Park","venue_3309__base",4030,,FALSE
 2016,"WSH",3309,"Nationals Park","venue_3309__base",4038,"venue_3309__base",FALSE
 2017,"WSH",3309,"Nationals Park","venue_3309__base",4145,"venue_3309__base",FALSE
@@ -328,4 +328,4 @@
 2023,"WSH",3309,"Nationals Park","venue_3309__base",4441,"venue_3309__base",FALSE
 2024,"WSH",3309,"Nationals Park","venue_3309__base",4258,"venue_3309__base",FALSE
 2025,"WSH",3309,"Nationals Park","venue_3309__base",4264,"venue_3309__base",FALSE
-2026,"WSH",3309,"Nationals Park","venue_3309__base",2264,"venue_3309__base",FALSE
+2026,"WSH",3309,"Nationals Park","venue_3309__base",3092,"venue_3309__base",FALSE

@@ -222,19 +222,6 @@ add_contact_event_residuals <- function(bbe, min_bin_n = 50L, prior_n = 200L) {
   bbe$triple_resid <- bbe$triple_on_contact - bbe$x3b_contact
   bbe$xbh_resid <- bbe$xbh_on_contact - bbe$xxbh_contact
 
-  # Ottoneu FanGraphs Points on contact, from the scoring constants in
-  # R/fangraphs_projections.R (OTTONEU_FG_HITTING_POINTS): AB -1.0, H +5.6,
-  # 2B +2.9, 3B +5.7, HR +9.4. Every BBE is treated as an AB, which slightly
-  # overpenalizes sacrifice flies (~1% of BBE). The expectation reuses the
-  # smoothed contact-shape event probabilities so actual and expected share
-  # one methodology.
-  pts_from_events <- function(hit, dbl, tpl, hr) {
-    -1.0 + 5.6 * hit + 2.9 * dbl + 5.7 * tpl + 9.4 * hr
-  }
-  bbe$pts_on_contact <- pts_from_events(bbe$hit_on_contact, bbe$double_on_contact, bbe$triple_on_contact, bbe$hr_on_contact)
-  bbe$xpts_contact <- pts_from_events(bbe$xhit_contact, bbe$x2b_contact, bbe$x3b_contact, bbe$xhr_contact)
-  bbe$pts_resid <- bbe$pts_on_contact - bbe$xpts_contact
-
   # Carry outcome: projected landing distance for balls hit in the air.
   # Grounder "distance" is roll- and defense-dependent, so it is excluded by
   # leaving it NA (component fits drop non-finite outcomes).
@@ -583,6 +570,19 @@ prepare_bbe_model_data <- function(
   bbe$half <- ifelse(bbe$month >= 3 & bbe$month <= 6, "1H", ifelse(bbe$month >= 7 & bbe$month <= 10, "2H", NA_character_))
   bbe <- bbe[!is.na(bbe$half), ]
 
+  # Six-level seasonal bucket for the league-wide nuisance fixed effect
+  # (mar_apr/may/jun subdivide 1H; jul/aug/sep_oct subdivide 2H). The park-half
+  # random effects and the 1H/2H outputs keep using `half`; only the league
+  # seasonal term is finer.
+  month_bucket <- c(
+    "3" = "mar_apr", "4" = "mar_apr", "5" = "may", "6" = "jun",
+    "7" = "jul", "8" = "aug", "9" = "sep_oct", "10" = "sep_oct"
+  )
+  bbe$month_grp <- factor(
+    month_bucket[as.character(bbe$month)],
+    levels = c("mar_apr", "may", "jun", "jul", "aug", "sep_oct")
+  )
+
   inning_half <- tolower(trimws(bbe$inning_topbot))
   is_top <- grepl("top", inning_half)
   bbe$batting_team <- ifelse(is_top, bbe$away_team, bbe$home_team)
@@ -696,8 +696,8 @@ fit_park_factor_model <- function(model_data, include_measurement_era = TRUE, qu
   d <- d[is.finite(d$resid), ]
 
   fixed_terms <- character(0)
-  if ("half" %in% names(d) && length(unique(stats::na.omit(d$half))) > 1) {
-    fixed_terms <- c(fixed_terms, "half")
+  if ("month_grp" %in% names(d) && length(unique(stats::na.omit(d$month_grp))) > 1) {
+    fixed_terms <- c(fixed_terms, "month_grp")
   }
   # League-wide batter-side level, so the park-hand deviations below measure
   # park asymmetry rather than league platoon dynamics.
@@ -774,8 +774,8 @@ fit_component_model <- function(
   }
 
   fixed_terms <- character(0)
-  if ("half" %in% names(d) && length(unique(stats::na.omit(d$half))) > 1) {
-    fixed_terms <- c(fixed_terms, "half")
+  if ("month_grp" %in% names(d) && length(unique(stats::na.omit(d$month_grp))) > 1) {
+    fixed_terms <- c(fixed_terms, "month_grp")
   }
   # League-wide batter-side level, so the park-hand deviations below measure
   # park asymmetry rather than league platoon dynamics.

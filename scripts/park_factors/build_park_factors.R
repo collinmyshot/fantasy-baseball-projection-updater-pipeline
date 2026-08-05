@@ -459,16 +459,6 @@ component_specs <- list(
     fallback_outcome = "",
     fallback_label = "",
     fallback_include_contact_shape = FALSE
-  ),
-  list(
-    key = "points",
-    title = "Ottoneu points residual",
-    outcome = "pts_resid",
-    label = "pts_resid",
-    include_contact_shape = FALSE,
-    fallback_outcome = "",
-    fallback_label = "",
-    fallback_include_contact_shape = FALSE
   )
 )
 
@@ -509,8 +499,6 @@ park_factors_triple_half <- component_results$triple$half
 park_factors_triple_overall <- component_results$triple$overall
 park_factors_distance_half <- component_results$distance$half
 park_factors_distance_overall <- component_results$distance$overall
-park_factors_points_half <- component_results$points$half
-park_factors_points_overall <- component_results$points$overall
 
 component_half_all <- do.call(rbind, lapply(component_results, function(x) x$half))
 component_overall_all <- do.call(rbind, lapply(component_results, function(x) x$overall))
@@ -547,8 +535,6 @@ utils::write.csv(park_factors_triple_half, file.path(output_dir, "park_factors_t
 utils::write.csv(park_factors_triple_overall, file.path(output_dir, "park_factors_triple_overall.csv"), row.names = FALSE, na = "")
 utils::write.csv(park_factors_distance_half, file.path(output_dir, "park_factors_distance_by_half.csv"), row.names = FALSE, na = "")
 utils::write.csv(park_factors_distance_overall, file.path(output_dir, "park_factors_distance_overall.csv"), row.names = FALSE, na = "")
-utils::write.csv(park_factors_points_half, file.path(output_dir, "park_factors_points_by_half.csv"), row.names = FALSE, na = "")
-utils::write.csv(park_factors_points_overall, file.path(output_dir, "park_factors_points_overall.csv"), row.names = FALSE, na = "")
 utils::write.csv(park_factors_hand, file.path(output_dir, "park_factors_by_hand.csv"), row.names = FALSE, na = "")
 utils::write.csv(component_results$bacon$hand, file.path(output_dir, "park_factors_bacon_by_hand.csv"), row.names = FALSE, na = "")
 utils::write.csv(component_results$hr$hand, file.path(output_dir, "park_factors_hr_by_hand.csv"), row.names = FALSE, na = "")
@@ -588,14 +574,12 @@ run_meta <- data.frame(
     "double_component_available",
     "triple_component_available",
     "distance_component_available",
-    "points_component_available",
     "bacon_component_outcome_used",
     "hr_component_outcome_used",
     "xbh_component_outcome_used",
     "double_component_outcome_used",
     "triple_component_outcome_used",
-    "distance_component_outcome_used",
-    "points_component_outcome_used"
+    "distance_component_outcome_used"
   ),
   value = c(
     format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
@@ -620,14 +604,12 @@ run_meta <- data.frame(
     as.character(isTRUE(component_results$double$available)),
     as.character(isTRUE(component_results$triple$available)),
     as.character(isTRUE(component_results$distance$available)),
-    as.character(isTRUE(component_results$points$available)),
     as.character(component_results$bacon$outcome_used),
     as.character(component_results$hr$outcome_used),
     as.character(component_results$xbh$outcome_used),
     as.character(component_results$double$outcome_used),
     as.character(component_results$triple$outcome_used),
-    as.character(component_results$distance$outcome_used),
-    as.character(component_results$points$outcome_used)
+    as.character(component_results$distance$outcome_used)
   ),
   stringsAsFactors = FALSE
 )

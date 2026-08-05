@@ -9,6 +9,12 @@ paths:
   - "scripts/derive_park_factor_weights.R"
   - "scripts/derive_park_factor_weights_v2.R"
   - "scripts/fetch_savant_drag.R"
+  - "scripts/park_factors/fetch_statcast_pa.R"
+  - "scripts/park_factors/verify_pa_store.R"
+  - "scripts/park_factors/build_park_k_factors.R"
+  - "scripts/park_factors/validate_park_k_factors.R"
+  - "scripts/park_factors/fetch_savant_park_factors.R"
+  - "scripts/park_factors/check_month_curve.R"
   - "scripts/analyze_humidor_effect.R"
   - "scripts/log_park_factor_build_checkpoints.sh"
   - "scripts/log_xba_backfill_checkpoints.sh"
@@ -57,8 +63,36 @@ paths:
 - The points component (pts_resid) still runs in the build but is NOT displayed and is NOT referenced in the article anymore — slated for removal in the August refresh (see queue below)
 - Article style (user requirement): no dashes as punctuation, no contractions, R² over Pearson r; article lives at fbb-tools-repo/www/methodology_park_factors.html with the 2026 iPF table + era appendix regenerated each refresh (scripts/build_park_era_appendix.R). Stability tables show mean absolute annual change only (R² column removed, sorted ascending).
 
-## ⏭️ AUGUST 2026 REFRESH QUEUE (decided July, pilot-tested, ready to implement)
-Three changes are pre-approved and validated for the next monthly rebuild. Do these together in one build:
-1. **Month-bucket seasonal fixed effect** — replace the league-wide `half` fixed effect in fit_park_factor_model + fit_component_model with a 6-level month bucket (mar_apr, may, jun, jul, aug, sep_oct). KEEP the park×half random effects (`park_era_half_id`) and the 1H/2H tabs exactly as-is — only the league-level nuisance term changes. Pilot (scripts/pilot_month_effects.R): month structure beyond half is real (F=50.3, p≈2e-42; mixed-model month curve May +4.1 → Aug +11.5, ×1000 wOBAcon), but park effects are unaffected (half-vs-month park-era correlation 0.99994) — so this is a hygiene/cleanliness gain, will NOT move rankings > ~0.3 index pts. Sanity check the fitted month curve against Tango's ~10°F = +10% HR rule.
-2. **Remove the points component** — delete the `points` spec from component_specs in build_park_factors.R + pts_resid/pts_on_contact/xpts_contact from R/park_factors.R. Confirmed dead: XBH re-derived against the SHIPPED target (direct wOBAcon effect) adds only +0.0012 R² (p=0.17) over BACON+HR, vs the old FGpts-target result of +0.052 — the significant XBH finding was an artifact of the retired FGpts blend. XBH component itself already cut from article display.
-3. **(Optional, discuss w/ user first) K/BB park lens = a Part III article, not part of iPF** — separate PA-level model: outcome K-per-PA and BB-per-PA, batter-season + pitcher-season random intercepts serve as the expected-K/BB baseline (no physics/wOBAcon calibration needed), park term is what survives; drag is a built-in falsification check (ball carry should not predict called strikes). Needs a sibling fetch of PA-ending events (~2M rows, reuse fetch_statcast_bbe chunk framework — the BBE store excludes K/BB by construction). External check: Savant `index_so` in the park-factors leaderboard payload. Expected findings: K effects small + concentrated (Coors, visibility/batter's-eye), BB ≈ 0. Grounded in the existing park-adjusted Stuff+ article (Coors Stuff+ delta −3.9, Loc+ only −0.4; stuff→K link is the k% predictor article). iPF stays contact-only; article's "iPF measures contact only" limitation already flags this.
+## AUGUST 2026 REFRESH (in progress, started 2026-08-03)
+User-approved scope: all three July queue items, K% as a new column in the existing views, ONE combined deploy, build locally and review results BEFORE any deploy. 2026 team defense deferred to the offseason (still the `defense_missing` indicator).
+
+Items 1 and 2 are implemented:
+1. **Month-bucket seasonal fixed effect** — DONE. `month_grp` (mar_apr, may, jun, jul, aug, sep_oct) replaces the league-wide `half` fixed effect in fit_park_factor_model + fit_component_model; `month_grp` is built in prepare_model_data next to `half`. Park×half random effects (`park_era_half_id`) and the 1H/2H tabs are untouched. Pilot basis (scripts/park_factors/pilot_month_effects.R): month structure beyond half is real (F=50.3, p≈2e-42), park effects unaffected (correlation 0.99994) — hygiene, not a ranking change. Sanity check the fitted month curve against Tango's ~10°F = +10% HR rule.
+2. **Points component removed** — DONE. `points` spec deleted from component_specs, `pts_resid`/`pts_on_contact`/`xpts_contact` deleted from R/park_factors.R, and the points outputs + run_metadata keys are gone. Confirmed dead beforehand: XBH re-derived against the SHIPPED target adds only +0.0012 R² (p=0.17).
+3. **K% lens** — a PA-level sibling model, NOT part of Overall. See below.
+
+### Park K% lens (new in August 2026)
+iPF measures contact only, so K% needs its own PA-level data and model.
+- `scripts/park_factors/fetch_statcast_pa.R` — sibling of fetch_statcast_bbe.R keeping the PA-ending rows (`events` non-empty) with `p_throws` added. Same chunk framework, same inclusive-date and freshness semantics. Store lives in the MAIN checkout (`data/raw/statcast_pa_store.csv`, gitignored) so it survives worktree cleanup. Validated on 2024-06-12 against the existing 2021-2025 pitch store: 1,147 PAs, 246 K, 87 BB, zero rows differing in either direction.
+- `scripts/park_factors/build_park_k_factors.R` — K-per-PA linear probability model (lmer) with park_era / park×half / park×hand / batter-season / pitcher-season / fielding-team-season / batting-team-season random effects; month_grp + hand + platoon-matchup + drag fixed effects. BB-per-PA sidecar as a falsification target. Writes an explicit event taxonomy (`k_event_taxonomy.csv`) rather than silently classifying; unrecognized events are excluded AND warned about.
+- `scripts/park_factors/verify_pa_store.R` — verifies the finished PA store against `data/raw/statcast_pitches/statcast_pitches_2021-2025.rds`, an independent pull of the same source from 2026-07-13 (per-season PA/K/BB counts + exact game_pk+at_bat_number reconciliation over 2021-2025), plus wide plausibility bands on the non-overlap seasons.
+- `scripts/park_factors/validate_park_k_factors.R` — three falsification checks (drag must not predict K, BB effect ≈ 0, wall-distance era events must not move K) plus external agreement vs Savant `index_so`. The drag check reports a t-value and the drag coverage share, because a low-coverage build can show a slope that is really a season-level artifact.
+- `scripts/park_factors/fetch_savant_park_factors.R` — Savant's own park factor leaderboard (embedded `var data = [...]`, cache-buster required). Carries `index_so`/`index_bb`, keyed by venue_id which joins to `venue_<id>`. NOTE Savant's payload is a 3-year rolling window; it records its own `year_range`.
+- `k_idx_100` merges into the five `_with_id` CSVs via build_park_factor_clean_2026.R, standardized with `std_index` like every other lens. The merge degrades to NA when the K outputs are absent, so the contact-only chain still runs standalone. `build_park_factor_archive.R` joins `park_factors_k_overall.csv` by era and emits `k_idx` (current-30 scale) + `k_pct_pts` (raw K% points).
+
+**Display decisions (user, 2026-08-04):** K% ships as a column in ALL views including 1H/2H. The 1H and 2H numbers are identical by construction (park-by-half K variance is exactly zero, a singular fit) and the user considers that identity itself informative, so it is shown rather than suppressed. K is colour-INVERTED in the app (`pf_created_row_js(color_cols, invert_cols)` maps `val -> 200 - val` for K) because more strikeouts favours the pitcher, so a high K must read navy like a low Overall. K is also in the Era Archive view.
+
+### ✍️ ARTICLE NOTE: batter approach is a confound for park K% (locked in 2026-08-04)
+Use this in the K% article as a stated limitation. Do NOT expand it into a full decomposition (user decision, 2026-08-04: worth naming, not worth digging further).
+
+Article-ready wording (house style: no dashes, no contractions):
+
+> A park factor for strikeouts cannot fully separate what the ball does from what the hitter chooses to do. At Coors Field, where contact is rewarded more than anywhere else, hitters swing 2.2 percent more often and chase 2.1 percent less often than they do elsewhere. That is what hunting contact looks like, and some part of the park's strikeout suppression is therefore a decision rather than an effect of the air.
+
+Provenance: descriptive split of 3,567,640 pitches, 2021-2025 (`data/raw/statcast_pitches/statcast_pitches_2021-2025.rds`), Coors vs all other parks. Coors swing rate 0.4857 vs 0.4753 elsewhere (+2.2% relative); chase rate on out-of-zone pitches 0.2772 vs 0.2832 (−2.1% relative); whiff per swing 0.2274 vs 0.2351 (−3.3% relative, the contact/physics channel). These are RAW rates and are NOT controlled for batter or pitcher identity, so quote them as descriptive context only, never as model output.
+
+Supporting evidence that the effect is mostly environmental rather than learned: pooling 2015-2026 by career, visiting hitters average 51 career Coors PAs against Rockies hitters' 551 (about eleven times less exposure) yet still show 79 percent of the strikeout suppression (−3.21 vs −4.08 K% points, raw within-batter deltas, not pitcher-controlled). Single-season Coors PA tops out at 357, so any per-season framing of those exposure numbers is wrong.
+
+**K% findings (2026-08-04 build, 1,963,426 PAs):** park K spread runs Coors −2.03 K% points (idx 76.9) to T-Mobile +2.04 (idx 121.2), roughly 20.1% to 24.2% against a 22.15% baseline. K is nearly orthogonal to Overall (R² = 0.058), so it is genuinely new information. Falsification: BB park SD is 0.12 BB% points vs K 0.80 (ratio 6.6), so parks move strikeouts far more than walks, ruling out umpire/framing artifacts. glmer vs LPM park effects R² = 0.9993. Savant `index_so` agreement R² = 0.685 with our spread narrower (SD 4.69 vs 5.94) as expected since Savant does not control for batter/pitcher. Drag is a CONTROL not a falsification instrument (see script header).
+
+⚠️ **The displayed index is a z-score index, not a ratio** (`std_index` = 100 + 10*z over the 30 current parks). Coors 130.8 = 3.08 SD, not +30% offense. Savant's indexes ARE ratios, so compare with R², never by reading levels side by side.

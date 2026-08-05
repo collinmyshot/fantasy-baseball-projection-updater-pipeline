@@ -85,14 +85,59 @@ active_suffix <- do.call(rbind, lapply(split(active_events, active_events$team),
   )
 }))
 
+# ── Park K% lens ──────────────────────────────────────────────────────────────
+# K% comes from a separate PA-level model (scripts/park_factors/build_park_k_factors.R),
+# not from the contact model: the BBE store has no strikeouts in it. It rides
+# along as a display column and is NOT part of the Overall factor. When the K
+# outputs are absent the column is simply NA and every other table is
+# unchanged, so the contact-only build chain still runs on its own.
+k_overall_path <- file.path(output_dir, "park_factors_k_overall.csv")
+k_half_path    <- file.path(output_dir, "park_factors_k_by_half.csv")
+k_hand_path    <- file.path(output_dir, "park_factors_k_by_hand.csv")
+
+read_k_effects <- function(path, slice_col = NULL, slice_value = NULL) {
+  if (!file.exists(path)) {
+    return(NULL)
+  }
+  d <- utils::read.csv(path, stringsAsFactors = FALSE, check.names = FALSE)
+  if (!is.null(slice_col)) {
+    if (!slice_col %in% names(d)) return(NULL)
+    d <- d[d[[slice_col]] == slice_value, , drop = FALSE]
+  }
+  effect_col <- if ("delta" %in% names(d)) "delta" else "park_effect"
+  if (!all(c("park_era_id", effect_col) %in% names(d))) {
+    return(NULL)
+  }
+  out <- data.frame(
+    park_era_id = as.character(d$park_era_id),
+    k_resid = suppressWarnings(as.numeric(d[[effect_col]])),
+    stringsAsFactors = FALSE
+  )
+  if ("n_pa" %in% names(d)) {
+    out$k_n_pa <- suppressWarnings(as.numeric(d$n_pa))
+  }
+  out[!duplicated(out$park_era_id), , drop = FALSE]
+}
+
+attach_k_effects <- function(tbl, k_tbl) {
+  if (is.null(k_tbl)) {
+    tbl$k_resid <- NA_real_
+    tbl$k_n_pa <- NA_real_
+    return(tbl)
+  }
+  merge(tbl, k_tbl, by = "park_era_id", all.x = TRUE)
+}
+
 display <- utils::read.csv(input_path, stringsAsFactors = FALSE, check.names = FALSE)
 display$team_token <- vapply(display$team_id, park_team_token, character(1))
 display$team_norm <- normalize_team(display$team_id)
 display$park_suffix <- suffix_from_id(display$park_era_id)
 display$year_end <- extract_year_end(display$years_used)
 display$year_start <- extract_year_start(display$years_used)
+display <- attach_k_effects(display, read_k_effects(k_overall_path))
 
 team_ids <- sort(unique(display$team_id))
+
 verified <- utils::read.csv(home_parks_csv, stringsAsFactors = FALSE, check.names = FALSE)
 verified$team_abbr <- toupper(trimws(as.character(verified$team_abbr)))
 verified$team_norm <- normalize_team(verified$team_abbr)
@@ -215,6 +260,9 @@ restandardize_over_selected <- function(picked_tbl) {
   if ("carry_ft" %in% names(picked_tbl)) {
     picked_tbl$carry_idx_100 <- restd(picked_tbl$carry_ft)
   }
+  if ("k_resid" %in% names(picked_tbl)) {
+    picked_tbl$k_idx_100 <- restd(picked_tbl$k_resid)
+  }
   picked_tbl$overall_pf_idx_100 <- restd(picked_tbl$overall_resid)
   picked_tbl
 }
@@ -249,6 +297,7 @@ clean_from_picked <- function(picked_tbl) {
     `HR Park Factor` = round2(picked_tbl$hr_idx_100),
     `Carry Park Factor` = col_or_na("carry_idx_100"),
     `Carry (ft vs avg)` = col_or_na("carry_ft"),
+    `K Park Factor` = col_or_na("k_idx_100"),
     `Total BBE` = as.integer(round(as.numeric(picked_tbl$total_bbe))),
     stringsAsFactors = FALSE,
     check.names = FALSE
@@ -443,10 +492,13 @@ build_half_display <- function(half_label) {
   merged$xbh_resid <- suppressWarnings(as.numeric(merged$xbh_delta))
   merged$carry_ft <- suppressWarnings(as.numeric(merged$carry_delta))
 
+  merged <- attach_k_effects(merged, read_k_effects(k_half_path, "half", half_label))
+
   merged$bacon_idx_100 <- std_index(merged$bacon_resid)
   merged$hr_idx_100 <- std_index(merged$hr_resid)
   merged$xbh_idx_100 <- std_index(merged$xbh_resid)
   merged$carry_idx_100 <- std_index(merged$carry_ft)
+  merged$k_idx_100 <- std_index(merged$k_resid)
   merged$overall_pf_idx_100 <- std_index(merged$overall_resid)
 
   merged <- merged[!is.na(merged$team_id), , drop = FALSE]
@@ -505,10 +557,13 @@ build_hand_display <- function(hand_label) {
   merged$xbh_resid <- suppressWarnings(as.numeric(merged$xbh_delta))
   merged$carry_ft <- suppressWarnings(as.numeric(merged$carry_delta))
 
+  merged <- attach_k_effects(merged, read_k_effects(k_hand_path, "hand", hand_label))
+
   merged$bacon_idx_100 <- std_index(merged$bacon_resid)
   merged$hr_idx_100 <- std_index(merged$hr_resid)
   merged$xbh_idx_100 <- std_index(merged$xbh_resid)
   merged$carry_idx_100 <- std_index(merged$carry_ft)
+  merged$k_idx_100 <- std_index(merged$k_resid)
   merged$overall_pf_idx_100 <- std_index(merged$overall_resid)
 
   merged <- merged[!is.na(merged$team_id), , drop = FALSE]

@@ -137,12 +137,30 @@ d_sc <- sc_half - sc_ann
 cat("--- Score movement (Overall lens) ---\n")
 cat(sprintf("delta composite: SD %.4f | mean|d| %.4f | max|d| %.4f pts\n",
             sd(d_sc), mean(abs(d_sc)), max(abs(d_sc))))
-flip_start <- sum((sc_ann > 105) != (sc_half > 105))
-flip_sit   <- sum((sc_ann < 95)  != (sc_half < 95))
-cat(sprintf("starts crossing the 105 line: %d of %d (%.3f%%)\n",
-            flip_start, nrow(st), 100 * flip_start / nrow(st)))
-cat(sprintf("starts crossing the 95 line:  %d of %d (%.3f%%)\n\n",
-            flip_sit, nrow(st), 100 * flip_sit / nrow(st)))
+
+# Decision boundaries as the LIVE app draws them. The shipped Streamonator
+# split the 95-105 coin flip at 100 into Lean Bench / Lean Start on 2026-08-14
+# (fbb-tools 598c64b), so 100 is a real boundary now and it sits in the
+# densest part of the score distribution. Reporting only 105/95 understates
+# how many decisions a scoring change can move.
+for (b in c(95, 100, 105)) {
+  n_cross <- sum((sc_ann > b) != (sc_half > b))
+  cat(sprintf("starts crossing the %3d line: %4d of %d (%.3f%%)%s\n",
+              b, n_cross, nrow(st), 100 * n_cross / nrow(st),
+              if (b == 100) "   <- Lean Bench / Lean Start" else ""))
+}
+cut4 <- function(s) cut(s, c(-Inf, 95, 100, 105, Inf),
+                        labels = c("Sit", "Lean Bench", "Lean Start", "Start"))
+b_ann <- cut4(sc_ann); b_half <- cut4(sc_half)
+cat(sprintf("ANY 4-bucket change: %d of %d (%.3f%%)\n",
+            sum(b_ann != b_half), nrow(st), 100 * mean(b_ann != b_half)))
+cat("\ngood-start rate by live 4-bucket, annual vs half PF:\n")
+gr <- function(b) tapply(st$good_start, b, mean)
+print(round(cbind(annual = gr(b_ann), half = gr(b_half),
+                  delta_pp = 100 * (gr(b_half) - gr(b_ann))), 4))
+cat("\nbucket sizes:\n")
+print(rbind(annual = table(b_ann), half = table(b_half)))
+cat("\n")
 
 # ── Pooled + per-season scoreboard ───────────────────────────────────────────
 arms <- list(`annual-overall` = sc_ann, `half-overall` = sc_half,

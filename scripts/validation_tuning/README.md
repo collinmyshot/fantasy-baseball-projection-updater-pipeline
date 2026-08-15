@@ -88,6 +88,12 @@ grep for `"/Users/ckaufman` to list them.
 Point-in-time backtest data lives in the **fbb-tools** repo, not here:
 `streamonator_coinflip_reweight.R` reads it, with `--calib-dir` to override.
 
+`streamonator_half_pf_test.R` reads park factors from the working tree but the
+starts cache (`data/processed/streamonator_weight_analysis/`) is gitignored and
+only exists in the main project root, so it falls back to `../../..` when run
+from a worktree. Park factors and starts can therefore come from different
+builds — check the park factor timestamps before trusting a result.
+
 ---
 
 ## Index
@@ -113,6 +119,7 @@ Point-in-time backtest data lives in the **fbb-tools** repo, not here:
 | `streamonator_gb_defense_interaction.R` | Does defense matter more for GB arms? | **yes but tiny** — settled |
 | `streamonator_shape_diagnostic.R` | Are the components linear, or do tails deviate? | **linear** — outlier-emphasis rejected |
 | `streamonator_home_road_park.R` | Why do arms post bad ERAs in bad parks? | park drives splits; **validates 6:3:1** |
+| `streamonator_half_pf_test.R` | Should the PF slot split 1H / 2H? | **no** — REJECTED on all 3 rules, 0.23 pt ceiling |
 
 ### SP Skillz
 | Script | Question | Verdict |

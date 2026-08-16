@@ -13,6 +13,23 @@ paths:
 
 # Sheets Pipeline Context
 
+> ## ⛔ RETIRED 2026-08-15
+>
+> **This pipeline no longer runs.** The `daily-refresh.yml` schedule was removed
+> (it had covered Dec 24 to Apr 15); only `workflow_dispatch` remains, so it can
+> be triggered by hand but will never fire on its own.
+>
+> Retired at the user's direction: the Sheets workflow is not needed live. It
+> was the last thing keeping this deprecated repo operationally active. See
+> [DEPRECATED.md](../../DEPRECATED.md).
+>
+> The Google Sheet itself is untouched. This pipeline only ever wrote TO it, so
+> your manual columns (CK.Rank, DS.Rank, RBLL targets) are exactly as you left
+> them; they just stop being refreshed alongside the projections.
+>
+> Everything below is retained as a record of how it worked, and is accurate for
+> a manual run. Nothing here should be treated as live automation.
+
 Daily automated pipeline: data fetch → processing → Google Sheets sync. Runs via GitHub Actions.
 
 ## Orchestration order (run_pipeline.R)

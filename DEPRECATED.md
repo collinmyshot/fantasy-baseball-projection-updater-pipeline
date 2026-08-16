@@ -1,10 +1,12 @@
-# ⛔ DEPRECATED — do not start new work here
+# ⛔ DEPRECATED -- do not start new work here
 
 **This repo (`fantasy-baseball-projection-updater-pipeline`) is being retired.
 New work goes to `~/Documents/fbb-tools-repo`.**
 
-It is **not** dead yet. Read the "still lives only here" section before deleting
-anything or assuming a file has a copy elsewhere.
+Nothing here runs on a schedule any more -- the last live automation (the Google
+Sheets refresh) was retired 2026-08-15. But the repo is still the **only** copy
+of a fair amount of code. Read the "still lives only here" section before
+deleting anything or assuming a file has a copy elsewhere.
 
 ---
 
@@ -26,7 +28,7 @@ if the two ever disagree.
 
 | here | there |
 |---|---|
-| `scripts/park_factors/` (24 files) | `scripts/park_factors/` (25 — plus the new `publish_park_factors.R`) |
+| `scripts/park_factors/` (24 files) | `scripts/park_factors/` (25 -- plus the new `publish_park_factors.R`) |
 | `scripts/validation_tuning/` (43 files) | `scripts/validation_tuning/` |
 | `R/park_factors.R` | `R/engines/park_factors.R` |
 | `data/processed/park_factors/` | `research/park_factors/` |
@@ -36,7 +38,7 @@ if the two ever disagree.
 Research data lives under `research/` there, deliberately: fbb-tools' `deploy.R`
 uses an **allowlist** (`appFiles`), and `research/` is not a path it names, so
 none of it can ever reach a deploy bundle. Do not "helpfully" move it under
-`data/processed/` — that directory is bundled wholesale, and gitignoring does
+`data/processed/` -- that directory is bundled wholesale, and gitignoring does
 not help because the allowlist reads the filesystem, not git.
 
 The raw boxscore cache (`box*.rds`, ~12.6k files / 279 MB) was **not** copied.
@@ -49,16 +51,22 @@ over that one.
 
 ---
 
-## What still lives ONLY here — deleting this repo loses it
+## What still lives ONLY here -- deleting this repo loses it
 
-### The Google Sheets draft pipeline (still runs)
+### The Google Sheets draft pipeline (RETIRED 2026-08-15 -- no longer runs)
 
-`.github/workflows/daily-refresh.yml` runs `scripts/run_pipeline.R` on a cron
-that is **dormant Apr 16 – Dec 23 and active Dec 24 – Apr 15**. It is quiet
-today only because of the date. It will start running again in late December
-unless it is rehomed or switched off first.
+`.github/workflows/daily-refresh.yml` used to run `scripts/run_pipeline.R` on a
+cron covering Dec 24 - Apr 15. **The schedule has been removed.** Only
+`workflow_dispatch` remains, so it can be triggered by hand but will never fire
+on its own. Retiring it was the last thing keeping this repo operationally live.
 
-Supporting scripts with no counterpart in fbb-tools:
+The Google Sheet is untouched -- the pipeline only ever wrote to it, so the
+hand-entered columns (CK.Rank, DS.Rank, RBLL targets) are as you left them.
+If you ever run this manually, note it WRITES to that live sheet with
+projections that may be several seasons stale.
+
+The code is kept, not deleted, so the pipeline can be revived. Scripts with no
+counterpart in fbb-tools:
 `run_pipeline.R`, `fetch_projections.R`, `fetch_nfbc_adp.R`,
 `build_pitcher_integration_table.R`, `push_to_google_sheets.R`,
 `sync_run_data_tab.R`, `sync_adp_tab.R`, `sync_position_tabs.R`,
@@ -85,7 +93,8 @@ Supporting scripts with no counterpart in fbb-tools:
 1. **Park factor or Streamonator validation work → fbb-tools.** Not here.
 2. **Do not edit the moved files here.** They are a frozen copy. Edits will be
    lost and will re-create the drift this migration removed.
-3. **Do not delete this repo** until the Sheets pipeline is either moved or
-   retired, and the article research is archived somewhere.
-4. If you rehome the Sheets pipeline, disable `daily-refresh.yml` in the same
-   change so it cannot wake up in December pointing at a dead checkout.
+3. **Do not delete this repo** while it is still the only copy of the scripts
+   listed above. The Sheets pipeline is retired, so nothing here runs any more,
+   but retired is not the same as backed up.
+4. Do not re-add a `schedule:` block to any workflow here. If something needs to
+   run on a cron, it belongs in fbb-tools.

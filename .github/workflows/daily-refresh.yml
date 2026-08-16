@@ -1,13 +1,27 @@
-name: Daily Google Sheets Refresh (No Shiny)
+name: "RETIRED - Google Sheets Refresh (manual only)"
+
+# RETIRED 2026-08-15. This no longer runs on a schedule.
+#
+# The schedule was three crons covering Dec 24 - Apr 15, dormant the rest of
+# the year. It was removed rather than left in place because this repo is
+# deprecated (see DEPRECATED.md) and a cron sitting quietly in a retired repo
+# would have woken up on Dec 24 and started pushing commits again months after
+# anyone stopped watching it.
+#
+# The crons are deleted; workflow_dispatch is kept so the pipeline can still be
+# run by hand if the Sheets workflow is ever revived.
+#
+# BEFORE RUNNING THIS MANUALLY: it WRITES to the live Google Sheet. The
+# position tabs and "RBLL Team & Targets" carry hand-entered columns
+# (CK.Rank, DS.Rank, manual targets). The sync scripts are written to preserve
+# them, but they have not been exercised since retirement, and the projections
+# it would push may be from a stale season. Check config/pipeline.yml and the
+# sheet's current contents first.
+#
+# Retiring this was the last thing keeping the monorepo operationally live.
 
 on:
   workflow_dispatch:
-  schedule:
-    # Run once daily at 11:00 UTC (3 AM PST / 4 AM PDT).
-    # Active Dec 24 – Apr 15 (Christmas Eve through Opening Day window).
-    - cron: '0 11 24-31 12 *'   # Dec 24-31
-    - cron: '0 11 * 1,2,3 *'    # Jan, Feb, Mar (all days)
-    - cron: '0 11 1-15 4 *'     # Apr 1-15 (covers any Opening Day date)
 
 permissions:
   contents: write

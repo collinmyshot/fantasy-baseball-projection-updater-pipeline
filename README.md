@@ -6,9 +6,12 @@
 > validation, and their research data have moved there; the copies here are
 > frozen.
 >
-> **Not dead yet.** The Google Sheets draft pipeline described below still runs
-> from this repo on a cron that is active Dec 24 – Apr 15. Do not delete this
-> repo until that is rehomed or retired.
+> **The Google Sheets pipeline described below is RETIRED (2026-08-15)** and no
+> longer runs on a schedule; it is manual-trigger only. The Sheet itself is
+> untouched, just no longer refreshed.
+>
+> The repo is still the only copy of that pipeline's code, the hitter article
+> research, and the projection/ADP fetchers, so don't delete it.
 
 This project pulls Fangraphs hitter projections (`BATX`, `Steamer`, `OOPSY`, `ATC`), builds your weighted per-PA aggregate, applies starter-pool z-scoring, converts to dollars, merges NFBC ADP, and syncs outputs to Google Sheets.
 

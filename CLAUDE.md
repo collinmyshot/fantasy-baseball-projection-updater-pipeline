@@ -11,13 +11,17 @@
 > **`R/sp_skillz.R` here is stale (Apr 7).** fbb-tools' `R/engines/sp_skillz.R`
 > is the live version, ~285 lines ahead. Never copy this one over that one.
 >
-> Still lives ONLY here, so do not delete the repo: the Google Sheets draft
-> pipeline (`scripts/run_pipeline.R` + `.github/workflows/daily-refresh.yml`,
-> cron active **Dec 24 – Apr 15**, dormant today only because of the date), the
-> hitter article research scripts, and the projection/ADP fetchers.
+> **Nothing here runs on a schedule any more.** The Google Sheets draft pipeline
+> was RETIRED 2026-08-15: `daily-refresh.yml` lost its Dec 24 to Apr 15 cron and
+> is `workflow_dispatch` only. Do not add a `schedule:` block back. If
+> something needs a cron, it belongs in fbb-tools.
 >
-> The workflow sections below still describe how THAT pipeline runs, and remain
-> accurate for it.
+> Still lives ONLY here, so do not delete the repo: the Sheets pipeline code
+> (`scripts/run_pipeline.R` and friends, kept so it can be revived), the hitter
+> article research scripts, and the projection/ADP fetchers.
+>
+> The workflow sections below describe how that pipeline worked and are accurate
+> for a manual run. Treat them as a record, not as live automation.
 
 # Fantasy Baseball Projections — Claude Code Context
 ## Project Root

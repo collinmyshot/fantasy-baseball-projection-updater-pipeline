@@ -1,3 +1,24 @@
+> # ⛔ THIS REPO IS DEPRECATED
+>
+> **New work belongs in `~/Documents/fbb-tools-repo`, not here.** Read
+> [DEPRECATED.md](DEPRECATED.md) before doing anything in this repo.
+>
+> Park factors, Streamonator validation, and their research data have MOVED to
+> fbb-tools. The copies here are frozen; editing them re-creates the exact drift
+> the migration removed (fbb-tools served park factors it could not reproduce
+> for three weeks because code and data were published separately).
+>
+> **`R/sp_skillz.R` here is stale (Apr 7).** fbb-tools' `R/engines/sp_skillz.R`
+> is the live version, ~285 lines ahead. Never copy this one over that one.
+>
+> Still lives ONLY here, so do not delete the repo: the Google Sheets draft
+> pipeline (`scripts/run_pipeline.R` + `.github/workflows/daily-refresh.yml`,
+> cron active **Dec 24 – Apr 15**, dormant today only because of the date), the
+> hitter article research scripts, and the projection/ADP fetchers.
+>
+> The workflow sections below still describe how THAT pipeline runs, and remain
+> accurate for it.
+
 # Fantasy Baseball Projections — Claude Code Context
 ## Project Root
 `/Users/ckaufman/Documents/New project`

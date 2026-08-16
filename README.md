@@ -1,5 +1,15 @@
 # Fantasy Baseball Projections Pipeline
 
+> ## ⛔ DEPRECATED — see [DEPRECATED.md](DEPRECATED.md)
+>
+> New work goes to `~/Documents/fbb-tools-repo`. Park factors, Streamonator
+> validation, and their research data have moved there; the copies here are
+> frozen.
+>
+> **Not dead yet.** The Google Sheets draft pipeline described below still runs
+> from this repo on a cron that is active Dec 24 – Apr 15. Do not delete this
+> repo until that is rehomed or retired.
+
 This project pulls Fangraphs hitter projections (`BATX`, `Steamer`, `OOPSY`, `ATC`), builds your weighted per-PA aggregate, applies starter-pool z-scoring, converts to dollars, merges NFBC ADP, and syncs outputs to Google Sheets.
 
 ## Project boundary (explicit)
